@@ -1,6 +1,6 @@
 ---
 import BaseLayout from './BaseLayout.astro';
-import { site } from '../data/site';
+import { hasEmail, site } from '../data/site';
 import { withBase } from '../lib/paths';
 
 interface Props {
@@ -34,9 +34,18 @@ const { title, description, heading, updated, version, toc = [], noindex = false
       <div class="legal-content">
         <slot />
         <div class="legal-note">
-          Если положение документа требует уточнения применительно к вашей ситуации, напишите на
-          <a href={`mailto:${site.legal.privacyEmail}`}>{site.legal.privacyEmail}</a> или
-          обратитесь по адресу: {site.office.postalCode}, {site.office.city}, {site.office.street}.
+          Если положение документа требует уточнения, направьте обращение{' '}
+          {hasEmail ? (
+            <>
+              на <a href={`mailto:${site.legal.privacyEmail}`}>{site.legal.privacyEmail}</a> или
+            </>
+          ) : (
+            'через '
+          )}
+          <a href={site.vkChat} target="_blank" rel="noopener noreferrer">
+            личные сообщения ВКонтакте
+          </a>
+          .
         </div>
       </div>
 

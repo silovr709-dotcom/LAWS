@@ -1,14 +1,28 @@
 ---
-import { site } from '../data/site';
+import { hasPhone, site } from '../data/site';
 import Icon from './Icon.astro';
 import { withBase } from '../lib/paths';
 ---
 
 <div class="mobile-callbar" data-callbar>
-  <a class="btn btn--outline" href={`tel:${site.phone.href}`}>
-    <Icon name="phone" size={15} />
-    Позвонить
-  </a>
+  {
+    hasPhone ? (
+      <a class="btn btn--outline" href={`tel:${site.phone.href}`}>
+        <Icon name="phone" size={15} />
+        Позвонить
+      </a>
+    ) : (
+      <a
+        class="btn btn--outline"
+        href={site.vkChat}
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <Icon name="vk" size={15} />
+        Написать
+      </a>
+    )
+  }
   <a class="btn btn--primary" href={withBase("/#kontakty")}>
     Обсудить ситуацию
     <Icon name="arrow-right" size={14} />

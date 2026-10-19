@@ -1,6 +1,6 @@
 ---
 import LegalLayout from '../layouts/LegalLayout.astro';
-import { site } from '../data/site';
+import { hasEmail, site } from '../data/site';
 
 const toc = [
   { id: 'obschie', label: 'Общие положения' },
@@ -35,9 +35,15 @@ const toc = [
   </p>
   <p>
     Оператор персональных данных — {site.fullName}, адвокат, реестровый номер
-    {site.registryNumber} в {site.chamber} (далее — Оператор). Адрес для обращений:
-    {site.office.postalCode}, {site.office.city}, {site.office.street}. Электронная почта:
-    <a href={`mailto:${site.legal.privacyEmail}`}>{site.legal.privacyEmail}</a>.
+    {site.registryNumber} в {site.chamber} (далее — Оператор). Обращения принимаются через
+    <a href={site.vkChat} target="_blank" rel="noopener noreferrer">личные сообщения ВКонтакте</a>
+    {hasEmail && (
+      <>
+        {' '}или по электронной почте{' '}
+        <a href={`mailto:${site.legal.privacyEmail}`}>{site.legal.privacyEmail}</a>
+      </>
+    )}
+    .
   </p>
   <p>
     Политика разработана с учётом Конституции Российской Федерации, Федерального закона от
@@ -207,8 +213,8 @@ const toc = [
   <h2 id="kontakty">13. Контакты оператора</h2>
   <p>
     {site.fullName}, адвокат, реестровый номер {site.registryNumber}.<br />
-    Адрес: {site.office.postalCode}, {site.office.city}, {site.office.street}.<br />
-    Телефон: <a href={`tel:${site.phone.href}`}>{site.phone.display}</a>.<br />
-    Электронная почта: <a href={`mailto:${site.legal.privacyEmail}`}>{site.legal.privacyEmail}</a>.
+    Регион деятельности: {site.coverage}.<br />
+    Канал обращений:{' '}
+    <a href={site.vkChat} target="_blank" rel="noopener noreferrer">личные сообщения ВКонтакте</a>.
   </p>
 </LegalLayout>

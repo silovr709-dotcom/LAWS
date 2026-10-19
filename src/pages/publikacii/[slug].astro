@@ -119,8 +119,8 @@ const schema = {
             <span class="author-card__role">Автор</span>
             <span class="author-card__name">{site.fullName}</span>
             <p>
-              Адвокат, партнёр {site.bureauGenitive}. Реестровый номер {site.registryNumber},
-              {site.chamber}.
+              Адвокат, реестровый номер {site.registryNumber}, {site.chamber}.
+              Практика: уголовно-правовая защита, {site.coverage.toLowerCase()}.
             </p>
             <a class="link-arrow" href={withBase("/#ob-advokate")}>
               Об адвокате

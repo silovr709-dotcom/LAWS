@@ -1,0 +1,72 @@
+---
+import { hasPhone, site } from '../data/site';
+import Icon from './Icon.astro';
+
+interface Props {
+  compact?: boolean;
+}
+
+const { compact = false } = Astro.props;
+---
+
+<section
+  class:list={['section', 'section--paper', 'geography', compact && 'geography--compact']}
+  id="geografiya"
+  aria-labelledby="geography-title"
+>
+  <div class="container geography__inner">
+    <div class="geography__head" data-reveal>
+      <p class="eyebrow">География работы</p>
+      <h2 id="geography-title">Тверь — точка базирования. Работа — по всей России</h2>
+    </div>
+
+    <div class="geography__grid">
+      <div class="geography__map" data-reveal aria-hidden="true">
+        <span class="geography__dot geography__dot--base"></span>
+        <span class="geography__label geography__label--base">Тверь</span>
+        <span class="geography__line"></span>
+        <span class="geography__label geography__label--far">Выезд в регион дела</span>
+        <span class="geography__label geography__label--remote">Дистанционно</span>
+      </div>
+
+      <div class="geography__text" data-reveal>
+        <p class="geography__lead">
+          Уголовное дело не привязано к месту, где зарегистрирован адвокат. Участие возможно в
+          любом регионе: личный выезд к месту производства по делу либо дистанционная работа с
+          документами.
+        </p>
+
+        <ul class="geography__points">
+          <li>
+            <strong>Личное участие</strong>
+            Выезд в регион, где ведётся проверка или рассмотрение дела, участие в следственных
+            действиях и в суде.
+          </li>
+          <li>
+            <strong>Дистанционная работа</strong>
+            Изучение материалов, подготовка процессуальных документов и жалоб, обсуждение позиции
+            по видеосвязи.
+          </li>
+          <li>
+            <strong>Формат обсуждается заранее</strong>
+            Конкретная схема зависит от стадии дела, требований суда и позиции доверителя.
+          </li>
+        </ul>
+
+        <p class="geography__note">{site.travelNote}</p>
+
+        <div class="geography__actions">
+          <a
+            class="btn btn--primary"
+            href={hasPhone ? `tel:${site.phone.href}` : site.vkChat}
+            target={hasPhone ? undefined : '_blank'}
+            rel={hasPhone ? undefined : 'noopener noreferrer'}
+          >
+            Обсудить свою ситуацию
+            <Icon name="arrow-right" size={15} />
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

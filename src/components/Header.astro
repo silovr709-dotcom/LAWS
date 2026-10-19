@@ -1,5 +1,5 @@
 ---
-import { navigation, site } from '../data/site';
+import { hasPhone, navigation, site } from '../data/site';
 import Icon from './Icon.astro';
 import { stripBase, withBase } from '../lib/paths';
 
@@ -35,10 +35,24 @@ const { overHero = false, currentPath = stripBase(Astro.url.pathname) } = Astro.
     </nav>
 
     <div class="header-actions">
-      <a class="site-nav__phone" href={`tel:${site.phone.href}`}>
-        {site.phone.display}
-        <small>{site.phone.label}</small>
-      </a>
+      {
+        hasPhone ? (
+          <a class="site-nav__phone" href={`tel:${site.phone.href}`}>
+            {site.phone.display}
+            <small>{site.phone.label}</small>
+          </a>
+        ) : (
+          <a
+            class="site-nav__phone"
+            href={site.vkChat}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Написать
+            <small>ВКонтакте · ответ в личных сообщениях</small>
+          </a>
+        )
+      }
       <a class="header-cta" href={withBase("/#kontakty")}>
         Обсудить ситуацию
         <Icon name="arrow-right" size={14} />
@@ -73,9 +87,17 @@ const { overHero = false, currentPath = stripBase(Astro.url.pathname) } = Astro.
     }
   </nav>
   <div class="mobile-menu__footer">
-    <a class="mobile-menu__phone" href={`tel:${site.phone.href}`}>{site.phone.display}</a>
-    <span>{site.phone.label} · {site.hours}</span>
-    <a href={site.vk} target="_blank" rel="noopener noreferrer">ВКонтакте</a>
+    {
+      hasPhone ? (
+        <a class="mobile-menu__phone" href={`tel:${site.phone.href}`}>{site.phone.display}</a>
+      ) : (
+        <a class="mobile-menu__phone" href={site.vkChat} target="_blank" rel="noopener noreferrer">
+          Написать во ВКонтакте
+        </a>
+      )
+    }
+    <span>{site.hours}</span>
+    <a href={site.vk} target="_blank" rel="noopener noreferrer">Страница ВКонтакте</a>
     <p class="mobile-menu__note">
       Не отправляйте в открытых каналах документы и сведения, составляющие адвокатскую тайну.
     </p>

@@ -1,6 +1,7 @@
 ---
 import { site } from '../data/site';
 import Icon from './Icon.astro';
+import { hasEmail, hasPhone } from '../data/site';
 import { withBase } from '../lib/paths';
 
 /**
@@ -10,8 +11,10 @@ import { withBase } from '../lib/paths';
  *    открывает почтовую программу с заполненным письмом.
  * Задаётся переменной окружения PUBLIC_FORM_ENDPOINT при сборке.
  */
-const endpoint = import.meta.env.PUBLIC_FORM_ENDPOINT ?? '/api/contact';
-const isMailto = endpoint === 'mailto';
+const rawEndpoint = import.meta.env.PUBLIC_FORM_ENDPOINT ?? '/api/contact';
+// Если почта не подтверждена, mailto-режим заменяется на переход в личные сообщения.
+const endpoint = rawEndpoint === 'mailto' && !site.email ? 'vk' : rawEndpoint;
+const isStatic = endpoint !== '/api/contact';
 ---
 
 <form
@@ -19,6 +22,7 @@ const isMailto = endpoint === 'mailto';
   data-contact-form
   data-endpoint={endpoint}
   data-email={site.email}
+  data-vk={site.vkChat}
   data-consent-version={site.legal.consentVersion}
   novalidate
 >
@@ -29,11 +33,12 @@ const isMailto = endpoint === 'mailto';
   </p>
 
   {
-    isMailto && (
+    isStatic && (
       <p class="form__mode">
         Демонстрационная версия сайта размещена на GitHub Pages — серверной обработки формы здесь
-        нет. Нажатие «Отправить» откроет вашу почтовую программу с готовым письмом. Если она не
-        настроена, позвоните по телефону.
+        нет. После заполнения откроется{' '}
+        {endpoint === 'mailto' ? 'почтовая программа с готовым письмом' : 'диалог ВКонтакте'}:
+        отправьте сообщение уже там. Ничего не потеряется — текст останется в этом окне.
       </p>
     )
   }
@@ -124,8 +129,8 @@ const isMailto = endpoint === 'mailto';
   <div class="form__success" data-success role="status" aria-live="polite">
     <h3 data-success-title>Сообщение отправлено</h3>
     <p data-success-text>
-      Спасибо. Обращение получено — я или сотрудник приёмной свяжется с вами по указанному
-      телефону. Если вопрос срочный, позвоните: <a href={`tel:${site.phone.href}`}>{site.phone.display}</a>.
+      Спасибо. Обращение получено — я свяжусь с вами по указанному телефону или в удобном для вас
+      канале. Если вопрос срочный, напишите об этом в первом сообщении.
     </p>
   </div>
 
@@ -136,9 +141,12 @@ const isMailto = endpoint === 'mailto';
 
   <noscript>
     <p class="form__privacy">
-      Для отправки формы нужен JavaScript. Вы можете позвонить по телефону
-      <a href={`tel:${site.phone.href}`}>{site.phone.display}</a> или написать на
-      <a href={`mailto:${site.email}`}>{site.email}</a>.
+      Для отправки формы нужен JavaScript. Вы можете написать напрямую:{' '}
+      <a href={site.vkChat} target="_blank" rel="noopener noreferrer">
+        личные сообщения ВКонтакте
+      </a>
+      {hasPhone && <> или позвонить по телефону <a href={`tel:${site.phone.href}`}>{site.phone.display}</a></>}
+      {hasEmail && <> либо на <a href={`mailto:${site.email}`}>{site.email}</a></>}.
     </p>
   </noscript>
 </form>
@@ -230,6 +238,25 @@ const isMailto = endpoint === 'mailto';
       event.preventDefault();
       if (!validate()) {
         form.querySelector<HTMLElement>('[aria-invalid="true"]')?.focus();
+        return;
+      }
+
+      if (form.dataset.endpoint === 'vk') {
+        const title = form.querySelector<HTMLElement>('[data-success-title]');
+        const text = form.querySelector<HTMLElement>('[data-success-text]');
+        if (title) title.textContent = 'Открываем диалог ВКонтакте';
+        if (text) {
+          text.innerHTML =
+            'Напишите в открывшемся диалоге то же, что указали здесь: имя, телефон и короткое описание. ' +
+            'Если диалог не открылся — <a href="' +
+            (form.dataset.vk ?? '') +
+            '" target="_blank" rel="noopener noreferrer">нажмите здесь</a>.';
+        }
+        // В статическом режиме сообщение ещё нужно отправить в открывшемся диалоге.
+        // Оставляем заполненные поля видимыми, чтобы текст можно было скопировать.
+        success?.classList.add('is-visible');
+        success?.focus();
+        window.open(form.dataset.vk ?? '', '_blank', 'noopener');
         return;
       }
 

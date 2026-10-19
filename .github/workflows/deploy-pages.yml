@@ -2,7 +2,9 @@ name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: [main]
+    # Деплой запускается с ЛЮБОЙ ветки: правки из сессии сразу попадают на сайт,
+    # без PR и merge. Ветка указывается в логе сборки.
+    branches: ['**']
   workflow_dispatch:
 
 permissions:
@@ -12,7 +14,7 @@ permissions:
 
 concurrency:
   group: pages
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   build:
@@ -28,11 +30,15 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Show source branch
+        run: |
+          printf 'Деплой из ветки: %s (%s)\n' "$GITHUB_REF_NAME" "$GITHUB_SHA"
+
       - name: Build site
         env:
           PUBLIC_SITE_URL: https://silovr709-dotcom.github.io
           BASE_PATH: /LAWS
-          # На GitHub Pages нет серверной части: форма работает через почтовую программу.
+          # На GitHub Pages нет серверной части: форма ведёт в диалог ВКонтакте (или mailto, если указана почта).
           PUBLIC_FORM_ENDPOINT: mailto
           # Временный адрес закрыт от индексации. Для боевого домена — убрать.
           PUBLIC_NOINDEX: 'true'
