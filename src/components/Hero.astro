@@ -12,8 +12,13 @@ import Portrait from './Portrait.astro';
       </p>
 
       <h1 class="hero__title" id="hero-title">
-        <span>{hero.headline.line1}</span>
-        <span>{hero.headline.line2} <em>{hero.headline.line3}</em>.</span>
+        {
+          hero.headline.map((line) => (
+            <span>
+              {line.emphasis ? <em>{line.text}</em> : line.text}
+            </span>
+          ))
+        }
       </h1>
 
       <p class="hero__lead">{hero.lead}</p>

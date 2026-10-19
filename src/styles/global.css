@@ -726,7 +726,7 @@ button {
 .mobile-menu__note {
   font-size: 0.75rem;
   letter-spacing: 0.04em;
-  color: rgba(246, 240, 231, 0.5);
+  color: rgba(246, 240, 231, 0.62);
   max-width: 34ch;
 }
 
@@ -782,8 +782,8 @@ button {
 }
 
 .hero__title {
-  font-size: clamp(2.65rem, 5.4vw, 5rem);
-  line-height: 0.98;
+  font-size: clamp(2.6rem, 4.7vw, 4.45rem);
+  line-height: 1;
   letter-spacing: -0.018em;
   font-weight: 300;
   margin-bottom: clamp(1.35rem, 2.6vw, 2rem);
@@ -792,6 +792,10 @@ button {
 
 .hero__title span {
   display: block;
+}
+
+.hero__title span + span {
+  margin-top: 0.06em;
 }
 
 .hero__title em {
@@ -842,7 +846,7 @@ button {
   font-size: 0.6875rem;
   line-height: 1.45;
   letter-spacing: 0.045em;
-  color: rgba(246, 240, 231, 0.58);
+  color: rgba(246, 240, 231, 0.72);
 }
 
 .hero__visual {
@@ -973,7 +977,7 @@ button {
   letter-spacing: 0.18em;
   text-transform: uppercase;
   margin-top: 2px;
-  color: rgba(246, 240, 231, 0.5);
+  color: rgba(246, 240, 231, 0.62);
 }
 
 .portrait__seal {
@@ -1936,7 +1940,7 @@ button {
   font-size: 0.6875rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: rgba(246, 240, 231, 0.5);
+  color: rgba(246, 240, 231, 0.66);
 }
 
 .contact__channels {
@@ -1961,7 +1965,7 @@ button {
   font-size: 0.625rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: rgba(246, 240, 231, 0.45);
+  color: rgba(246, 240, 231, 0.6);
 }
 
 .contact__channel:hover span:last-child {
@@ -2020,7 +2024,7 @@ button {
 .contact__hours {
   margin-top: 6px;
   font-size: 0.8125rem;
-  color: rgba(246, 240, 231, 0.5);
+  color: rgba(246, 240, 231, 0.62);
 }
 
 .contact__warning {
@@ -2031,7 +2035,7 @@ button {
   border-top: 1px solid var(--line-light);
   font-size: 0.75rem;
   line-height: 1.6;
-  color: rgba(246, 240, 231, 0.6);
+  color: rgba(246, 240, 231, 0.7);
   max-width: 40ch;
 }
 
@@ -2317,7 +2321,7 @@ button {
   gap: 14px 32px;
   padding-top: 22px;
   font-size: 0.75rem;
-  color: rgba(246, 240, 231, 0.45);
+  color: rgba(246, 240, 231, 0.62);
 }
 
 .footer__ethics {
