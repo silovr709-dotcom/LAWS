@@ -23,6 +23,9 @@ const {
 const canonical = canonicalUrl(site.url, Astro.url.pathname);
 const ogImage = canonicalUrl(site.url, image);
 const jsonLd = schema ? (Array.isArray(schema) ? schema : [schema]) : [];
+/** Временные размещения (GitHub Pages) закрываются от индексации целиком. */
+const forcedNoindex = import.meta.env.PUBLIC_NOINDEX === 'true';
+const isNoindex = noindex || forcedNoindex;
 ---
 
 <meta charset="utf-8" />
@@ -30,8 +33,8 @@ const jsonLd = schema ? (Array.isArray(schema) ? schema : [schema]) : [];
 <title>{title}</title>
 <meta name="description" content={description} />
 <link rel="canonical" href={canonical} />
-{noindex && <meta name="robots" content="noindex, nofollow" />}
-{!noindex && <meta name="robots" content="index, follow, max-image-preview:large" />}
+{isNoindex && <meta name="robots" content="noindex, nofollow" />}
+{!isNoindex && <meta name="robots" content="index, follow, max-image-preview:large" />}
 <meta name="theme-color" content="#541C2B" />
 <meta name="format-detection" content="telephone=no" />
 
