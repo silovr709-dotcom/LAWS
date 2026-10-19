@@ -252,7 +252,8 @@ const isStatic = endpoint !== '/api/contact';
             (form.dataset.vk ?? '') +
             '" target="_blank" rel="noopener noreferrer">нажмите здесь</a>.';
         }
-        form.classList.add('is-sent');
+        // В статическом режиме сообщение ещё нужно отправить в открывшемся диалоге.
+        // Оставляем заполненные поля видимыми, чтобы текст можно было скопировать.
         success?.classList.add('is-visible');
         success?.focus();
         window.open(form.dataset.vk ?? '', '_blank', 'noopener');

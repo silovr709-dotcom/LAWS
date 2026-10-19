@@ -31,7 +31,8 @@ jobs:
         run: npm ci
 
       - name: Show source branch
-        run: echo "Деплой из ветки: ${{ github.ref_name }} (${{ github.sha }})"
+        run: |
+          printf 'Деплой из ветки: %s (%s)\n' "$GITHUB_REF_NAME" "$GITHUB_SHA"
 
       - name: Build site
         env:
