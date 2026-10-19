@@ -1,0 +1,32 @@
+---
+import { process, site } from '../data/site';
+import SectionHead from './SectionHead.astro';
+---
+
+<section class="section section--paper" id="poryadok" aria-labelledby="poryadok-title">
+  <div class="container">
+    <SectionHead
+      id="poryadok"
+      eyebrow={process.eyebrow}
+      title={process.title}
+      lead={process.lead}
+    />
+
+    <div class="process">
+      {
+        process.steps.map((step, index) => (
+          <article class="process__step" data-reveal style={`--reveal-delay: ${index * 50}ms`}>
+            <p class="process__number" aria-hidden="true">{step.number}</p>
+            <h3 class="process__title">{step.title}</h3>
+            <p class="process__text">{step.text}</p>
+          </article>
+        ))
+      }
+    </div>
+
+    <p class="process__note" data-reveal>
+      {process.disclaimer} Первый контакт удобнее начать по телефону{' '}
+      <a href={`tel:${site.phone.href}`}>{site.phone.display}</a>.
+    </p>
+  </div>
+</section>

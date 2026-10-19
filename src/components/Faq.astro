@@ -1,0 +1,32 @@
+---
+import { faq, site } from '../data/site';
+---
+
+<section class="section section--milk" id="voprosy" aria-labelledby="voprosy-title">
+  <div class="container faq">
+    <div class="faq__head" data-reveal>
+      <p class="eyebrow">{faq.eyebrow}</p>
+      <h2 id="voprosy-title">{faq.title}</h2>
+      <p>
+        Если ответа нет в списке, задайте вопрос по телефону или через форму — без лишних
+        подробностей.
+      </p>
+    </div>
+
+    <div class="accordion">
+      {
+        faq.items.map((item, index) => (
+          <details class="accordion__item" data-reveal open={index === 0}>
+            <summary class="accordion__summary">
+              <span>{item.question}</span>
+              <span class="accordion__icon" aria-hidden="true" />
+            </summary>
+            <div class="accordion__content">{item.answer}</div>
+          </details>
+        ))
+      }
+    </div>
+
+    <p class="faq__disclaimer">{faq.disclaimer}</p>
+  </div>
+</section>

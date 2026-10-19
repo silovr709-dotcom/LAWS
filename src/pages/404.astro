@@ -1,0 +1,25 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="Страница не найдена — адвокат Юрий Кочевинов"
+  description="Запрошенная страница не найдена."
+  noindex
+  overHero
+>
+  <section class="notfound">
+    <div class="container">
+      <p class="notfound__code" aria-hidden="true">404</p>
+      <h1>Страница не найдена</h1>
+      <p>
+        Возможно, адрес изменился или в ссылке допущена ошибка. Основные разделы сайта доступны
+        по ссылкам ниже.
+      </p>
+      <div class="btn-row">
+        <a class="btn btn--light" href="/">На главную</a>
+        <a class="btn btn--outline-light" href="/#kontakty">Связаться с адвокатом</a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

@@ -1,0 +1,65 @@
+---
+import { about, site } from '../data/site';
+import Portrait from './Portrait.astro';
+---
+
+<section class="section section--paper" id="ob-advokate" aria-labelledby="ob-advokate-title">
+  <div class="container about">
+    <div class="about__visual">
+      <div class="about__portrait" data-reveal>
+        <Portrait />
+        <p class="about__caption">
+          {site.fullName}. Реестровый номер {site.registryNumber}, {site.chamber}.
+        </p>
+      </div>
+    </div>
+
+    <div class="about__body">
+      <p class="eyebrow" data-reveal>{about.eyebrow}</p>
+      <h2 id="ob-advokate-title" data-reveal>{about.title}</h2>
+      <p class="about__subtitle" data-reveal>
+        {site.role}, партнёр {site.bureauGenitive}
+      </p>
+      <p class="about__lead" data-reveal>{about.lead}</p>
+
+      <dl class="about__facts" data-reveal>
+        {
+          about.facts.map((fact) => (
+            <div class="about__fact">
+              <dt>{fact.label}</dt>
+              <dd>{fact.value}</dd>
+            </div>
+          ))
+        }
+      </dl>
+
+      <h3 class="about__section-title">Профессиональный путь</h3>
+      <div class="timeline">
+        {
+          about.timeline.map((item) => (
+            <div class="timeline__item" data-reveal>
+              <span class="timeline__period">{item.period}</span>
+              <h4 class="timeline__title">{item.title}</h4>
+              <p class="timeline__text">{item.text}</p>
+            </div>
+          ))
+        }
+      </div>
+
+      {
+        about.awards.length > 0 && (
+          <>
+            <h3 class="about__section-title">Награды и знаки отличия</h3>
+            <ul class="awards" data-reveal>
+              {about.awards.map((award) => (
+                <li>{award}</li>
+              ))}
+            </ul>
+          </>
+        )
+      }
+
+      <p class="about__note" data-reveal>{about.note}</p>
+    </div>
+  </div>
+</section>

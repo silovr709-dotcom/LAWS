@@ -1,0 +1,44 @@
+---
+import { directions } from '../data/site';
+import SectionHead from './SectionHead.astro';
+import Icon from './Icon.astro';
+---
+
+<section class="section section--milk" id="napravleniya" aria-labelledby="napravleniya-title">
+  <div class="container">
+    <SectionHead
+      id="napravleniya"
+      eyebrow="Направления"
+      title="С какими ситуациями можно обратиться"
+      lead="Практика сосредоточена на уголовном праве и процессе. Ниже — не список статей, а ситуации, в которых человеку обычно нужен адвокат."
+    />
+
+    <div class="directions">
+      {
+        directions.map((direction, index) => (
+          <article class="direction" data-reveal style={`--reveal-delay: ${index * 40}ms`}>
+            <span class="direction__number" aria-hidden="true">{direction.number}</span>
+            <h3 class="direction__title">{direction.title}</h3>
+            <p class="direction__lead">{direction.lead}</p>
+            <ul class="direction__points">
+              {direction.points.map((point) => (
+                <li>{point}</li>
+              ))}
+            </ul>
+          </article>
+        ))
+      }
+    </div>
+
+    <div class="directions-note" data-reveal>
+      <p>
+        Не нашли свою ситуацию? Опишите её в общих чертах — на первом разговоре станет понятно,
+        относится ли вопрос к практике адвоката.
+      </p>
+      <a class="link-arrow" href="#kontakty">
+        Обсудить ситуацию
+        <Icon name="arrow-right" size={14} />
+      </a>
+    </div>
+  </div>
+</section>

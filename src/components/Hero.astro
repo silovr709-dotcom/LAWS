@@ -1,0 +1,52 @@
+---
+import { hero, site } from '../data/site';
+import Icon from './Icon.astro';
+import Portrait from './Portrait.astro';
+---
+
+<section class="hero" aria-labelledby="hero-title">
+  <div class="container hero__inner">
+    <div class="hero__content">
+      <p class="eyebrow hero__eyebrow">
+        {hero.eyebrow} · реестр {site.registryNumber}
+      </p>
+
+      <h1 class="hero__title" id="hero-title">
+        <span>{hero.headline.line1}</span>
+        <span>{hero.headline.line2} <em>{hero.headline.line3}</em>.</span>
+      </h1>
+
+      <p class="hero__lead">{hero.lead}</p>
+
+      <div class="hero__actions btn-row">
+        <a class="btn btn--light" href="#kontakty">
+          {hero.primaryCta}
+          <Icon name="arrow-right" size={15} />
+        </a>
+        <a class="btn btn--outline-light" href="#napravleniya">
+          {hero.secondaryCta}
+        </a>
+      </div>
+
+      <dl class="hero__facts">
+        {
+          hero.facts.map((fact) => (
+            <div class="hero__fact">
+              <dt class="hero__fact-label">{fact.label}</dt>
+              <dd class="hero__fact-value">{fact.value}</dd>
+            </div>
+          ))
+        }
+      </dl>
+    </div>
+
+    <div class="hero__visual">
+      <Portrait priority />
+      <p class="hero__coords" aria-hidden="true">{hero.coordinates}</p>
+    </div>
+  </div>
+
+  <div class="container">
+    <p class="hero__scroll" aria-hidden="true">Листайте</p>
+  </div>
+</section>

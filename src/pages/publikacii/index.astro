@@ -1,0 +1,74 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Icon from '../../components/Icon.astro';
+import { formatDate } from '../../lib/format';
+import { site } from '../../data/site';
+
+const articles = (await getCollection('articles', ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.publishedAt.getTime() - a.data.publishedAt.getTime(),
+);
+
+const title = 'Публикации — адвокат Юрий Кочевинов, Мурманск';
+const description =
+  'Практические материалы по уголовному процессу: допрос, доследственная проверка, апелляция и кассация. Объяснения без обещаний результата.';
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'Blog',
+  name: 'Публикации адвоката Юрия Кочевинова',
+  url: `${site.url}/publikacii/`,
+  inLanguage: 'ru-RU',
+  blogPost: articles.map((item) => ({
+    '@type': 'BlogPosting',
+    headline: item.data.title,
+    url: `${site.url}/publikacii/${item.id}/`,
+    datePublished: item.data.publishedAt.toISOString(),
+  })),
+};
+---
+
+<BaseLayout title={title} description={description} schema={schema}>
+  <section class="page-hero">
+    <div class="container">
+      <nav class="breadcrumbs" aria-label="Хлебные крошки">
+        <a href="/">Главная</a>
+        <span aria-hidden="true">/</span>
+        <span aria-current="page">Публикации</span>
+      </nav>
+      <p class="eyebrow">Публикации</p>
+      <h1 class="page-hero__title">Разобраться до того, как действовать</h1>
+      <p class="page-hero__lead">
+        Материалы о процессуальных ситуациях, с которыми люди сталкиваются чаще всего. Это не
+        замена консультации: применимость выводов зависит от обстоятельств конкретного дела.
+      </p>
+    </div>
+  </section>
+
+  <section class="section section--paper">
+    <div class="container">
+      {
+        articles.length > 0 ? (
+          <div class="articles-list">
+            {articles.map((item) => (
+              <a class="article-row" href={`/publikacii/${item.id}/`} data-reveal>
+                <div class="article-row__meta">
+                  <span>{item.data.category}</span>
+                  <span>{formatDate(item.data.publishedAt)}</span>
+                  <span>{item.data.readingTime}</span>
+                </div>
+                <div>
+                  <h2 class="article-row__title">{item.data.title}</h2>
+                  <p class="article-row__desc">{item.data.description}</p>
+                </div>
+                <Icon name="arrow-up-right" size={18} class="article-row__arrow" />
+              </a>
+            ))}
+          </div>
+        ) : (
+          <p>Публикации готовятся к выпуску.</p>
+        )
+      }
+    </div>
+  </section>
+</BaseLayout>

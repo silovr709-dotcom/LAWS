@@ -1,0 +1,31 @@
+---
+---
+
+<div class="cookie-notice" data-cookie-notice role="region" aria-label="Использование cookie">
+  <p>
+    Сайт использует только технические cookie и локальное хранилище, необходимые для работы
+    формы и запоминания настроек. Аналитика не подключена.
+    <a href="/politika-personalnyh-dannyh/#cookies">Подробнее</a>
+  </p>
+  <div class="cookie-notice__actions">
+    <button type="button" data-cookie-accept>Понятно</button>
+  </div>
+</div>
+
+<script>
+  const notice = document.querySelector<HTMLElement>('[data-cookie-notice]');
+  const button = document.querySelector<HTMLButtonElement>('[data-cookie-accept]');
+  const KEY = 'kch-cookie-notice-v1';
+
+  try {
+    if (notice && localStorage.getItem(KEY) !== 'accepted') {
+      notice.classList.add('is-visible');
+    }
+    button?.addEventListener('click', () => {
+      notice?.classList.remove('is-visible');
+      localStorage.setItem(KEY, 'accepted');
+    });
+  } catch {
+    /* localStorage может быть недоступен — тогда просто не показываем уведомление */
+  }
+</script>
