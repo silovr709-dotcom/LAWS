@@ -1,6 +1,6 @@
 ---
 import LegalLayout from '../layouts/LegalLayout.astro';
-import { site } from '../data/site';
+import { hasEmail, hasPhone, site } from '../data/site';
 
 const toc = [
   { id: 'status', label: 'Статус информации' },
@@ -121,8 +121,9 @@ const toc = [
   </p>
 
   <p>
-    По вопросам, связанным с содержанием Сайта, напишите на
-    <a href={`mailto:${site.email}`}>{site.email}</a> или позвоните по телефону
-    <a href={`tel:${site.phone.href}`}>{site.phone.display}</a>.
+    По вопросам, связанным с содержанием Сайта, напишите в
+    <a href={site.vkChat} target="_blank" rel="noopener noreferrer">личные сообщения ВКонтакте</a>
+    {hasEmail && <> или на <a href={`mailto:${site.email}`}>{site.email}</a></>}
+    {hasPhone && <> либо позвоните по телефону <a href={`tel:${site.phone.href}`}>{site.phone.display}</a></>}.
   </p>
 </LegalLayout>

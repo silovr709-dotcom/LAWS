@@ -1,5 +1,5 @@
 ---
-import { process, site } from '../data/site';
+import { hasPhone, process, site } from '../data/site';
 import SectionHead from './SectionHead.astro';
 ---
 
@@ -25,8 +25,17 @@ import SectionHead from './SectionHead.astro';
     </div>
 
     <p class="process__note" data-reveal>
-      {process.disclaimer} Первый контакт удобнее начать по телефону{' '}
-      <a href={`tel:${site.phone.href}`}>{site.phone.display}</a>.
+      {process.disclaimer} Первый контакт удобнее начать{' '}
+      {hasPhone ? (
+        <span>
+          по телефону <a href={`tel:${site.phone.href}`}>{site.phone.display}</a>
+        </span>
+      ) : (
+        <a href={site.vkChat} target="_blank" rel="noopener noreferrer">
+          в личных сообщениях ВКонтакте
+        </a>
+      )}
+      — достаточно коротко обозначить ситуацию.
     </p>
   </div>
 </section>

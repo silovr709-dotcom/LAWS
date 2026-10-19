@@ -1,5 +1,5 @@
 ---
-import { contactSection, site } from '../data/site';
+import { contactSection, hasEmail, hasOffice, hasPhone, site } from '../data/site';
 import ContactForm from './ContactForm.astro';
 import Icon from './Icon.astro';
 ---
@@ -11,26 +11,55 @@ import Icon from './Icon.astro';
       <h2 id="kontakty-title">{contactSection.title}</h2>
       <p class="contact__lead">{contactSection.lead}</p>
 
-      <a class="contact__phone" href={`tel:${site.phone.href}`}>{site.phone.display}</a>
-      <span class="contact__phone-label">{site.phone.label}</span>
+      {
+        hasPhone ? (
+          <a class="contact__phone" href={`tel:${site.phone.href}`}>
+            {site.phone.display}
+          </a>
+        ) : (
+          <a
+            class="contact__phone"
+            href={site.vkChat}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {site.vkLabel}
+          </a>
+        )
+      }
+      <span class="contact__phone-label">
+        {hasPhone ? site.phone.label : 'Личные сообщения · ответ в порядке поступления'}
+      </span>
 
       <div class="contact__channels">
-        <a class="contact__channel" href={`mailto:${site.email}`}>
-          <span>Почта</span>
-          <span>{site.email}</span>
-        </a>
         <a
           class="contact__channel"
-          href={site.vk}
+          href={site.vkChat}
           target="_blank"
           rel="noopener noreferrer"
         >
+          <span>Личные сообщения</span>
           <span>ВКонтакте</span>
-          <span>vk.com/advocat_yuriy51</span>
         </a>
-        <a class="contact__channel" href={`tel:${site.phoneAlt.href}`}>
-          <span>Второй номер</span>
-          <span>{site.phoneAlt.display}</span>
+        {
+          hasEmail && (
+            <a class="contact__channel" href={`mailto:${site.email}`}>
+              <span>Почта</span>
+              <span>{site.email}</span>
+            </a>
+          )
+        }
+        {
+          hasPhone && (
+            <a class="contact__channel" href={`tel:${site.phone.href}`}>
+              <span>Телефон</span>
+              <span>{site.phone.display}</span>
+            </a>
+          )
+        }
+        <a class="contact__channel" href={site.vk} target="_blank" rel="noopener noreferrer">
+          <span>Страница</span>
+          <span>vk.com/advocat_yuriy51</span>
         </a>
       </div>
 
@@ -38,17 +67,46 @@ import Icon from './Icon.astro';
         <span class="contact__address-line">
           <Icon name="pin" size={15} />
           <span>
-            {site.office.postalCode}, {site.office.city}, {site.office.street}
+            {site.city}, {site.region}
             <br />
-            {site.bureau}
+            {site.travelNote}
           </span>
         </span>
-        <a class="contact__map-link" href={site.mapUrl} target="_blank" rel="noopener noreferrer">
-          Открыть на карте
-          <Icon name="arrow-up-right" size={13} />
-        </a>
+        {
+          hasOffice && site.office && (
+            <span class="contact__address-line contact__address-line--plain">
+              Приём: {site.office.postalCode}, {site.office.city}, {site.office.street}
+              {site.mapUrl && (
+                <a
+                  class="contact__map-link"
+                  href={site.mapUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Открыть на карте
+                  <Icon name="arrow-up-right" size={13} />
+                </a>
+              )}
+            </span>
+          )
+        }
         <span class="contact__hours">{site.hours}</span>
       </address>
+
+      <div class="contact__next">
+        <p class="contact__next-title">Что будет после обращения</p>
+        <ol>
+          {
+            contactSection.nextSteps.map((step, index) => (
+              <li>
+                <span aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>
+                {step}
+              </li>
+            ))
+          }
+        </ol>
+        <p class="contact__next-note">{contactSection.nextStepsNote}</p>
+      </div>
 
       <p class="contact__warning">{contactSection.privacyWarning}</p>
     </div>

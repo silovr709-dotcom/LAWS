@@ -1,5 +1,5 @@
 ---
-import { navigation, site, footer } from '../data/site';
+import { hasEmail, hasPhone, navigation, site, footer } from '../data/site';
 import { withBase } from '../lib/paths';
 ---
 
@@ -36,12 +36,12 @@ import { withBase } from '../lib/paths';
       <div class="footer__col">
         <h2>Контакты</h2>
         <ul>
-          <li><a href={`tel:${site.phone.href}`}>{site.phone.display}</a></li>
-          <li><a href={`mailto:${site.email}`}>{site.email}</a></li>
           <li>
             <a href={site.vk} target="_blank" rel="noopener noreferrer">ВКонтакте</a>
           </li>
-          <li><a href={site.mapUrl} target="_blank" rel="noopener noreferrer">{site.office.city}, {site.office.street}</a></li>
+          {hasPhone && <li><a href={`tel:${site.phone.href}`}>{site.phone.display}</a></li>}
+          {hasEmail && <li><a href={`mailto:${site.email}`}>{site.email}</a></li>}
+          <li>{site.city} · работа по всей России</li>
         </ul>
       </div>
 

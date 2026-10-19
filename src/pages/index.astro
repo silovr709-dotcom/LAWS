@@ -7,82 +7,75 @@ import About from '../components/About.astro';
 import PracticePreview from '../components/PracticePreview.astro';
 import Process from '../components/Process.astro';
 import Faq from '../components/Faq.astro';
+import Urgent from '../components/Urgent.astro';
+import Geography from '../components/Geography.astro';
 import Contact from '../components/Contact.astro';
 import { faq, site } from '../data/site';
 import { withBase } from '../lib/paths';
 
-const title = `Адвокат Юрий Кочевинов — уголовно-правовая защита в Мурманске`;
+const title = 'Адвокат Юрий Кочевинов — уголовно-правовая защита в Твери и по всей России';
 const description =
-  'Адвокат Юрий Анатольевич Кочевинов, Мурманск. Уголовно-правовая защита: доследственная проверка, экономические и должностные преступления, представительство потерпевших, апелляция и кассация.';
+  'Адвокат Юрий Анатольевич Кочевинов: уголовно-правовая защита на любой стадии — доследственная проверка, экономические и должностные преступления, представительство потерпевших, апелляция и кассация. Приём в Твери, работа по всей России.';
+
+const personSchema: Record<string, unknown> = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: site.fullName,
+  givenName: 'Юрий',
+  familyName: 'Кочевинов',
+  jobTitle: 'Адвокат',
+  description:
+    'Адвокат, специализация — уголовно-правовая защита. Приём в Твери, работа по всей России.',
+  url: site.url,
+  image: `${site.url}${withBase('/og/og-default.png')}`,
+  address: {
+    '@type': 'PostalAddress',
+    addressLocality: site.city,
+    addressRegion: site.region,
+    addressCountry: 'RU',
+  },
+  memberOf: {
+    '@type': 'Organization',
+    name: site.chamber,
+    url: site.chamberUrl,
+  },
+  identifier: {
+    '@type': 'PropertyValue',
+    propertyID: 'Реестровый номер адвоката',
+    value: site.registryNumber,
+  },
+  award: ['Нагрудный знак «За верность закону»', 'Медаль «Ягужинского»'],
+  sameAs: [site.vk],
+  knowsLanguage: ['ru'],
+};
+
+const serviceSchema: Record<string, unknown> = {
+  '@context': 'https://schema.org',
+  '@type': 'LegalService',
+  name: 'Адвокат Юрий Кочевинов',
+  description:
+    'Уголовно-правовая защита, представительство потерпевших, обжалование приговоров. Приём в Твери, работа по всей России.',
+  url: site.url,
+  image: `${site.url}${withBase('/og/og-default.png')}`,
+  areaServed: [
+    { '@type': 'Country', name: 'Россия' },
+    { '@type': 'City', name: 'Тверь' },
+  ],
+  founder: { '@type': 'Person', name: site.fullName },
+  sameAs: [site.vk],
+  knowsAbout: [
+    'Уголовное право',
+    'Уголовный процесс',
+    'Доследственная проверка',
+    'Экономические преступления',
+    'Должностные преступления',
+    'Апелляция и кассация',
+  ],
+};
 
 const schemas = [
-  {
-    '@context': 'https://schema.org',
-    '@type': 'Person',
-    name: site.fullName,
-    givenName: 'Юрий',
-    familyName: 'Кочевинов',
-    jobTitle: 'Адвокат',
-    description: 'Адвокат, партнёр адвокатского бюро «Панфилов и партнёры», Мурманск.',
-    url: site.url,
-    image: `${site.url}${withBase('/og/og-default.png')}`,
-    worksFor: {
-      '@type': 'Organization',
-      name: site.bureau,
-      url: site.bureauUrl,
-    },
-    memberOf: {
-      '@type': 'Organization',
-      name: site.chamber,
-      url: site.chamberUrl,
-    },
-    identifier: {
-      '@type': 'PropertyValue',
-      propertyID: 'Реестровый номер адвоката',
-      value: site.registryNumber,
-    },
-    award: [
-      'Нагрудный знак «За верность закону»',
-      'Медаль «Ягужинского»',
-    ],
-    sameAs: [site.vk],
-    knowsLanguage: ['ru'],
-  },
-  {
-    '@context': 'https://schema.org',
-    '@type': 'LegalService',
-    name: 'Адвокат Юрий Кочевинов',
-    description:
-      'Уголовно-правовая защита, представительство потерпевших, обжалование приговоров. Мурманск и Мурманская область.',
-    url: site.url,
-    image: `${site.url}${withBase('/og/og-default.png')}`,
-    telephone: site.phone.display,
-    email: site.email,
-    areaServed: [
-      { '@type': 'City', name: 'Мурманск' },
-      { '@type': 'AdministrativeArea', name: 'Мурманская область' },
-    ],
-    address: {
-      '@type': 'PostalAddress',
-      streetAddress: site.office.street,
-      addressLocality: site.office.city,
-      postalCode: site.office.postalCode,
-      addressCountry: 'RU',
-    },
-    founder: {
-      '@type': 'Person',
-      name: site.fullName,
-    },
-    sameAs: [site.vk],
-    knowsAbout: [
-      'Уголовное право',
-      'Уголовный процесс',
-      'Доследственная проверка',
-      'Экономические преступления',
-      'Должностные преступления',
-      'Апелляция и кассация',
-    ],
-  },
+  personSchema,
+  serviceSchema,
   {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
@@ -96,10 +89,7 @@ const schemas = [
     mainEntity: faq.items.map((item) => ({
       '@type': 'Question',
       name: item.question,
-      acceptedAnswer: {
-        '@type': 'Answer',
-        text: item.answer,
-      },
+      acceptedAnswer: { '@type': 'Answer', text: item.answer },
     })),
   },
 ];
@@ -113,10 +103,12 @@ const schemas = [
   schema={schemas}
 >
   <Hero />
+  <Urgent />
   <Directions />
   <Approach />
   <About />
   <PracticePreview />
+  <Geography />
   <Process />
   <Faq />
   <Contact />

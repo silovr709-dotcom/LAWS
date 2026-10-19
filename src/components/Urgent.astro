@@ -1,0 +1,46 @@
+---
+import { hasPhone, site, urgent } from '../data/site';
+import Icon from './Icon.astro';
+import { withBase } from '../lib/paths';
+---
+
+<section class="urgent" id="srochno" aria-labelledby="urgent-title">
+  <div class="container urgent__inner">
+    <div class="urgent__head" data-reveal>
+      <p class="eyebrow urgent__eyebrow">{urgent.eyebrow}</p>
+      <h2 class="urgent__title" id="urgent-title">{urgent.title}</h2>
+      <p class="urgent__lead">{urgent.lead}</p>
+    </div>
+
+    <div class="urgent__body" data-reveal>
+      <ol class="urgent__list">
+        {
+          urgent.actions.map((action, index) => (
+            <li>
+              <span aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>
+              {action}
+            </li>
+          ))
+        }
+      </ol>
+
+      <div class="urgent__actions">
+        <a
+          class="btn btn--light"
+          href={hasPhone ? `tel:${site.phone.href}` : site.vkChat}
+          target={hasPhone ? undefined : '_blank'}
+          rel={hasPhone ? undefined : 'noopener noreferrer'}
+        >
+          <Icon name={hasPhone ? 'phone' : 'vk'} size={15} />
+          {hasPhone ? site.phone.display : urgent.cta}
+        </a>
+        <a class="urgent__link" href={withBase('/#kontakty')}>
+          Или оставьте сообщение через форму
+          <Icon name="arrow-right" size={14} />
+        </a>
+      </div>
+
+      <p class="urgent__note">{urgent.note}</p>
+    </div>
+  </div>
+</section>
