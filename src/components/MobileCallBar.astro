@@ -1,6 +1,7 @@
 ---
 import { site } from '../data/site';
 import Icon from './Icon.astro';
+import { withBase } from '../lib/paths';
 ---
 
 <div class="mobile-callbar" data-callbar>
@@ -8,7 +9,7 @@ import Icon from './Icon.astro';
     <Icon name="phone" size={15} />
     Позвонить
   </a>
-  <a class="btn btn--primary" href="/#kontakty">
+  <a class="btn btn--primary" href={withBase("/#kontakty")}>
     Обсудить ситуацию
     <Icon name="arrow-right" size={14} />
   </a>

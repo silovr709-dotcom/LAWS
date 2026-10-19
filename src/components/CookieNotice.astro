@@ -1,11 +1,12 @@
----
+---import { withBase } from '../lib/paths';
+
 ---
 
 <div class="cookie-notice" data-cookie-notice role="region" aria-label="Использование cookie">
   <p>
     Сайт использует только технические cookie и локальное хранилище, необходимые для работы
     формы и запоминания настроек. Аналитика не подключена.
-    <a href="/politika-personalnyh-dannyh/#cookies">Подробнее</a>
+    <a href={withBase("/politika-personalnyh-dannyh/#cookies")}>Подробнее</a>
   </p>
   <div class="cookie-notice__actions">
     <button type="button" data-cookie-accept>Понятно</button>

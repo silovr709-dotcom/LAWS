@@ -3,6 +3,7 @@ import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Icon from '../../components/Icon.astro';
 import { site } from '../../data/site';
+import { withBase } from '../../lib/paths';
 
 const cases = (await getCollection('cases', ({ data }) => !data.draft)).sort(
   (a, b) => b.data.year - a.data.year,
@@ -44,7 +45,7 @@ const schema = {
   <section class="page-hero">
     <div class="container">
       <nav class="breadcrumbs" aria-label="Хлебные крошки">
-        <a href="/">Главная</a>
+        <a href={withBase("/")}>Главная</a>
         <span aria-hidden="true">/</span>
         <span aria-current="page">Практика</span>
       </nav>
@@ -109,7 +110,7 @@ const schema = {
               {cases.map((item) => (
                 <a
                   class="case-card"
-                  href={`/praktika/${item.id}/`}
+                  href={withBase(`/praktika/${item.id}/`)}
                   data-category={item.data.category}
                   data-instance={item.data.instance}
                   data-result={item.data.result}
@@ -158,11 +159,11 @@ const schema = {
               </li>
             </ul>
             <div class="practice-empty__cta btn-row">
-              <a class="btn btn--primary" href="/#kontakty">
+              <a class="btn btn--primary" href={withBase("/#kontakty")}>
                 Обсудить ситуацию
                 <Icon name="arrow-right" size={15} />
               </a>
-              <a class="btn btn--outline" href="/publikacii/">Читать публикации</a>
+              <a class="btn btn--outline" href={withBase("/publikacii/")}>Читать публикации</a>
             </div>
           </div>
         )

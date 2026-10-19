@@ -4,6 +4,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import Icon from '../../components/Icon.astro';
 import { formatDate, toIsoDate } from '../../lib/format';
 import { site } from '../../data/site';
+import { withBase } from '../../lib/paths';
 
 export async function getStaticPaths() {
   const articles = await getCollection('articles', ({ data }) => !data.draft);
@@ -56,9 +57,9 @@ const schema = {
     <header class="article-hero">
       <div class="container">
         <nav class="breadcrumbs breadcrumbs--light" aria-label="Хлебные крошки">
-          <a href="/">Главная</a>
+          <a href={withBase("/")}>Главная</a>
           <span aria-hidden="true">/</span>
-          <a href="/publikacii/">Публикации</a>
+          <a href={withBase("/publikacii/")}>Публикации</a>
           <span aria-hidden="true">/</span>
           <span aria-current="page">{data.category}</span>
         </nav>
@@ -121,7 +122,7 @@ const schema = {
               Адвокат, партнёр {site.bureauGenitive}. Реестровый номер {site.registryNumber},
               {site.chamber}.
             </p>
-            <a class="link-arrow" href="/#ob-advokate">
+            <a class="link-arrow" href={withBase("/#ob-advokate")}>
               Об адвокате
               <Icon name="arrow-right" size={14} />
             </a>
@@ -134,7 +135,7 @@ const schema = {
               напрямую.
             </p>
             <p style="margin-top: 12px;">
-              <a class="btn btn--primary" href="/#kontakty">Связаться с адвокатом</a>
+              <a class="btn btn--primary" href={withBase("/#kontakty")}>Связаться с адвокатом</a>
             </p>
           </div>
         </aside>
@@ -150,7 +151,7 @@ const schema = {
             </h2>
             <div class="articles-list">
               {related.map((other) => (
-                <a class="article-row" href={`/publikacii/${other.id}/`}>
+                <a class="article-row" href={withBase(`/publikacii/${other.id}/`)}>
                   <div class="article-row__meta">
                     <span>{other.data.category}</span>
                     <span>{formatDate(other.data.publishedAt)}</span>

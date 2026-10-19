@@ -3,6 +3,7 @@ import { getCollection, type CollectionEntry } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Icon from '../../components/Icon.astro';
 import { site } from '../../data/site';
+import { withBase } from '../../lib/paths';
 
 export async function getStaticPaths() {
   const cases = await getCollection('cases', ({ data }) => !data.draft);
@@ -43,9 +44,9 @@ const schema = {
   <section class="page-hero">
     <div class="container">
       <nav class="breadcrumbs" aria-label="Хлебные крошки">
-        <a href="/">Главная</a>
+        <a href={withBase("/")}>Главная</a>
         <span aria-hidden="true">/</span>
-        <a href="/praktika/">Практика</a>
+        <a href={withBase("/praktika/")}>Практика</a>
         <span aria-hidden="true">/</span>
         <span aria-current="page">{data.category}</span>
       </nav>
@@ -122,7 +123,7 @@ const schema = {
             или через форму обращения.
           </p>
           <p style="margin-top: 14px;">
-            <a class="btn btn--primary" href="/#kontakty">Обсудить ситуацию</a>
+            <a class="btn btn--primary" href={withBase("/#kontakty")}>Обсудить ситуацию</a>
           </p>
         </div>
       </aside>

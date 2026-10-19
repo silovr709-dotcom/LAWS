@@ -1,6 +1,7 @@
 ---
 import LegalLayout from '../layouts/LegalLayout.astro';
 import { site } from '../data/site';
+import { withBase } from '../lib/paths';
 
 const toc = [
   { id: 'soglasie', label: 'Текст согласия' },
@@ -31,7 +32,7 @@ const toc = [
   <p>
     Согласие даётся на обработку данных в объёме, который я указал самостоятельно в форме
     обращения. Я подтверждаю, что ознакомлен с
-    <a href="/politika-personalnyh-dannyh/">Политикой обработки персональных данных</a>.
+    <a href={withBase("/politika-personalnyh-dannyh/")}>Политикой обработки персональных данных</a>.
   </p>
 
   <h2 id="sostav">2. Состав персональных данных</h2>

@@ -1,6 +1,7 @@
 ---
 import BaseLayout from './BaseLayout.astro';
 import { site } from '../data/site';
+import { withBase } from '../lib/paths';
 
 interface Props {
   title: string;
@@ -19,7 +20,7 @@ const { title, description, heading, updated, version, toc = [], noindex = false
   <section class="legal-hero">
     <div class="container">
       <nav class="breadcrumbs breadcrumbs--light" aria-label="Хлебные крошки">
-        <a href="/">Главная</a>
+        <a href={withBase("/")}>Главная</a>
         <span aria-hidden="true">/</span>
         <span aria-current="page">{heading}</span>
       </nav>

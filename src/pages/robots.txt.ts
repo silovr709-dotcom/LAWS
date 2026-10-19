@@ -1,5 +1,6 @@
 import type { APIRoute } from 'astro';
 import { site } from '../data/site';
+import { withBase } from '../lib/paths';
 
 export const GET: APIRoute = () => {
   const body = [
@@ -8,7 +9,7 @@ export const GET: APIRoute = () => {
     'Disallow: /api/',
     'Disallow: /soglasie-na-obrabotku-personalnyh-dannyh/',
     '',
-    `Sitemap: ${site.url}/sitemap-index.xml`,
+    `Sitemap: ${site.url}${withBase('/sitemap-index.xml')}`,
     '',
   ].join('\n');
 

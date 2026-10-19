@@ -2075,6 +2075,16 @@ button {
   margin-bottom: 26px;
 }
 
+.form__mode {
+  margin: -10px 0 24px;
+  padding: 12px 14px;
+  border-left: 2px solid var(--gold);
+  background: rgba(182, 154, 99, 0.08);
+  font-size: 0.75rem;
+  line-height: 1.6;
+  color: var(--muted);
+}
+
 .form__grid {
   display: grid;
   gap: 20px;

@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { withBase } from '../lib/paths';
 ---
 
 <BaseLayout
@@ -17,8 +18,8 @@ import BaseLayout from '../layouts/BaseLayout.astro';
         по ссылкам ниже.
       </p>
       <div class="btn-row">
-        <a class="btn btn--light" href="/">На главную</a>
-        <a class="btn btn--outline-light" href="/#kontakty">Связаться с адвокатом</a>
+        <a class="btn btn--light" href={withBase("/")}>На главную</a>
+        <a class="btn btn--outline-light" href={withBase("/#kontakty")}>Связаться с адвокатом</a>
       </div>
     </div>
   </section>

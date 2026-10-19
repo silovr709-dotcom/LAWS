@@ -9,6 +9,7 @@ import Process from '../components/Process.astro';
 import Faq from '../components/Faq.astro';
 import Contact from '../components/Contact.astro';
 import { faq, site } from '../data/site';
+import { withBase } from '../lib/paths';
 
 const title = `Адвокат Юрий Кочевинов — уголовно-правовая защита в Мурманске`;
 const description =
@@ -24,7 +25,7 @@ const schemas = [
     jobTitle: 'Адвокат',
     description: 'Адвокат, партнёр адвокатского бюро «Панфилов и партнёры», Мурманск.',
     url: site.url,
-    image: `${site.url}/og/og-default.png`,
+    image: `${site.url}${withBase('/og/og-default.png')}`,
     worksFor: {
       '@type': 'Organization',
       name: site.bureau,
@@ -54,7 +55,7 @@ const schemas = [
     description:
       'Уголовно-правовая защита, представительство потерпевших, обжалование приговоров. Мурманск и Мурманская область.',
     url: site.url,
-    image: `${site.url}/og/og-default.png`,
+    image: `${site.url}${withBase('/og/og-default.png')}`,
     telephone: site.phone.display,
     email: site.email,
     areaServed: [

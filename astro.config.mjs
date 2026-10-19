@@ -15,9 +15,15 @@ function hasPublishedCases() {
 }
 
 const SITE = process.env.PUBLIC_SITE_URL ?? 'https://kochevinov.ru';
+/**
+ * Базовый путь. На GitHub Pages проект живёт в подкаталоге: BASE_PATH=/LAWS.
+ * На собственном домене переменная не задаётся — сайт публикуется в корне.
+ */
+const BASE = process.env.BASE_PATH ?? '/';
 
 export default defineConfig({
   site: SITE,
+  base: BASE,
   output: 'static',
   adapter: node({ mode: 'standalone' }),
   integrations: [

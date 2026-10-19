@@ -2,6 +2,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { site } from '../data/site';
+import { withBase } from '../lib/paths';
 
 interface Props {
   priority?: boolean;
@@ -23,7 +24,7 @@ const photoExists = fs.existsSync(path.join(process.cwd(), 'public', site.portra
     {
       photoExists ? (
         <img
-          src={site.portrait}
+          src={withBase(site.portrait)}
           alt={`Адвокат ${site.fullName}`}
           width="900"
           height="1125"

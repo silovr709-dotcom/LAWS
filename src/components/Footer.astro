@@ -1,12 +1,13 @@
 ---
 import { navigation, site, footer } from '../data/site';
+import { withBase } from '../lib/paths';
 ---
 
 <footer class="site-footer">
   <div class="container">
     <div class="footer__top">
       <div class="footer__brand">
-        <a class="brand" href="/" aria-label={`${site.name} — на главную`}>
+        <a class="brand" href={withBase("/")} aria-label={`${site.name} — на главную`}>
           <span class="brand__mark" aria-hidden="true">ЮК</span>
           <span class="brand__text">
             <span class="brand__name">{site.name}</span>
@@ -25,7 +26,7 @@ import { navigation, site, footer } from '../data/site';
           {
             navigation.map((item) => (
               <li>
-                <a href={item.href}>{item.label}</a>
+                <a href={withBase(item.href)}>{item.label}</a>
               </li>
             ))
           }
@@ -47,10 +48,10 @@ import { navigation, site, footer } from '../data/site';
       <div class="footer__col">
         <h2>Документы</h2>
         <ul>
-          <li><a href="/politika-personalnyh-dannyh/">Политика обработки данных</a></li>
-          <li><a href="/soglasie-na-obrabotku-personalnyh-dannyh/">Согласие на обработку</a></li>
-          <li><a href="/pravovaya-informaciya/">Правовая информация</a></li>
-          <li><a href="/publikacii/">Публикации</a></li>
+          <li><a href={withBase("/politika-personalnyh-dannyh/")}>Политика обработки данных</a></li>
+          <li><a href={withBase("/soglasie-na-obrabotku-personalnyh-dannyh/")}>Согласие на обработку</a></li>
+          <li><a href={withBase("/pravovaya-informaciya/")}>Правовая информация</a></li>
+          <li><a href={withBase("/publikacii/")}>Публикации</a></li>
         </ul>
       </div>
     </div>

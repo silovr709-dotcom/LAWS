@@ -1,6 +1,7 @@
 ---
 import { navigation, site } from '../data/site';
 import Icon from './Icon.astro';
+import { stripBase, withBase } from '../lib/paths';
 
 interface Props {
   /** Прозрачная шапка поверх бордового первого экрана. */
@@ -8,12 +9,12 @@ interface Props {
   currentPath?: string;
 }
 
-const { overHero = false, currentPath = Astro.url.pathname } = Astro.props;
+const { overHero = false, currentPath = stripBase(Astro.url.pathname) } = Astro.props;
 ---
 
 <header class:list={['site-header', !overHero && 'is-solid']} data-header>
   <div class="site-header__inner">
-    <a class="brand" href="/" aria-label={`${site.name} — на главную`}>
+    <a class="brand" href={withBase("/")} aria-label={`${site.name} — на главную`}>
       <span class="brand__mark" aria-hidden="true">ЮК</span>
       <span class="brand__text">
         <span class="brand__name">{site.name}</span>
@@ -25,7 +26,7 @@ const { overHero = false, currentPath = Astro.url.pathname } = Astro.props;
       {navigation.map((item) => (
         <a
           class="site-nav__link"
-          href={item.href}
+          href={withBase(item.href)}
           aria-current={currentPath === item.href ? 'page' : undefined}
         >
           {item.label}
@@ -38,7 +39,7 @@ const { overHero = false, currentPath = Astro.url.pathname } = Astro.props;
         {site.phone.display}
         <small>{site.phone.label}</small>
       </a>
-      <a class="header-cta" href="/#kontakty">
+      <a class="header-cta" href={withBase("/#kontakty")}>
         Обсудить ситуацию
         <Icon name="arrow-right" size={14} />
       </a>
@@ -64,7 +65,7 @@ const { overHero = false, currentPath = Astro.url.pathname } = Astro.props;
   <nav class="mobile-menu__nav" aria-label="Мобильная навигация">
     {
       navigation.map((item, index) => (
-        <a class="mobile-menu__link" href={item.href} data-menu-link>
+        <a class="mobile-menu__link" href={withBase(item.href)} data-menu-link>
           <span>{String(index + 1).padStart(2, '0')}</span>
           {item.label}
         </a>

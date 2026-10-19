@@ -6,8 +6,10 @@
  * оставьте пустую строку — интерфейс скроет соответствующий элемент.
  */
 
+const SITE_URL = (import.meta.env.PUBLIC_SITE_URL ?? 'https://kochevinov.ru').replace(/\/+$/, '');
+
 export const site = {
-  url: 'https://kochevinov.ru',
+  url: SITE_URL,
   name: 'Юрий Кочевинов',
   fullName: 'Кочевинов Юрий Анатольевич',
   shortName: 'Юрий Кочевинов',
