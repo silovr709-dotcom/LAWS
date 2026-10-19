@@ -1,0 +1,59 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import { site } from '../data/site';
+import { withBase } from '../lib/paths';
+
+interface Props {
+  title: string;
+  description: string;
+  heading: string;
+  updated: string;
+  version: string;
+  toc?: { id: string; label: string }[];
+  noindex?: boolean;
+}
+
+const { title, description, heading, updated, version, toc = [], noindex = false } = Astro.props;
+---
+
+<BaseLayout title={title} description={description} noindex={noindex}>
+  <section class="legal-hero">
+    <div class="container">
+      <nav class="breadcrumbs breadcrumbs--light" aria-label="Хлебные крошки">
+        <a href={withBase("/")}>Главная</a>
+        <span aria-hidden="true">/</span>
+        <span aria-current="page">{heading}</span>
+      </nav>
+      <h1>{heading}</h1>
+      <p>Редакция {version} от {updated}. Оператор: {site.fullName}, реестровый номер {site.registryNumber}.</p>
+    </div>
+  </section>
+
+  <section class="section section--paper">
+    <div class="container legal-layout">
+      <div class="legal-content">
+        <slot />
+        <div class="legal-note">
+          Если положение документа требует уточнения применительно к вашей ситуации, напишите на
+          <a href={`mailto:${site.legal.privacyEmail}`}>{site.legal.privacyEmail}</a> или
+          обратитесь по адресу: {site.office.postalCode}, {site.office.city}, {site.office.street}.
+        </div>
+      </div>
+
+      {
+        toc.length > 0 && (
+          <nav class="legal-toc" aria-label="Содержание документа">
+            <h2>Содержание</h2>
+            <ol>
+              {toc.map((item) => (
+                <li>
+                  <a href={`#${item.id}`}>{item.label}</a>
+                </li>
+              ))}
+            </ol>
+          </nav>
+        )
+      }
+    </div>
+  </section>
+</BaseLayout>

@@ -1,0 +1,25 @@
+# build
+dist/
+.astro/
+
+# deps
+node_modules/
+
+# env
+.env
+.env.*
+!.env.example
+
+# персональные данные обращений — никогда не коммитить
+.data/
+leads/
+
+# системное
+.DS_Store
+Thumbs.db
+*.log
+npm-debug.log*
+
+# локальные кэши
+.vite/
+.cache/

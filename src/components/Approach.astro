@@ -1,0 +1,33 @@
+---
+import { approach } from '../data/site';
+---
+
+<section class="section section--wine" id="podhod" aria-labelledby="podhod-title">
+  <div class="container approach">
+    <div class="approach__head" data-reveal>
+      <p class="eyebrow">{approach.eyebrow}</p>
+      <h2 id="podhod-title">{approach.title}</h2>
+      <p>{approach.lead}</p>
+    </div>
+
+    <div class="principles">
+      {
+        approach.principles.map((principle, index) => (
+          <article
+            class="principle"
+            data-reveal
+            style={`--reveal-delay: ${index * 60}ms`}
+          >
+            <span class="principle__number" aria-hidden="true">
+              {principle.number}
+            </span>
+            <div>
+              <h3 class="principle__title">{principle.title}</h3>
+              <p class="principle__text">{principle.text}</p>
+            </div>
+          </article>
+        ))
+      }
+    </div>
+  </div>
+</section>

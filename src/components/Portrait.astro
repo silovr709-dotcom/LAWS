@@ -1,0 +1,61 @@
+---
+import fs from 'node:fs';
+import path from 'node:path';
+import { site } from '../data/site';
+import { withBase } from '../lib/paths';
+
+interface Props {
+  priority?: boolean;
+  class?: string;
+}
+
+const { priority = false, class: className } = Astro.props;
+
+/**
+ * Портрет подставляется автоматически, если файл существует.
+ * Пока фотографии нет, показывается типографическая плашка с монограммой —
+ * мы не подменяем реального человека изображением другого лица.
+ */
+const photoExists = fs.existsSync(path.join(process.cwd(), 'public', site.portrait));
+---
+
+<figure class:list={['portrait', className]}>
+  <div class="portrait__media">
+    {
+      photoExists ? (
+        <img
+          src={withBase(site.portrait)}
+          alt={`Адвокат ${site.fullName}`}
+          width="900"
+          height="1125"
+          loading={priority ? 'eager' : 'lazy'}
+          fetchpriority={priority ? 'high' : 'auto'}
+          decoding="async"
+        />
+      ) : (
+        <div class="portrait__fallback">
+          <span class="portrait__monogram" aria-hidden="true">
+            ЮК
+          </span>
+          <div class="portrait__caption">
+            <div>
+              <strong>{site.name}</strong>
+              <small>{site.role} · {site.city}</small>
+            </div>
+            <span class="portrait__seal" aria-hidden="true">
+              С 2023<br />адвокат
+            </span>
+          </div>
+        </div>
+      )
+    }
+    <div class="portrait__frame" aria-hidden="true"></div>
+  </div>
+  {
+    photoExists && (
+      <figcaption class="visually-hidden">
+        Портрет адвоката {site.fullName}
+      </figcaption>
+    )
+  }
+</figure>

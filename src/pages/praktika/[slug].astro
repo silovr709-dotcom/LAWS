@@ -1,0 +1,132 @@
+---
+import { getCollection, type CollectionEntry } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Icon from '../../components/Icon.astro';
+import { site } from '../../data/site';
+import { withBase } from '../../lib/paths';
+
+export async function getStaticPaths() {
+  const cases = await getCollection('cases', ({ data }) => !data.draft);
+  return cases.map((item) => ({ params: { slug: item.id }, props: { item } }));
+}
+
+interface Props {
+  item: CollectionEntry<'cases'>;
+}
+
+const { item } = Astro.props;
+const data = item.data;
+
+const title = `${data.title} — судебная практика адвоката Юрия Кочевинова`;
+const description = data.summary;
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: data.title,
+  description: data.summary,
+  datePublished: data.publishedAt.toISOString(),
+  inLanguage: 'ru-RU',
+  author: {
+    '@type': 'Person',
+    name: site.fullName,
+    jobTitle: 'Адвокат',
+  },
+  publisher: {
+    '@type': 'Person',
+    name: site.fullName,
+  },
+  mainEntityOfPage: `${site.url}/praktika/${item.id}/`,
+};
+---
+
+<BaseLayout title={title} description={description} type="article" schema={schema}>
+  <section class="page-hero">
+    <div class="container">
+      <nav class="breadcrumbs" aria-label="Хлебные крошки">
+        <a href={withBase("/")}>Главная</a>
+        <span aria-hidden="true">/</span>
+        <a href={withBase("/praktika/")}>Практика</a>
+        <span aria-hidden="true">/</span>
+        <span aria-current="page">{data.category}</span>
+      </nav>
+      <p class="eyebrow">{data.category} · {data.instance} · {data.year}</p>
+      <h1 class="page-hero__title">{data.title}</h1>
+      <p class="page-hero__lead">{data.summary}</p>
+    </div>
+  </section>
+
+  <section class="section section--paper">
+    <div class="container case-detail">
+      <div class="case-detail__main">
+        <h2>Суть правового вопроса</h2>
+        <p>{data.legalIssue}</p>
+
+        {data.actions.length > 0 && (
+          <>
+            <h2>Процессуальные действия</h2>
+            <ul>
+              {data.actions.map((action) => (
+                <li>{action}</li>
+              ))}
+            </ul>
+          </>
+        )}
+
+        <h2>Итог</h2>
+        <p>{data.outcome}</p>
+
+        {data.sourceUrl && (
+          <p>
+            <a class="link-arrow" href={data.sourceUrl} target="_blank" rel="noopener noreferrer">
+              {data.sourceLabel ?? 'Первоисточник'}
+              <Icon name="arrow-up-right" size={14} />
+            </a>
+          </p>
+        )}
+
+        <p class="article-disclaimer">
+          Описание носит информационный характер, не раскрывает сведений, составляющих
+          адвокатскую тайну, и не является обещанием аналогичного результата по другому делу.
+          Основание публикации: {data.publicationBasis}.
+        </p>
+      </div>
+
+      <aside class="case-detail__aside">
+        <dl class="case-detail__meta">
+          <div>
+            <dt>Роль адвоката</dt>
+            <dd>{data.role}</dd>
+          </div>
+          <div>
+            <dt>Суд</dt>
+            <dd>{data.court}</dd>
+          </div>
+          <div>
+            <dt>Инстанция</dt>
+            <dd>{data.instance}</dd>
+          </div>
+          <div>
+            <dt>Результат</dt>
+            <dd>{data.result}</dd>
+          </div>
+          <div>
+            <dt>Год</dt>
+            <dd>{data.year}</dd>
+          </div>
+        </dl>
+
+        <div class="aside-card" style="margin-top: 22px;">
+          <h2>Нужна оценка ситуации?</h2>
+          <p>
+            Обстоятельства каждого дела индивидуальны. Обсудить свою ситуацию можно по телефону
+            или через форму обращения.
+          </p>
+          <p style="margin-top: 14px;">
+            <a class="btn btn--primary" href={withBase("/#kontakty")}>Обсудить ситуацию</a>
+          </p>
+        </div>
+      </aside>
+    </div>
+  </section>
+</BaseLayout>

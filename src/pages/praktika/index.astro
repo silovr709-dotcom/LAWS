@@ -1,0 +1,274 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Icon from '../../components/Icon.astro';
+import { site } from '../../data/site';
+import { withBase } from '../../lib/paths';
+
+const cases = (await getCollection('cases', ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.year - a.data.year,
+);
+
+const categories = [...new Set(cases.map((item) => item.data.category))].sort();
+const instances = [...new Set(cases.map((item) => item.data.instance))];
+const results = [...new Set(cases.map((item) => item.data.result))].sort();
+
+const title = 'Судебная практика — адвокат Юрий Кочевинов, Мурманск';
+const description =
+  'Каталог судебных дел с участием адвоката Юрия Кочевинова: категории, инстанции и результаты. Публикуются только подтверждённые и обезличенные материалы.';
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'CollectionPage',
+  name: title,
+  description,
+  url: `${site.url}/praktika/`,
+  isPartOf: { '@type': 'WebSite', name: `Адвокат ${site.name}`, url: site.url },
+  mainEntity: {
+    '@type': 'ItemList',
+    itemListElement: cases.map((item, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      url: `${site.url}/praktika/${item.id}/`,
+      name: item.data.title,
+    })),
+  },
+};
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  noindex={cases.length === 0}
+  schema={schema}
+>
+  <section class="page-hero">
+    <div class="container">
+      <nav class="breadcrumbs" aria-label="Хлебные крошки">
+        <a href={withBase("/")}>Главная</a>
+        <span aria-hidden="true">/</span>
+        <span aria-current="page">Практика</span>
+      </nav>
+      <p class="eyebrow">Судебная практика</p>
+      <h1 class="page-hero__title">Дела и правовые вопросы</h1>
+      <p class="page-hero__lead">
+        Каталог пополняется вручную. Для каждого дела проверяется участие адвоката и
+        допустимость публикации, а обстоятельства излагаются без сведений, позволяющих
+        идентифицировать доверителя.
+      </p>
+    </div>
+  </section>
+
+  <section class="section section--paper">
+    <div class="container">
+      {
+        cases.length > 0 ? (
+          <>
+            <div class="filters" data-filters aria-label="Фильтры практики">
+              {categories.length > 1 && (
+                <div class="filters__group">
+                  <span class="filters__label">Категория</span>
+                  <button class="filter-btn" type="button" aria-pressed="true" data-filter-group="category" data-filter-value="all">
+                    Все
+                  </button>
+                  {categories.map((category) => (
+                    <button class="filter-btn" type="button" aria-pressed="false" data-filter-group="category" data-filter-value={category}>
+                      {category}
+                    </button>
+                  ))}
+                </div>
+              )}
+              {instances.length > 1 && (
+                <div class="filters__group">
+                  <span class="filters__label">Инстанция</span>
+                  <button class="filter-btn" type="button" aria-pressed="true" data-filter-group="instance" data-filter-value="all">
+                    Все
+                  </button>
+                  {instances.map((instance) => (
+                    <button class="filter-btn" type="button" aria-pressed="false" data-filter-group="instance" data-filter-value={instance}>
+                      {instance}
+                    </button>
+                  ))}
+                </div>
+              )}
+              {results.length > 1 && (
+                <div class="filters__group">
+                  <span class="filters__label">Результат</span>
+                  <button class="filter-btn" type="button" aria-pressed="true" data-filter-group="result" data-filter-value="all">
+                    Все
+                  </button>
+                  {results.map((result) => (
+                    <button class="filter-btn" type="button" aria-pressed="false" data-filter-group="result" data-filter-value={result}>
+                      {result}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <div class="cases-grid" data-cases>
+              {cases.map((item) => (
+                <a
+                  class="case-card"
+                  href={withBase(`/praktika/${item.id}/`)}
+                  data-category={item.data.category}
+                  data-instance={item.data.instance}
+                  data-result={item.data.result}
+                  data-reveal
+                >
+                  <p class="case-card__meta">
+                    <span>{item.data.category}</span>
+                    <span>{item.data.instance}</span>
+                    <span>{item.data.year}</span>
+                  </p>
+                  <h2 class="case-card__title">{item.data.title}</h2>
+                  <p class="case-card__summary">{item.data.summary}</p>
+                  <div class="case-card__foot">
+                    <span class="case-card__result">{item.data.result}</span>
+                    <Icon name="arrow-up-right" size={15} />
+                  </div>
+                </a>
+              ))}
+            </div>
+
+            <p class="form__status" data-empty-filter role="status" aria-live="polite">
+              По выбранным фильтрам дел не найдено.
+            </p>
+          </>
+        ) : (
+          <div class="practice-empty" data-reveal>
+            <span class="practice-empty__mark" aria-hidden="true">П</span>
+            <h2 class="practice-empty__title">Раздел готовится к публикации</h2>
+            <p class="practice-empty__body">
+              Здесь появится каталог дел с фильтрацией по категориям, инстанциям и результатам.
+              Мы не публикуем дела автоматически по совпадению фамилии и не размещаем сведения,
+              которые могут раскрыть адвокатскую тайну или идентифицировать доверителя.
+            </p>
+            <ul class="practice-empty__notes">
+              <li>
+                <strong>Проверка участия</strong>
+                Сверка с процессуальными документами и материалами дела.
+              </li>
+              <li>
+                <strong>Обезличивание</strong>
+                Без имён, адресов и данных, позволяющих идентифицировать участников.
+              </li>
+              <li>
+                <strong>Допустимость</strong>
+                Публикация только при наличии правового основания.
+              </li>
+            </ul>
+            <div class="practice-empty__cta btn-row">
+              <a class="btn btn--primary" href={withBase("/#kontakty")}>
+                Обсудить ситуацию
+                <Icon name="arrow-right" size={15} />
+              </a>
+              <a class="btn btn--outline" href={withBase("/publikacii/")}>Читать публикации</a>
+            </div>
+          </div>
+        )
+      }
+
+      <div class="practice-policy" data-reveal>
+        <h2>Как публикуется практика</h2>
+        <div class="practice-policy__grid">
+          <div>
+            <h3>Подтверждение участия</h3>
+            <p>
+              Дело попадает в каталог только после проверки процессуального статуса адвоката.
+              Совпадение фамилии или упоминание в открытой картотеке само по себе основанием не
+              является.
+            </p>
+          </div>
+          <div>
+            <h3>Защита доверителя</h3>
+            <p>
+              Из описания исключаются имена, адреса, номера дел и иные сведения, по которым можно
+              установить личность. Основание публикации фиксируется отдельно.
+            </p>
+          </div>
+          <div>
+            <h3>Без обещаний результата</h3>
+            <p>
+              Исход конкретного дела не свидетельствует о результате других дел. Каталог носит
+              информационный характер и не является рекламным обещанием.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <script>
+  const root = document.querySelector<HTMLElement>('[data-filters]');
+  const grid = document.querySelector<HTMLElement>('[data-cases]');
+  const empty = document.querySelector<HTMLElement>('[data-empty-filter]');
+
+  if (root && grid) {
+    const state: Record<string, string> = { category: 'all', instance: 'all', result: 'all' };
+    const buttons = root.querySelectorAll<HTMLButtonElement>('[data-filter-group]');
+    const cards = grid.querySelectorAll<HTMLElement>('[data-category]');
+
+    const apply = () => {
+      let visible = 0;
+      cards.forEach((card) => {
+        const matches = Object.entries(state).every(
+          ([key, value]) =>
+            value === 'all' || card.dataset[key] === value,
+        );
+        card.hidden = !matches;
+        if (matches) visible += 1;
+      });
+      if (empty) empty.classList.toggle('is-visible', visible === 0);
+      if (empty) empty.classList.toggle('form__status--error', visible === 0);
+    };
+
+    buttons.forEach((button) => {
+      button.addEventListener('click', () => {
+        const group = button.dataset.filterGroup!;
+        state[group] = button.dataset.filterValue ?? 'all';
+        root
+          .querySelectorAll<HTMLButtonElement>(`[data-filter-group="${group}"]`)
+          .forEach((item) => item.setAttribute('aria-pressed', String(item === button)));
+        apply();
+      });
+    });
+  }
+</script>
+<style>
+  .practice-policy {
+    margin-top: clamp(3rem, 6vw, 5rem);
+    padding-top: clamp(2rem, 4vw, 3rem);
+    border-top: 1px solid var(--line);
+  }
+
+  .practice-policy > h2 {
+    font-size: clamp(1.6rem, 2.6vw, 2.1rem);
+    margin-bottom: clamp(1.5rem, 3vw, 2rem);
+  }
+
+  .practice-policy__grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: clamp(20px, 3vw, 32px);
+  }
+
+  .practice-policy__grid h3 {
+    font-size: 1.15rem;
+    font-family: var(--font-body);
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+
+  .practice-policy__grid p {
+    font-size: 0.9rem;
+    line-height: 1.62;
+    color: var(--muted);
+  }
+
+  @media (max-width: 860px) {
+    .practice-policy__grid {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+  </style>
+</BaseLayout>

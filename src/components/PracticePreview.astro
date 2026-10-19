@@ -1,0 +1,83 @@
+---
+import { getCollection } from 'astro:content';
+import SectionHead from './SectionHead.astro';
+import Icon from './Icon.astro';
+import { withBase } from '../lib/paths';
+
+const cases = (await getCollection('cases', ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.year - a.data.year,
+);
+const latest = cases.slice(0, 2);
+---
+
+<section class="section section--milk section--practice" id="praktika" aria-labelledby="praktika-title">
+  <div class="container">
+    <SectionHead
+      id="praktika"
+      eyebrow="Судебная практика"
+      title="Дела, о которых можно рассказать"
+      lead="Публикуются только те дела, где участие адвоката подтверждено, а обстоятельства обезличены. Сведения, составляющие адвокатскую тайну, не раскрываются."
+    />
+
+    {
+      latest.length > 0 ? (
+        <>
+          <div class="cases-grid">
+            {latest.map((item) => (
+              <a class="case-card" href={withBase(`/praktika/${item.id}/`)} data-reveal>
+                <p class="case-card__meta">
+                  <span>{item.data.category}</span>
+                  <span>{item.data.instance}</span>
+                  <span>{item.data.year}</span>
+                </p>
+                <h3 class="case-card__title">{item.data.title}</h3>
+                <p class="case-card__summary">{item.data.summary}</p>
+                <div class="case-card__foot">
+                  <span class="case-card__result">{item.data.result}</span>
+                  <Icon name="arrow-up-right" size={15} />
+                </div>
+              </a>
+            ))}
+          </div>
+          <div class="directions-note">
+            <p>Каталог с фильтрацией по категориям, инстанциям и результатам.</p>
+            <a class="link-arrow" href={withBase("/praktika/")}>
+              Посмотреть судебную практику
+              <Icon name="arrow-right" size={14} />
+            </a>
+          </div>
+        </>
+      ) : (
+        <div class="practice-empty" data-reveal>
+          <span class="practice-empty__mark" aria-hidden="true">П</span>
+          <h3 class="practice-empty__title">Каталог практики готовится к публикации</h3>
+          <p class="practice-empty__body">
+            Судебные акты публикуются не автоматически. Для каждого дела проверяется участие
+            адвоката — одного совпадения фамилии недостаточно, — а также допустимость публикации
+            с учётом адвокатской тайны и ограничений по материалам уголовных дел.
+          </p>
+          <ul class="practice-empty__notes">
+            <li>
+              <strong>Проверка участия</strong>
+              Сверка с материалами дела и процессуальными документами.
+            </li>
+            <li>
+              <strong>Обезличивание</strong>
+              Без имён доверителей и данных, позволяющих их идентифицировать.
+            </li>
+            <li>
+              <strong>Правовое основание</strong>
+              Публикация только при наличии допустимого основания.
+            </li>
+          </ul>
+          <div class="practice-empty__cta">
+            <a class="btn btn--primary" href="#kontakty">
+              Обсудить свою ситуацию
+              <Icon name="arrow-right" size={15} />
+            </a>
+          </div>
+        </div>
+      )
+    }
+  </div>
+</section>

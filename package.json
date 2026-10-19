@@ -1,0 +1,39 @@
+{
+  "name": "kochevinov-law",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "astro dev --host 0.0.0.0 --port 4321",
+    "build": "astro build",
+    "preview": "astro preview --host 0.0.0.0",
+    "check": "astro check",
+    "start": "node ./dist/server/entry.mjs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/silovr709-dotcom/LAWS.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/silovr709-dotcom/LAWS/issues"
+  },
+  "homepage": "https://github.com/silovr709-dotcom/LAWS#readme",
+  "dependencies": {
+    "@astrojs/node": "^11.1.8",
+    "@astrojs/sitemap": "^3.7.4",
+    "@fontsource/cormorant-garamond": "^5.3.0",
+    "@fontsource/golos-text": "^5.3.0",
+    "astro": "^7.4.0",
+    "sharp": "^0.35.5"
+  },
+  "type": "module",
+  "private": true,
+  "devDependencies": {
+    "@astrojs/check": "^0.9.10",
+    "@resvg/resvg-js": "^2.6.2",
+    "typescript": "^6.0.3"
+  }
+}

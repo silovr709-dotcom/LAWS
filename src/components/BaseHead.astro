@@ -1,0 +1,67 @@
+---
+import { site } from '../data/site';
+import { canonicalUrl, withBase } from '../lib/paths';
+
+interface Props {
+  title: string;
+  description: string;
+  image?: string;
+  type?: 'website' | 'article' | 'profile';
+  noindex?: boolean;
+  schema?: Record<string, unknown> | Record<string, unknown>[];
+}
+
+const {
+  title,
+  description,
+  image = '/og/og-default.png',
+  type = 'website',
+  noindex = false,
+  schema,
+} = Astro.props;
+
+const canonical = canonicalUrl(site.url, Astro.url.pathname);
+const ogImage = canonicalUrl(site.url, image);
+const jsonLd = schema ? (Array.isArray(schema) ? schema : [schema]) : [];
+---
+
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>{title}</title>
+<meta name="description" content={description} />
+<link rel="canonical" href={canonical} />
+{noindex && <meta name="robots" content="noindex, nofollow" />}
+{!noindex && <meta name="robots" content="index, follow, max-image-preview:large" />}
+<meta name="theme-color" content="#541C2B" />
+<meta name="format-detection" content="telephone=no" />
+
+<meta property="og:type" content={type} />
+<meta property="og:locale" content="ru_RU" />
+<meta property="og:site_name" content={`Адвокат ${site.name}`} />
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description} />
+<meta property="og:url" content={canonical} />
+<meta property="og:image" content={ogImage} />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:image:alt" content={`Адвокат ${site.fullName}, ${site.city}`} />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={title} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={ogImage} />
+
+<link rel="icon" type="image/svg+xml" href={withBase("/favicon.svg")} />
+<link rel="apple-touch-icon" href={withBase("/apple-touch-icon.png")} />
+<link rel="manifest" href={withBase("/site.webmanifest")} />
+
+<!-- Класс js добавляется до отрисовки, чтобы не было «мигания» анимаций -->
+<script is:inline>
+  document.documentElement.classList.add('js');
+</script>
+
+{
+  jsonLd.map((item) => (
+    <script type="application/ld+json" set:html={JSON.stringify(item)} />
+  ))
+}
