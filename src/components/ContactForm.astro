@@ -145,13 +145,6 @@ import Icon from './Icon.astro';
       }
     };
 
-    const clearErrors = () => {
-      ['name', 'phone', 'consent'].forEach((name) => setError(name, ''));
-      if (status) {
-        status.classList.remove('is-visible', 'form__status--error', 'form__status--success');
-        status.textContent = '';
-      }
-    };
 
     const validate = () => {
       let valid = true;

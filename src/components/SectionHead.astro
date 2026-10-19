@@ -4,12 +4,11 @@ interface Props {
   title: string;
   lead?: string;
   id?: string;
-  tone?: 'light' | 'dark';
   center?: boolean;
   class?: string;
 }
 
-const { eyebrow, title, lead, id, tone = 'light', center = false, class: className } = Astro.props;
+const { eyebrow, title, lead, id, center = false, class: className } = Astro.props;
 const headingId = id ? `${id}-title` : undefined;
 ---
 

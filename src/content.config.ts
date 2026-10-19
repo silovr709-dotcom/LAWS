@@ -1,4 +1,5 @@
-import { defineCollection, z } from 'astro:content';
+import { defineCollection } from 'astro:content';
+import { z } from 'astro/zod';
 import { glob } from 'astro/loaders';
 
 /**
@@ -18,7 +19,7 @@ const articles = defineCollection({
       .array(
         z.object({
           label: z.string(),
-          url: z.string().url(),
+          url: z.url(),
         }),
       )
       .default([]),
@@ -57,7 +58,7 @@ const cases = defineCollection({
     legalIssue: z.string().max(600),
     actions: z.array(z.string()).default([]),
     outcome: z.string().max(600),
-    sourceUrl: z.string().url().optional(),
+    sourceUrl: z.url().optional(),
     sourceLabel: z.string().optional(),
     publicationBasis: z.string(),
     anonymized: z.literal(true),
