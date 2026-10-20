@@ -3,6 +3,7 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
 import Icon from '../../../components/Icon.astro';
 import ContactPrompt from '../../../components/ContactPrompt.astro';
 import { documents, documentGroupsWithCount } from '../../../data/documents';
+import { plural } from '../../../lib/format';
 import { site } from '../../../data/site';
 import '../../../styles/policy.css';
 import { canonicalUrl, withBase } from '../../../lib/paths';
@@ -40,7 +41,9 @@ const schema = {
         <span aria-hidden="true">/</span>
         <span aria-current="page">Образцы документов</span>
       </nav>
-      <p class="eyebrow">Документы · {documents.length} образцов</p>
+      <p class="eyebrow">
+        Документы · {documents.length} {plural(documents.length, 'образец', 'образца', 'образцов')}
+      </p>
       <h1 class="page-hero__title">Образцы документов,<br /><em>жалоб и ходатайств</em></h1>
       <p class="page-hero__lead">
         Шаблоны документов, с которыми чаще всего приходят на консультацию. Каждый можно открыть

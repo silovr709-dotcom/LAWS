@@ -4,7 +4,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import Icon from '../../components/Icon.astro';
 import ContactPrompt from '../../components/ContactPrompt.astro';
 import { documents, documentGroupsWithCount } from '../../data/documents';
-import { formatDate } from '../../lib/format';
+import { formatDate, plural } from '../../lib/format';
 import { site } from '../../data/site';
 import { canonicalUrl, withBase } from '../../lib/paths';
 
@@ -61,7 +61,10 @@ const schema = {
         <span aria-hidden="true">/</span>
         <span aria-current="page">Материалы</span>
       </nav>
-      <p class="eyebrow">Материалы · {articles.length} разборов · {documents.length} образцов</p>
+      <p class="eyebrow">
+        Материалы · {articles.length} {plural(articles.length, 'разбор', 'разбора', 'разборов')} ·
+        {documents.length} {plural(documents.length, 'образец', 'образца', 'образцов')}
+      </p>
       <h1 class="page-hero__title">Сначала разобраться,<br /><em>потом действовать</em></h1>
       <p class="page-hero__lead">
         Здесь два вида материалов, и они дополняют друг друга: разборы объясняют, что происходит в
