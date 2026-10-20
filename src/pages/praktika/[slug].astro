@@ -3,7 +3,7 @@ import { getCollection, type CollectionEntry } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Icon from '../../components/Icon.astro';
 import { site } from '../../data/site';
-import { withBase } from '../../lib/paths';
+import { canonicalUrl, withBase } from '../../lib/paths';
 
 export async function getStaticPaths() {
   const cases = await getCollection('cases', ({ data }) => !data.draft);
@@ -36,7 +36,7 @@ const schema = {
     '@type': 'Person',
     name: site.fullName,
   },
-  mainEntityOfPage: `${site.url}/praktika/${item.id}/`,
+  mainEntityOfPage: canonicalUrl(site.url, `/praktika/${item.id}/`),
 };
 ---
 

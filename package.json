@@ -8,7 +8,12 @@
     "build": "astro build",
     "preview": "astro preview --host 0.0.0.0",
     "check": "astro check",
-    "start": "node ./dist/server/entry.mjs"
+    "start": "node ./dist/server/entry.mjs",
+    "test": "tsx --test tests/*.test.ts",
+    "check:build": "node scripts/check-build.mjs",
+    "portraits": "node scripts/prepare-portraits.mjs",
+    "test:browser": "node scripts/check-browser.mjs",
+    "test:form-browser": "node scripts/check-form-browser.mjs"
   },
   "repository": {
     "type": "git",
@@ -34,6 +39,8 @@
   "devDependencies": {
     "@astrojs/check": "^0.9.10",
     "@resvg/resvg-js": "^2.6.2",
+    "fontkit": "^2.0.4",
+    "tsx": "^4.23.15",
     "typescript": "^6.0.3"
   }
 }

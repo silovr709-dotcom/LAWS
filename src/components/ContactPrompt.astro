@@ -1,0 +1,9 @@
+---
+import { hasPhone, site } from '../data/site';
+import Portrait from './Portrait.astro';
+import Icon from './Icon.astro';
+import { withBase } from '../lib/paths';
+interface Props { title?: string; }
+const { title = 'Обсудим, что можно сделать в вашей ситуации' } = Astro.props;
+---
+<section class="contact-prompt" aria-label="Связь с адвокатом"><div class="container contact-prompt__inner"><div class="contact-prompt__person"><Portrait variant="avatar" credit={false} /><div><span>Юрий Кочевинов</span><small>Адвокат · Тверь и вся Россия</small></div></div><div class="contact-prompt__copy"><h2>{title}</h2><p>Начните со стадии дела и ближайших сроков. Документы и чувствительные сведения пока не нужны.</p></div><div class="contact-prompt__actions"><a class="btn btn--light" href={hasPhone ? `tel:${site.phone.href}` : site.vkChat} target={hasPhone ? undefined : '_blank'} rel={hasPhone ? undefined : 'noopener noreferrer'} data-goal={hasPhone ? 'contact_phone' : 'contact_vk'}>{hasPhone ? 'Позвонить адвокату' : 'Написать во ВКонтакте'}<Icon name="arrow-up-right" size={15} /></a><a href={withBase('/#kontakty')}>Все способы связи</a></div></div></section>

@@ -14,6 +14,7 @@ interface Props {
 }
 
 const { title, description, heading, updated, version, toc = [], noindex = false } = Astro.props;
+const privacyEmail = site.legal.privacyEmail || site.email;
 ---
 
 <BaseLayout title={title} description={description} noindex={noindex}>
@@ -34,9 +35,18 @@ const { title, description, heading, updated, version, toc = [], noindex = false
       <div class="legal-content">
         <slot />
         <div class="legal-note">
-          Если положение документа требует уточнения применительно к вашей ситуации, напишите на
-          <a href={`mailto:${site.legal.privacyEmail}`}>{site.legal.privacyEmail}</a> или
-          обратитесь по адресу: {site.office.postalCode}, {site.office.city}, {site.office.street}.
+          Если положение документа требует уточнения, направьте обращение{' '}
+          {privacyEmail ? (
+            <>
+              на <a href={`mailto:${privacyEmail}`}>{privacyEmail}</a> или
+            </>
+          ) : (
+            'через '
+          )}
+          <a href={site.vkChat} target="_blank" rel="noopener noreferrer">
+            личные сообщения ВКонтакте
+          </a>
+          .
         </div>
       </div>
 

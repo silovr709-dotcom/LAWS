@@ -1,300 +1,74 @@
 ---
-import { site } from '../data/site';
+import { hasEmail, hasPhone, site } from '../data/site';
+import { contactMode, directContactHref } from '../lib/contact';
 import Icon from './Icon.astro';
 import { withBase } from '../lib/paths';
-
-/**
- * Режим отправки:
- *  - '/api/contact' (по умолчанию) — серверная обработка: антиспам и сохранение заявок;
- *  - 'mailto' — для чисто статического размещения (GitHub Pages): без сервера форма
- *    открывает почтовую программу с заполненным письмом.
- * Задаётся переменной окружения PUBLIC_FORM_ENDPOINT при сборке.
- */
-const endpoint = import.meta.env.PUBLIC_FORM_ENDPOINT ?? '/api/contact';
-const isMailto = endpoint === 'mailto';
 ---
-
-<form
-  class="form"
-  data-contact-form
-  data-endpoint={endpoint}
-  data-email={site.email}
-  data-consent-version={site.legal.consentVersion}
-  novalidate
->
-  <h3 class="form__title">Короткое сообщение</h3>
-  <p class="form__note">
-    Достаточно имени, телефона и общего описания ситуации. Подробности обсудим в защищённом
-    разговоре.
-  </p>
-
-  {
-    isMailto && (
-      <p class="form__mode">
-        Демонстрационная версия сайта размещена на GitHub Pages — серверной обработки формы здесь
-        нет. Нажатие «Отправить» откроет вашу почтовую программу с готовым письмом. Если она не
-        настроена, позвоните по телефону.
-      </p>
-    )
-  }
-
-  <div class="form__grid">
-    <div class="form__row">
-      <div class="field">
-        <label for="cf-name">Как к вам обращаться</label>
-        <input
-          id="cf-name"
-          name="name"
-          type="text"
-          autocomplete="name"
-          maxlength="60"
-          required
-          aria-describedby="cf-name-error"
-        />
-        <p class="field__error" id="cf-name-error" data-error-for="name" hidden></p>
-      </div>
-
-      <div class="field">
-        <label for="cf-phone">Телефон</label>
-        <input
-          id="cf-phone"
-          name="phone"
-          type="tel"
-          inputmode="tel"
-          autocomplete="tel"
-          maxlength="30"
-          placeholder="+7 ___ ___-__-__"
-          required
-          aria-describedby="cf-phone-error"
-        />
-        <p class="field__error" id="cf-phone-error" data-error-for="phone" hidden></p>
-      </div>
-    </div>
-
-    <div class="field">
-      <label for="cf-channel">Удобный способ связи</label>
-      <select id="cf-channel" name="channel">
-        <option value="call">Звонок</option>
-        <option value="sms">SMS / сообщение</option>
-        <option value="email">Электронная почта</option>
-      </select>
-    </div>
-
-    <div class="field">
-      <label for="cf-message">Кратко о ситуации <span aria-hidden="true">— необязательно</span></label>
-      <textarea
-        id="cf-message"
-        name="message"
-        rows="3"
-        maxlength="600"
-        placeholder="Например: идёт проверка, вызвали на допрос, нужно оценить риски"
-        aria-describedby="cf-message-hint"
-      ></textarea>
-      <p class="field__hint" id="cf-message-hint">
-        Не указывайте фамилии, номера дел и не прикладывайте документы. Не более 600 символов.
-      </p>
-    </div>
-
-    <div class="field">
-      <label class="checkbox">
-        <input type="checkbox" name="consent" required aria-describedby="cf-consent-error" />
-        <span>
-          Я даю согласие на обработку персональных данных в объёме, указанном в
-          <a href={withBase("/soglasie-na-obrabotku-personalnyh-dannyh/")} target="_blank" rel="noopener">согласии</a>,
-          и ознакомился с
-          <a href={withBase("/politika-personalnyh-dannyh/")} target="_blank" rel="noopener">политикой обработки</a>.
-        </span>
-      </label>
-      <p class="field__error" id="cf-consent-error" data-error-for="consent" hidden></p>
-    </div>
-
-    <div class="form__honeypot" aria-hidden="true">
-      <label for="cf-website">Не заполняйте это поле</label>
-      <input id="cf-website" name="website" type="text" tabindex="-1" autocomplete="off" />
-    </div>
-
-    <button class="btn btn--primary form__submit" type="submit" data-submit>
-      Отправить обращение
-      <Icon name="arrow-right" size={15} />
-    </button>
-
-    <p class="form__status" role="status" aria-live="polite" data-status></p>
+{contactMode !== 'server' ? (
+  <div class="direct-contact" data-contact-mode={contactMode}>
+    <p class="eyebrow">Без анкеты</p><h3>Личный диалог</h3>
+    <a class="btn btn--primary" href={directContactHref} target={contactMode === 'vk' ? '_blank' : undefined} rel={contactMode === 'vk' ? 'noopener noreferrer' : undefined} data-goal={contactMode === 'vk' ? 'contact_vk' : 'contact_email'}><Icon name={contactMode === 'vk' ? 'vk' : 'mail'} size={18} />{contactMode === 'vk' ? 'Открыть диалог ВКонтакте' : 'Написать по электронной почте'}<Icon name="arrow-up-right" size={16} /></a>
+    <p class="direct-contact__explanation">{contactMode === 'vk' ? 'Откроется внешний сервис ВКонтакте; для переписки может потребоваться вход. Сообщение отправляется уже в диалоге, не через этот сайт.' : 'Откроется почтовая программа. Проверьте адрес и отправьте письмо самостоятельно.'}</p>
+    <div class="direct-contact__prepare"><h4>Что написать в первом сообщении</h4><ul><li>Кому нужна помощь: вам или близкому.</li><li>Что происходит: проверка, следствие, суд или обжалование.</li><li>Когда предстоит ближайшее действие.</li></ul></div>
+    <p class="direct-contact__privacy">Сайт не собирает это сообщение и не сохраняет черновик. Порядок обработки во внешнем сервисе определяется также его правилами. <a href={withBase('/politika-personalnyh-dannyh/')}>Подробнее о данных</a>.</p>
   </div>
-
-  <div class="form__success" data-success role="status" aria-live="polite">
-    <h3 data-success-title>Сообщение отправлено</h3>
-    <p data-success-text>
-      Спасибо. Обращение получено — я или сотрудник приёмной свяжется с вами по указанному
-      телефону. Если вопрос срочный, позвоните: <a href={`tel:${site.phone.href}`}>{site.phone.display}</a>.
-    </p>
-  </div>
-
-  <p class="form__privacy">
-    Отправляя форму, вы подтверждаете, что не передаёте сведения, составляющие адвокатскую
-    тайну. Безопасный способ передачи материалов согласуется отдельно.
-  </p>
-
-  <noscript>
-    <p class="form__privacy">
-      Для отправки формы нужен JavaScript. Вы можете позвонить по телефону
-      <a href={`tel:${site.phone.href}`}>{site.phone.display}</a> или написать на
-      <a href={`mailto:${site.email}`}>{site.email}</a>.
-    </p>
-  </noscript>
-</form>
-
+) : (
+  <form class="form" method="post" action={withBase('/api/contact')} data-contact-form data-endpoint={withBase('/api/contact')} data-consent-version={site.legal.consentVersion} novalidate>
+    <h3 class="form__title">Короткое сообщение</h3><p class="form__note">Обозначьте ситуацию в общих чертах. Не прикладывайте документы и сведения о других людях.</p>
+    <div class="form__grid">
+      <div class="form__row"><div class="field"><label for="cf-name">Как к вам обращаться</label><input id="cf-name" name="name" type="text" autocomplete="name" maxlength="60" required aria-describedby="cf-name-error" /><p class="field__error" id="cf-name-error" data-error-for="name" hidden></p></div><div class="field"><label for="cf-phone">Телефон для ответа</label><input id="cf-phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" maxlength="30" placeholder="+7 900 000-00-00" required aria-describedby="cf-phone-error" /><p class="field__error" id="cf-phone-error" data-error-for="phone" hidden></p></div></div>
+      <div class="field"><label for="cf-channel">Удобный способ связи</label><select id="cf-channel" name="channel"><option value="call">Звонок</option><option value="sms">SMS / сообщение</option></select></div>
+      <div class="field"><label for="cf-message">Кратко о ситуации — необязательно</label><textarea id="cf-message" name="message" rows="3" maxlength="600" aria-describedby="cf-message-hint"></textarea><p class="field__hint" id="cf-message-hint">Без фамилий, номеров дел и чувствительных подробностей. До 600 символов.</p></div>
+      <div class="field"><label class="checkbox"><input type="checkbox" name="consent" required aria-describedby="cf-consent-error" /><span>Я даю <a href={withBase('/soglasie-na-obrabotku-personalnyh-dannyh/')} target="_blank" rel="noopener">согласие на обработку персональных данных</a> и ознакомился с <a href={withBase('/politika-personalnyh-dannyh/')} target="_blank" rel="noopener">политикой обработки</a>.</span></label><p class="field__error" id="cf-consent-error" data-error-for="consent" hidden></p></div>
+      <div class="form__honeypot" aria-hidden="true"><label for="cf-website">Не заполняйте это поле</label><input id="cf-website" name="website" type="text" tabindex="-1" autocomplete="off" /></div>
+      <button class="btn btn--primary form__submit" type="submit" data-submit disabled>Отправить обращение<Icon name="arrow-right" size={15} /></button><p class="form__status" role="status" aria-live="polite" data-status></p>
+    </div>
+    <div class="form__success" data-success role="status" aria-live="polite" tabindex="-1"><h3>Обращение принято</h3><p>Сообщение сохранено для рассмотрения; отправка не означает принятия поручения и не гарантирует немедленного ответа.</p></div>
+    <p class="form__privacy">Для первого обращения не нужны обстоятельства уголовного дела. Безопасный способ передачи материалов согласуется отдельно. Если форма не отвечает, <a href={site.vkChat} target="_blank" rel="noopener noreferrer" data-goal="contact_vk">напишите напрямую во ВКонтакте</a>.</p>
+    <noscript><p class="form__privacy">Для отправки нужен JavaScript. <a href={site.vkChat} target="_blank" rel="noopener noreferrer">Напишите в личные сообщения ВКонтакте</a>{hasPhone && <> или <a href={`tel:${site.phone.href}`}>позвоните</a></>}{hasEmail && <> либо <a href={`mailto:${site.email}`}>отправьте письмо</a></>}.</p></noscript>
+  </form>
+)}
 <script>
+  import { trackGoal } from '../lib/events';
   const form = document.querySelector<HTMLFormElement>('[data-contact-form]');
-
   if (form) {
-    const nameInput = form.querySelector<HTMLInputElement>('input[name="name"]');
-    const phoneInput = form.querySelector<HTMLInputElement>('input[name="phone"]');
-    const consentInput = form.querySelector<HTMLInputElement>('input[name="consent"]');
-    const messageInput = form.querySelector<HTMLTextAreaElement>('textarea[name="message"]');
-    const channelInput = form.querySelector<HTMLSelectElement>('select[name="channel"]');
-    const honeypot = form.querySelector<HTMLInputElement>('input[name="website"]');
+    const field = <T extends HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>(name: string) => form.querySelector<T>(`[name="${name}"]`);
     const status = form.querySelector<HTMLElement>('[data-status]');
-    const success = form.querySelector<HTMLElement>('[data-success]');
     const submit = form.querySelector<HTMLButtonElement>('[data-submit]');
-    const startedAt = Date.now();
-
-    const setError = (name: string, message: string) => {
-      const error = form.querySelector<HTMLElement>(`[data-error-for="${name}"]`);
-      const input = form.querySelector<HTMLInputElement | HTMLTextAreaElement>(
-        `[name="${name}"]`,
-      );
-      if (error) {
-        error.textContent = message;
-        error.hidden = !message;
-      }
-      if (input) {
-        if (message) input.setAttribute('aria-invalid', 'true');
-        else input.removeAttribute('aria-invalid');
-      }
+    const startedAt = Date.now(); let sending = false;
+    const error = (name: string, text: string) => {
+      const message = form.querySelector<HTMLElement>(`[data-error-for="${name}"]`);
+      if (message) { message.textContent = text; message.hidden = !text; message.classList.toggle('is-visible', Boolean(text)); }
+      if (text) field(name)?.setAttribute('aria-invalid', 'true'); else field(name)?.removeAttribute('aria-invalid');
     };
-
-
-    const validate = () => {
-      let valid = true;
-      const name = nameInput?.value.trim() ?? '';
-      const phone = phoneInput?.value.trim() ?? '';
-      const digits = phone.replace(/\D/g, '');
-
-      if (name.length < 2) {
-        setError('name', 'Укажите имя — хотя бы два символа.');
-        valid = false;
-      } else {
-        setError('name', '');
-      }
-
-      if (digits.length < 10 || digits.length > 15) {
-        setError('phone', 'Укажите телефон в формате +7 900 000-00-00.');
-        valid = false;
-      } else {
-        setError('phone', '');
-      }
-
-      if (!consentInput?.checked) {
-        setError('consent', 'Без согласия на обработку данных отправить форму нельзя.');
-        valid = false;
-      } else {
-        setError('consent', '');
-      }
-
-      return valid;
-    };
-
-    const prepareMailto = () => {
-      const channelLabel =
-        channelInput?.selectedOptions[0]?.textContent?.trim() ?? 'Звонок';
-      const email = form.dataset.email ?? '';
-      const consentVersion = form.dataset.consentVersion ?? '';
-      const lines = [
-        `Имя: ${nameInput?.value.trim() ?? ''}`,
-        `Телефон: ${phoneInput?.value.trim() ?? ''}`,
-        `Удобный способ связи: ${channelLabel}`,
-        '',
-        messageInput?.value.trim() ? messageInput.value.trim() : 'Краткое описание не указано.',
-        '',
-        `Согласие на обработку персональных данных: да (редакция ${consentVersion}).`,
-        'Сообщение отправлено с сайта адвоката.',
-      ];
-
-      const subject = 'Обращение с сайта — адвокат Ю. А. Кочевинов';
-      return `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(
-        lines.join('\n'),
-      )}`;
-    };
-
     form.addEventListener('submit', async (event) => {
-      event.preventDefault();
-      if (!validate()) {
-        form.querySelector<HTMLElement>('[aria-invalid="true"]')?.focus();
-        return;
-      }
-
-      if (form.dataset.endpoint === 'mailto') {
-        const title = form.querySelector<HTMLElement>('[data-success-title]');
-        const text = form.querySelector<HTMLElement>('[data-success-text]');
-        if (title) title.textContent = 'Открываем почтовую программу';
-        if (text) {
-          text.textContent =
-            'Проверьте письмо и отправьте его — оно уже заполнено. Если почтовая программа не открылась, напишите на ' +
-            (form.dataset.email ?? '') +
-            ' или позвоните по телефону.';
-        }
-        form.classList.add('is-sent');
-        success?.classList.add('is-visible');
-        success?.focus();
-        window.location.href = prepareMailto();
-        return;
-      }
-
-      submit?.setAttribute('disabled', 'true');
-      if (status) {
-        status.textContent = 'Отправляем…';
-        status.classList.add('is-visible');
-        status.classList.remove('form__status--error', 'form__status--success');
-      }
-
+      event.preventDefault(); if (sending) return;
+      const name = field<HTMLInputElement>('name')?.value.trim() ?? '';
+      const phone = field<HTMLInputElement>('phone')?.value.trim() ?? '';
+      const consent = field<HTMLInputElement>('consent')?.checked === true;
+      const digits = phone.replace(/\D/g, '');
+      error('name', name.length < 2 ? 'Укажите имя — хотя бы два символа.' : '');
+      error('phone', digits.length < 10 || digits.length > 15 ? 'Проверьте номер телефона.' : '');
+      error('consent', !consent ? 'Нужно согласие на обработку данных.' : '');
+      const invalid = form.querySelector<HTMLElement>('[aria-invalid="true"]');
+      if (invalid) { invalid.focus(); return; }
+      sending = true; submit?.setAttribute('disabled', 'true'); form.setAttribute('aria-busy', 'true');
+      if (status) { status.textContent = 'Отправляем…'; status.classList.add('is-visible'); status.classList.remove('form__status--error'); }
       try {
-        const response = await fetch('/api/contact', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            name: nameInput?.value.trim(),
-            phone: phoneInput?.value.trim(),
-            channel: channelInput?.value,
-            message: messageInput?.value.trim(),
-            consent: consentInput?.checked,
-            website: honeypot?.value ?? '',
-            startedAt,
-          }),
-        });
-
-        const data = (await response.json().catch(() => ({}))) as {
-          ok?: boolean;
-          error?: string;
-        };
-
+        const response = await fetch(form.dataset.endpoint ?? '', { method: 'POST', headers: { 'Content-Type': 'application/json' }, signal: AbortSignal.timeout(15_000), body: JSON.stringify({ name, phone, consent, consentVersion: form.dataset.consentVersion, channel: field<HTMLSelectElement>('channel')?.value, message: field<HTMLTextAreaElement>('message')?.value.trim(), website: field<HTMLInputElement>('website')?.value ?? '', startedAt }) });
+        let data: { ok?: boolean; error?: string; errors?: Record<string, string> };
+        try { data = await response.json(); if (!data || typeof data !== 'object') throw new Error(); }
+        catch { throw new Error('Сервер не подтвердил получение обращения. Текст остался в форме; уточните получение через прямой канал.'); }
         if (!response.ok || !data.ok) {
-          throw new Error(data.error || 'Не удалось отправить обращение.');
+          if (data.errors) Object.entries(data.errors).forEach(([key, text]) => error(key, text));
+          throw new Error(data.error || 'Не удалось отправить обращение. Используйте прямой канал связи.');
         }
-
-        form.classList.add('is-sent');
-        success?.classList.add('is-visible');
-        success?.focus();
-      } catch (error) {
-        if (status) {
-          status.textContent =
-            error instanceof Error
-              ? error.message
-              : 'Не удалось отправить обращение. Позвоните по телефону.';
-          status.classList.add('is-visible', 'form__status--error');
-        }
-      } finally {
-        submit?.removeAttribute('disabled');
-      }
+        form.classList.add('is-sent'); if (status) status.textContent = '';
+        const success = form.querySelector<HTMLElement>('[data-success]'); success?.classList.add('is-visible'); success?.focus(); trackGoal('contact_success');
+      } catch (reason) {
+        if (status) { status.textContent = reason instanceof Error && !(reason instanceof TypeError) && reason.name !== 'TimeoutError' ? reason.message : 'Нет подтверждения от сервера. Введённый текст остался в форме; уточните получение через прямой канал, прежде чем отправлять повторно.'; status.classList.add('is-visible', 'form__status--error'); }
+      } finally { sending = false; submit?.removeAttribute('disabled'); form.removeAttribute('aria-busy'); }
     });
+    submit?.removeAttribute('disabled');
   }
 </script>

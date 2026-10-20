@@ -2,7 +2,9 @@ name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: [main]
+    # Сборка из любой ветки; деплой дополнительно зависит от правил github-pages.
+    # Ветка и SHA указываются в логе сборки.
+    branches: ['**']
   workflow_dispatch:
 
 permissions:
@@ -12,7 +14,7 @@ permissions:
 
 concurrency:
   group: pages
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   build:
@@ -28,15 +30,32 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Validate source
+        run: |
+          npm run check
+          npm test
+
+      - name: Show source branch
+        run: |
+          printf 'Деплой из ветки: %s (%s)\n' "$GITHUB_REF_NAME" "$GITHUB_SHA"
+
       - name: Build site
         env:
           PUBLIC_SITE_URL: https://silovr709-dotcom.github.io
           BASE_PATH: /LAWS
-          # На GitHub Pages нет серверной части: форма работает через почтовую программу.
-          PUBLIC_FORM_ENDPOINT: mailto
+          # На GitHub Pages нет серверной части: только прямая ссылка, без сбора данных.
+          PUBLIC_FORM_ENDPOINT: vk
+          CONTACT_FORM_ENABLED: 'false'
           # Временный адрес закрыт от индексации. Для боевого домена — убрать.
           PUBLIC_NOINDEX: 'true'
         run: npm run build
+
+      - name: Check Pages URLs and metadata
+        env:
+          EXPECT_SITE: https://silovr709-dotcom.github.io
+          EXPECT_BASE: /LAWS
+          EXPECT_NOINDEX: 'true'
+        run: npm run check:build
 
       - uses: actions/configure-pages@v5
 

@@ -4,7 +4,9 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import Icon from '../../components/Icon.astro';
 import { formatDate, toIsoDate } from '../../lib/format';
 import { site } from '../../data/site';
-import { withBase } from '../../lib/paths';
+import { canonicalUrl, withBase } from '../../lib/paths';
+import Portrait from '../../components/Portrait.astro';
+import { services } from '../../data/services';
 
 export async function getStaticPaths() {
   const articles = await getCollection('articles', ({ data }) => !data.draft);
@@ -17,6 +19,7 @@ interface Props {
 
 const { item } = Astro.props;
 const data = item.data;
+const relatedServices = services.filter((service) => service.articleIds.includes(item.id)).slice(0, 2);
 const { Content } = await render(item);
 
 const related = (
@@ -27,7 +30,7 @@ const related = (
 
 const title = `${data.title} — адвокат Юрий Кочевинов`;
 const description = data.description;
-const canonical = `${site.url}/publikacii/${item.id}/`;
+const canonical = canonicalUrl(site.url, `/publikacii/${item.id}/`);
 
 const schema = {
   '@context': 'https://schema.org',
@@ -42,7 +45,8 @@ const schema = {
     '@type': 'Person',
     name: site.fullName,
     jobTitle: 'Адвокат',
-    url: site.url,
+    url: canonicalUrl(site.url, '/ob-advokate/'),
+    image: canonicalUrl(site.url, site.portraits.avatar),
   },
   publisher: {
     '@type': 'Person',
@@ -116,17 +120,20 @@ const schema = {
           </div>
 
           <div class="author-card">
+            <Portrait variant="avatar" credit={false} />
             <span class="author-card__role">Автор</span>
             <span class="author-card__name">{site.fullName}</span>
             <p>
-              Адвокат, партнёр {site.bureauGenitive}. Реестровый номер {site.registryNumber},
-              {site.chamber}.
+              Адвокат, реестровый номер {site.registryNumber}, {site.chamber}.
+              Уголовно-правовая защита. Тверь и вся Россия.
             </p>
-            <a class="link-arrow" href={withBase("/#ob-advokate")}>
+            <a class="link-arrow" href={withBase("/ob-advokate/")}>
               Об адвокате
               <Icon name="arrow-right" size={14} />
             </a>
           </div>
+
+          {relatedServices.length > 0 && <div class="aside-card"><h2>Направления помощи</h2><ul class="sources-list">{relatedServices.map((service) => <li><a href={withBase(`/napravleniya/${service.slug}/`)}>{service.title}</a></li>)}</ul></div>}
 
           <div class="aside-card">
             <h2>Обсудить ситуацию</h2>

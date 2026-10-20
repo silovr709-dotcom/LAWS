@@ -1,0 +1,15 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Portrait from '../components/Portrait.astro';
+import ContactPrompt from '../components/ContactPrompt.astro';
+import Geography from '../components/Geography.astro';
+import { about, site } from '../data/site';
+import { canonicalUrl, withBase } from '../lib/paths';
+const schema = { '@context': 'https://schema.org', '@type': 'Person', '@id': canonicalUrl(site.url, '/ob-advokate/#person'), name: site.fullName, jobTitle: 'Адвокат', url: canonicalUrl(site.url, '/ob-advokate/'), image: canonicalUrl(site.url, `${site.portraits.about}-960.webp`), description: about.lead, memberOf: { '@type': 'Organization', name: site.chamber, url: site.chamberUrl }, identifier: { '@type': 'PropertyValue', propertyID: 'Реестровый номер адвоката', value: site.registryNumber }, sameAs: [site.vk] };
+---
+<BaseLayout title="Об адвокате — Юрий Анатольевич Кочевинов" description="Профессиональный путь Юрия Кочевинова: оперативная работа, служба в прокуратуре и адвокатская практика с 2023 года. Реестровый номер 51/862. Тверь, работа по всей России." schema={schema}>
+  <section class="biography-hero"><div class="container biography-hero__inner"><div><nav class="breadcrumbs" aria-label="Хлебные крошки"><a href={withBase('/')}>Главная</a><span aria-hidden="true">/</span><span aria-current="page">Об адвокате</span></nav><p class="eyebrow">Опыт проверки, надзора и защиты</p><h1>Юрий Анатольевич<br /><em>Кочевинов</em></h1><p class="biography-hero__lead">{about.lead}</p><dl class="biography-hero__facts"><div><dt>Юридическая практика</dt><dd>25 лет</dd></div><div><dt>Адвокатская практика</dt><dd>С 2023 года</dd></div></dl><p class="detail-note">Юридическая практика включает предыдущую профессиональную деятельность; она не означает 25 лет работы в статусе адвоката.</p></div><Portrait variant="about" priority sizes="(max-width: 600px) calc(100vw - 40px), (max-width: 760px) 420px, (max-width: 1024px) 40vw, 465px" /></div></section>
+  <section class="section section--paper"><div class="container biography-layout"><div><p class="eyebrow">Профессиональный путь</p><h2>От изучения обстоятельств<br />к позиции защиты</h2><div class="biography-timeline">{about.timeline.map((item) => <article><span>{item.period}</span><div><h3>{item.title}</h3><p>{item.text}</p></div></article>)}</div></div><aside class="biography-facts"><p class="eyebrow">Профессиональные сведения</p><dl>{about.facts.map((fact) => <div><dt>{fact.label}</dt><dd>{fact.value}</dd></div>)}</dl><a href={site.chamberUrl} target="_blank" rel="noopener noreferrer">Сайт адвокатской палаты</a><h2>Награды и знаки отличия</h2><ul>{about.awards.map((award) => <li>{award}</li>)}</ul><p class="detail-note">{about.note}</p></aside></div></section>
+  <Geography />
+  <ContactPrompt title="Начните с короткого знакомства с ситуацией" />
+</BaseLayout>

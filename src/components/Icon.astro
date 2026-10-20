@@ -1,6 +1,6 @@
 ---
 interface Props {
-  name: 'arrow-right' | 'arrow-up-right' | 'phone' | 'mail' | 'pin' | 'vk' | 'check' | 'doc';
+  name: 'arrow-right' | 'arrow-down' | 'arrow-up-right' | 'phone' | 'mail' | 'pin' | 'vk' | 'check' | 'doc';
   size?: number;
   stroke?: number;
   class?: string;
@@ -8,6 +8,7 @@ interface Props {
 
 const { name, size = 16, stroke = 1.4, class: className } = Astro.props;
 const paths: Record<string, string> = {
+  'arrow-down': '<path d="M8 2v11M4 9l4 4 4-4"/>',
   'arrow-right': '<path d="M2 8h11M9 4l4 4-4 4"/>',
   'arrow-up-right': '<path d="M4.5 11.5 11.5 4.5M5.5 4.5h6v6"/>',
   phone:

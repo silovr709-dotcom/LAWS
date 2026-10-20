@@ -1,60 +1,23 @@
 ---
-import { contactSection, site } from '../data/site';
+import { contactSection, hasEmail, hasOffice, hasPhone, site } from '../data/site';
 import ContactForm from './ContactForm.astro';
 import Icon from './Icon.astro';
 ---
-
 <section class="section section--wine-deep" id="kontakty" aria-labelledby="kontakty-title">
   <div class="container contact">
-    <div class="contact__info" data-reveal>
-      <p class="eyebrow">{contactSection.eyebrow}</p>
-      <h2 id="kontakty-title">{contactSection.title}</h2>
-      <p class="contact__lead">{contactSection.lead}</p>
-
-      <a class="contact__phone" href={`tel:${site.phone.href}`}>{site.phone.display}</a>
-      <span class="contact__phone-label">{site.phone.label}</span>
-
-      <div class="contact__channels">
-        <a class="contact__channel" href={`mailto:${site.email}`}>
-          <span>Почта</span>
-          <span>{site.email}</span>
-        </a>
-        <a
-          class="contact__channel"
-          href={site.vk}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <span>ВКонтакте</span>
-          <span>vk.com/advocat_yuriy51</span>
-        </a>
-        <a class="contact__channel" href={`tel:${site.phoneAlt.href}`}>
-          <span>Второй номер</span>
-          <span>{site.phoneAlt.display}</span>
-        </a>
-      </div>
-
-      <address class="contact__address">
-        <span class="contact__address-line">
-          <Icon name="pin" size={15} />
-          <span>
-            {site.office.postalCode}, {site.office.city}, {site.office.street}
-            <br />
-            {site.bureau}
-          </span>
-        </span>
-        <a class="contact__map-link" href={site.mapUrl} target="_blank" rel="noopener noreferrer">
-          Открыть на карте
-          <Icon name="arrow-up-right" size={13} />
-        </a>
-        <span class="contact__hours">{site.hours}</span>
-      </address>
-
-      <p class="contact__warning">{contactSection.privacyWarning}</p>
+    <div class="contact__intro" data-reveal>
+      <p class="eyebrow">Лично с адвокатом</p><h2 id="kontakty-title">Обсудим<br /><em>вашу ситуацию.</em></h2><p class="contact__lead">{contactSection.lead}</p>
     </div>
-
-    <div class="contact__form-wrap" data-reveal>
-      <ContactForm />
+    <div class="contact__form-wrap" data-reveal><ContactForm /></div>
+    <div class="contact__info" data-reveal>
+      <div class="contact__channels">
+        {hasPhone && <a class="contact__channel" href={`tel:${site.phone.href}`} data-goal="contact_phone"><span>Телефон</span><span>{site.phone.display}</span></a>}
+        {hasEmail && <a class="contact__channel" href={`mailto:${site.email}`} data-goal="contact_email"><span>Почта</span><span>{site.email}</span></a>}
+        <a class="contact__channel" href={site.vk} target="_blank" rel="noopener noreferrer"><span>Официальная страница</span><span>ВКонтакте<Icon name="arrow-up-right" size={14} /></span></a>
+      </div>
+      <address class="contact__address"><span class="contact__address-line"><Icon name="pin" size={16} /><span>{site.city} · работа по всей России<br />{site.hours}</span></span>{hasOffice && site.office && <span class="contact__address-line--plain">{site.office.postalCode}, {site.office.city}, {site.office.street}{site.mapUrl && <a class="contact__map-link" href={site.mapUrl} target="_blank" rel="noopener noreferrer">На карте<Icon name="arrow-up-right" size={14} /></a>}</span>}</address>
+      <div class="contact__next"><p class="contact__next-title">Что будет после обращения</p><ol>{contactSection.nextSteps.map((step, index) => <li><span aria-hidden="true">0{index + 1}</span>{step}</li>)}</ol></div>
+      <p class="contact__warning">{contactSection.responseNote}</p>
     </div>
   </div>
 </section>

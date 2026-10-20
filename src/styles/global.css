@@ -413,18 +413,18 @@ button {
 }
 
 /* Появление при прокрутке */
-.js [data-reveal] {
-  opacity: 0;
-  transform: translateY(18px);
+[data-reveal] {
+  opacity: 1;
+  transform: none;
   transition:
     opacity 700ms var(--ease),
     transform 700ms var(--ease);
   transition-delay: var(--reveal-delay, 0ms);
 }
 
-.js [data-reveal].is-visible {
-  opacity: 1;
-  transform: none;
+.has-reveal [data-reveal]:not(.is-visible) {
+  opacity: 0;
+  transform: translateY(12px);
 }
 
 /* --------------------------------------------------------------------------
@@ -813,6 +813,14 @@ button {
 
 .hero__actions {
   margin-top: clamp(1.75rem, 3vw, 2.5rem);
+}
+
+.hero__microcopy {
+  margin-top: 14px;
+  font-size: 0.75rem;
+  line-height: 1.5;
+  color: rgba(246, 240, 231, 0.62);
+  letter-spacing: 0.01em;
 }
 
 .hero__facts {
@@ -1994,12 +2002,18 @@ button {
   color: var(--gold-soft);
 }
 
+.contact__address-line--plain {
+  display: block;
+  padding-left: 25px;
+}
+
 .contact__map-link {
   display: inline-flex;
   align-items: center;
   gap: 6px;
   width: fit-content;
-  margin-left: 25px;
+  margin-left: 0;
+  margin-top: 6px;
   font-size: 0.8125rem;
   color: var(--gold-soft);
   text-decoration: none;
@@ -3342,4 +3356,284 @@ button {
     background: #fff;
     color: #000;
   }
+}
+
+/* --------------------------------------------------------------------------
+   Срочная ситуация (конверсионный блок)
+   -------------------------------------------------------------------------- */
+
+.urgent {
+  position: relative;
+  padding-block: clamp(2.5rem, 5vw, 4rem);
+  background: var(--milk);
+  border-bottom: 1px solid var(--line);
+}
+
+.urgent__inner {
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  gap: clamp(24px, 4vw, 56px);
+  align-items: start;
+}
+
+.urgent__eyebrow {
+  color: #8a2b3a;
+}
+
+.urgent__eyebrow::before {
+  background: #8a2b3a;
+}
+
+.urgent__title {
+  font-size: clamp(1.8rem, 2.9vw, 2.5rem);
+  margin: 18px 0 14px;
+  max-width: 16ch;
+}
+
+.urgent__lead {
+  font-size: 0.9875rem;
+  line-height: 1.65;
+  color: var(--muted);
+  max-width: 40ch;
+}
+
+.urgent__list {
+  display: grid;
+  gap: 10px;
+}
+
+.urgent__list li {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr);
+  gap: 10px;
+  align-items: baseline;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--line);
+  font-size: 0.9375rem;
+  line-height: 1.55;
+}
+
+.urgent__list span {
+  font-family: var(--font-display);
+  font-style: italic;
+  color: var(--gold-deep);
+}
+
+.urgent__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px 22px;
+  margin-top: 22px;
+}
+
+.urgent__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.875rem;
+  color: var(--wine);
+  text-decoration: none;
+  border-bottom: 1px solid rgba(84, 28, 43, 0.28);
+  padding-bottom: 2px;
+}
+
+.urgent__link:hover {
+  border-color: var(--wine);
+}
+
+.urgent__note {
+  margin-top: 16px;
+  font-size: 0.75rem;
+  line-height: 1.55;
+  color: var(--muted);
+  max-width: 58ch;
+}
+
+/* --------------------------------------------------------------------------
+   География работы
+   -------------------------------------------------------------------------- */
+
+.geography__head h2 {
+  max-width: 22ch;
+  margin: 20px 0 clamp(1.75rem, 3vw, 2.5rem);
+}
+
+.geography__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 4fr) minmax(0, 7fr);
+  gap: clamp(24px, 4vw, 64px);
+  align-items: start;
+}
+
+.geography__map {
+  position: relative;
+  min-height: 260px;
+  border: 1px solid rgba(182, 154, 99, 0.5);
+  background:
+    radial-gradient(70% 60% at 62% 44%, rgba(182, 154, 99, 0.16), transparent 70%),
+    repeating-linear-gradient(0deg, rgba(84, 28, 43, 0.06) 0 1px, transparent 1px 42px),
+    repeating-linear-gradient(90deg, rgba(84, 28, 43, 0.06) 0 1px, transparent 1px 42px),
+    var(--milk);
+  overflow: hidden;
+}
+
+.geography__dot {
+  position: absolute;
+  left: 58%;
+  top: 42%;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--wine);
+  box-shadow: 0 0 0 6px rgba(84, 28, 43, 0.12), 0 0 0 14px rgba(84, 28, 43, 0.06);
+}
+
+.geography__line {
+  position: absolute;
+  left: 58%;
+  top: 42%;
+  width: 34%;
+  height: 1px;
+  transform-origin: left center;
+  transform: rotate(-22deg);
+  background: linear-gradient(90deg, var(--wine), rgba(182, 154, 99, 0.2));
+}
+
+.geography__label {
+  position: absolute;
+  font-size: 0.625rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.geography__label--base {
+  left: calc(58% + 16px);
+  top: calc(42% - 6px);
+  color: var(--wine);
+  font-weight: 600;
+}
+
+.geography__label--far {
+  left: 62%;
+  top: 16%;
+}
+
+.geography__label--remote {
+  left: 8%;
+  bottom: 14%;
+  color: var(--gold-deep);
+}
+
+.geography__lead {
+  font-size: var(--fs-lead);
+  line-height: 1.66;
+  max-width: 56ch;
+}
+
+.geography__points {
+  display: grid;
+  gap: 16px;
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid var(--line);
+}
+
+.geography__points li {
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: var(--muted);
+  max-width: 60ch;
+}
+
+.geography__points strong {
+  display: block;
+  font-weight: 600;
+  color: var(--graphite);
+  font-size: 0.9375rem;
+  margin-bottom: 2px;
+}
+
+.geography__note {
+  margin-top: 20px;
+  font-size: 0.8125rem;
+  line-height: 1.6;
+  color: var(--gold-deep);
+}
+
+.geography__actions {
+  margin-top: 22px;
+}
+
+@media (max-width: 1024px) {
+  .urgent__inner,
+  .geography__grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .urgent__lead {
+    max-width: 60ch;
+  }
+
+  .geography__map {
+    min-height: 200px;
+    order: 2;
+  }
+}
+
+@media (max-width: 600px) {
+  .urgent__actions .btn {
+    width: 100%;
+  }
+
+  .urgent__title {
+    max-width: none;
+  }
+}
+
+/* Что будет после обращения */
+.contact__next {
+  margin-top: 28px;
+  padding-top: 20px;
+  border-top: 1px solid var(--line-light);
+}
+
+.contact__next-title {
+  font-size: 0.625rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--gold-soft);
+  margin-bottom: 12px;
+}
+
+.contact__next ol {
+  display: grid;
+  gap: 8px;
+}
+
+.contact__next li {
+  display: grid;
+  grid-template-columns: 26px minmax(0, 1fr);
+  gap: 8px;
+  align-items: baseline;
+  font-size: 0.875rem;
+  line-height: 1.55;
+  color: var(--muted-light);
+}
+
+.contact__next li span {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 0.85rem;
+  color: var(--gold-soft);
+}
+
+.contact__next-note {
+  margin-top: 12px;
+  font-size: 0.75rem;
+  line-height: 1.55;
+  color: rgba(246, 240, 231, 0.62);
+  max-width: 42ch;
 }

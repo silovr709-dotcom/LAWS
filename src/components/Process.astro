@@ -1,32 +1,17 @@
 ---
-import { process, site } from '../data/site';
-import SectionHead from './SectionHead.astro';
+import { withBase } from '../lib/paths';
+import Icon from './Icon.astro';
+const steps = [
+  { title: 'Коротко обозначить ситуацию', text: 'Что произошло, ваш процессуальный статус и ближайшие сроки. Без документов и чувствительных подробностей в первом сообщении.' },
+  { title: 'Согласовать консультацию', text: 'Формат разговора и порядок передачи материалов обсуждаются заранее. Затем — обстоятельства, риски и возможные действия.' },
+  { title: 'Определить условия работы', text: 'Если поручение принимается, объём помощи, стоимость и порядок взаимодействия фиксируются в соглашении.' },
+];
 ---
-
-<section class="section section--paper" id="poryadok" aria-labelledby="poryadok-title">
+<section class="section section--paper consultation" id="poryadok" aria-labelledby="poryadok-title">
   <div class="container">
-    <SectionHead
-      id="poryadok"
-      eyebrow={process.eyebrow}
-      title={process.title}
-      lead={process.lead}
-    />
-
-    <div class="process">
-      {
-        process.steps.map((step, index) => (
-          <article class="process__step" data-reveal style={`--reveal-delay: ${index * 50}ms`}>
-            <p class="process__number" aria-hidden="true">{step.number}</p>
-            <h3 class="process__title">{step.title}</h3>
-            <p class="process__text">{step.text}</p>
-          </article>
-        ))
-      }
-    </div>
-
-    <p class="process__note" data-reveal>
-      {process.disclaimer} Первый контакт удобнее начать по телефону{' '}
-      <a href={`tel:${site.phone.href}`}>{site.phone.display}</a>.
-    </p>
+    <div class="compact-head" data-reveal><div><p class="eyebrow">Порядок работы</p><h2 id="poryadok-title">Понятно с первого разговора</h2></div><p>Сначала — знакомство с ситуацией.<br />Затем — решение о дальнейшей работе.</p></div>
+    <ol class="consultation__steps">{steps.map((step, i) => <li data-reveal><span aria-hidden="true">0{i + 1}</span><h3>{step.title}</h3><p>{step.text}</p></li>)}</ol>
+    <div class="consultation__terms" data-reveal><div><h3>Формат консультации</h3><p>Лично или дистанционно — по договорённости. Канал связи и перечень материалов согласуются заранее; выезд в другой регион обсуждается отдельно.</p></div><div><h3>Как определяется стоимость</h3><p>Она зависит от стадии, срочности и объёма помощи. Условия и порядок оплаты нужно согласовать до начала консультации или работы по делу.</p></div></div>
+    <p class="consultation__note">Обращение не создаёт отношений «адвокат — доверитель» и не обязывает заключать соглашение. <a href={withBase('/#kontakty')}>Обсудить первый контакт<Icon name="arrow-right" size={14} /></a></p>
   </div>
 </section>

@@ -1,61 +1,30 @@
 ---
-import fs from 'node:fs';
-import path from 'node:path';
 import { site } from '../data/site';
 import { withBase } from '../lib/paths';
 
 interface Props {
+  variant?: 'hero' | 'about' | 'avatar';
   priority?: boolean;
+  sizes?: string;
+  credit?: boolean;
   class?: string;
 }
-
-const { priority = false, class: className } = Astro.props;
-
-/**
- * Портрет подставляется автоматически, если файл существует.
- * Пока фотографии нет, показывается типографическая плашка с монограммой —
- * мы не подменяем реального человека изображением другого лица.
- */
-const photoExists = fs.existsSync(path.join(process.cwd(), 'public', site.portrait));
+const { variant = 'hero', priority = false, credit = variant !== 'avatar', class: className, sizes: imageSizes } = Astro.props;
+const isAvatar = variant === 'avatar';
+const stem = isAvatar ? site.portraits.hero : site.portraits[variant];
+const sizes = imageSizes ?? (variant === 'about' ? '(max-width: 360px) 100px, (max-width: 600px) 120px, (max-width: 1024px) 35vw, 360px' : '(max-width: 360px) 32vw, (max-width: 600px) 40vw, (max-width: 1024px) 42vw, 465px');
+const srcset = (format: string) => [320, 640, 960].map((width) => `${withBase(`${stem}-${width}.${format}`)} ${width}w`).join(', ');
 ---
-
-<figure class:list={['portrait', className]}>
+<figure class:list={['portrait', `portrait--${variant}`, className]}>
   <div class="portrait__media">
-    {
-      photoExists ? (
-        <img
-          src={withBase(site.portrait)}
-          alt={`Адвокат ${site.fullName}`}
-          width="900"
-          height="1125"
-          loading={priority ? 'eager' : 'lazy'}
-          fetchpriority={priority ? 'high' : 'auto'}
-          decoding="async"
-        />
-      ) : (
-        <div class="portrait__fallback">
-          <span class="portrait__monogram" aria-hidden="true">
-            ЮК
-          </span>
-          <div class="portrait__caption">
-            <div>
-              <strong>{site.name}</strong>
-              <small>{site.role} · {site.city}</small>
-            </div>
-            <span class="portrait__seal" aria-hidden="true">
-              С 2023<br />адвокат
-            </span>
-          </div>
-        </div>
-      )
-    }
-    <div class="portrait__frame" aria-hidden="true"></div>
+    {isAvatar ? (
+      <img src={withBase(site.portraits.avatar)} width="192" height="192" alt={`Юрий Кочевинов — ИИ-портрет по фотографиям адвоката`} loading="lazy" decoding="async" />
+    ) : (
+      <picture>
+        <source type="image/avif" srcset={srcset('avif')} sizes={sizes} />
+        <img src={withBase(`${stem}-640.webp`)} srcset={srcset('webp')} sizes={sizes} width="960" height={variant === 'about' ? 1280 : 1200} alt={`Портрет адвоката Юрия Кочевинова. Изображение создано с помощью ИИ по предоставленным фотографиям.`} loading={priority ? 'eager' : 'lazy'} fetchpriority={priority ? 'high' : 'auto'} decoding="async" />
+      </picture>
+    )}
   </div>
-  {
-    photoExists && (
-      <figcaption class="visually-hidden">
-        Портрет адвоката {site.fullName}
-      </figcaption>
-    )
-  }
+  {credit && <figcaption class="portrait__credit">{site.portraitCredit}</figcaption>}
 </figure>

@@ -3,7 +3,7 @@ import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Icon from '../../components/Icon.astro';
 import { site } from '../../data/site';
-import { withBase } from '../../lib/paths';
+import { canonicalUrl, withBase } from '../../lib/paths';
 
 const cases = (await getCollection('cases', ({ data }) => !data.draft)).sort(
   (a, b) => b.data.year - a.data.year,
@@ -13,7 +13,7 @@ const categories = [...new Set(cases.map((item) => item.data.category))].sort();
 const instances = [...new Set(cases.map((item) => item.data.instance))];
 const results = [...new Set(cases.map((item) => item.data.result))].sort();
 
-const title = 'Судебная практика — адвокат Юрий Кочевинов, Мурманск';
+const title = 'Судебная практика — адвокат Юрий Кочевинов, Тверь';
 const description =
   'Каталог судебных дел с участием адвоката Юрия Кочевинова: категории, инстанции и результаты. Публикуются только подтверждённые и обезличенные материалы.';
 
@@ -22,14 +22,14 @@ const schema = {
   '@type': 'CollectionPage',
   name: title,
   description,
-  url: `${site.url}/praktika/`,
-  isPartOf: { '@type': 'WebSite', name: `Адвокат ${site.name}`, url: site.url },
+  url: canonicalUrl(site.url, '/praktika/'),
+  isPartOf: { '@type': 'WebSite', name: `Адвокат ${site.name}`, url: canonicalUrl(site.url, '/') },
   mainEntity: {
     '@type': 'ItemList',
     itemListElement: cases.map((item, index) => ({
       '@type': 'ListItem',
       position: index + 1,
-      url: `${site.url}/praktika/${item.id}/`,
+      url: canonicalUrl(site.url, `/praktika/${item.id}/`),
       name: item.data.title,
     })),
   },

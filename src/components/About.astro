@@ -1,65 +1,24 @@
 ---
-import { about, site } from '../data/site';
+import { site } from '../data/site';
 import Portrait from './Portrait.astro';
+import Icon from './Icon.astro';
+import { withBase } from '../lib/paths';
 ---
-
-<section class="section section--paper" id="ob-advokate" aria-labelledby="ob-advokate-title">
-  <div class="container about">
-    <div class="about__visual">
-      <div class="about__portrait" data-reveal>
-        <Portrait />
-        <p class="about__caption">
-          {site.fullName}. Реестровый номер {site.registryNumber}, {site.chamber}.
-        </p>
-      </div>
-    </div>
-
-    <div class="about__body">
-      <p class="eyebrow" data-reveal>{about.eyebrow}</p>
-      <h2 id="ob-advokate-title" data-reveal>{about.title}</h2>
-      <p class="about__subtitle" data-reveal>
-        {site.role}, партнёр {site.bureauGenitive}
-      </p>
-      <p class="about__lead" data-reveal>{about.lead}</p>
-
-      <dl class="about__facts" data-reveal>
-        {
-          about.facts.map((fact) => (
-            <div class="about__fact">
-              <dt>{fact.label}</dt>
-              <dd>{fact.value}</dd>
-            </div>
-          ))
-        }
+<section class="section section--paper home-about" id="ob-advokate" aria-labelledby="ob-advokate-title">
+  <div class="container home-about__inner">
+    <div class="home-about__visual" data-reveal><Portrait variant="about" /></div>
+    <div class="home-about__content">
+      <p class="eyebrow">Личная практика</p>
+      <h2 id="ob-advokate-title">Юрий Анатольевич<br />Кочевинов</h2>
+      <p class="home-about__lead">Опыт проверки, надзора и защиты — чтобы видеть уголовное дело с разных сторон.</p>
+      <p>Работа в оперативных подразделениях и прокуратуре Мурманской области предшествовала адвокатской практике. Сейчас — уголовно-правовая защита из Твери, с участием в делах по всей России.</p>
+      <dl class="home-about__facts">
+        <div><dt>Юридическая практика</dt><dd>25 лет</dd></div>
+        <div><dt>Статус адвоката</dt><dd>С 2023 года</dd></div>
+        <div><dt>Реестровый номер</dt><dd>{site.registryNumber}</dd></div>
+        <div><dt>Адвокатская палата</dt><dd>Мурманской области</dd></div>
       </dl>
-
-      <h3 class="about__section-title">Профессиональный путь</h3>
-      <div class="timeline">
-        {
-          about.timeline.map((item) => (
-            <div class="timeline__item" data-reveal>
-              <span class="timeline__period">{item.period}</span>
-              <h4 class="timeline__title">{item.title}</h4>
-              <p class="timeline__text">{item.text}</p>
-            </div>
-          ))
-        }
-      </div>
-
-      {
-        about.awards.length > 0 && (
-          <>
-            <h3 class="about__section-title">Награды и знаки отличия</h3>
-            <ul class="awards" data-reveal>
-              {about.awards.map((award) => (
-                <li>{award}</li>
-              ))}
-            </ul>
-          </>
-        )
-      }
-
-      <p class="about__note" data-reveal>{about.note}</p>
+      <a class="link-arrow" href={withBase('/ob-advokate/')}>Профессиональный путь и сведения<Icon name="arrow-right" size={16} /></a>
     </div>
   </div>
 </section>
