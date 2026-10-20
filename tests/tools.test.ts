@@ -12,6 +12,7 @@ import {
   alimonyShare,
   shiftToWorkingDay,
 } from '../src/lib/deadlines';
+import { inspectDraft } from '../src/lib/draft';
 import { situations } from '../src/data/situations';
 import { memos } from '../src/data/memos';
 import { documents } from '../src/data/documents';
@@ -20,6 +21,52 @@ import { articleDocuments, articleSituations, serviceDocuments } from '../src/da
 
 const articleIds = async () =>
   new Set((await fs.readdir('src/content/articles')).filter((file) => file.endsWith('.md')).map((file) => file.replace(/\.md$/, '')));
+
+const completeDraft = `В Прокуратуру города Твери
+от Петрова Ивана Сергеевича,
+проживающего по адресу: г. Тверь, ул. Ленина, д. 1, кв. 2,
+телефон +7 900 000-00-00
+
+ЖАЛОБА
+на постановление об отказе в возбуждении уголовного дела
+
+20 сентября 2026 года следователь вынес постановление об отказе в возбуждении уголовного дела по моему заявлению.
+
+Считаю постановление незаконным: ч. 1 ст. 125 УПК РФ, ст. 144 УПК РФ.
+
+На основании изложенного прошу признать постановление незаконным и обязать устранить допущенное нарушение.
+
+Приложения: копия постановления — 1 экз.
+
+Дата 20.10.2026    Подпись ____`;
+
+test('draft check finds the formal parts of a complete document', () => {
+  const report = inspectDraft(completeDraft);
+  assert.equal(report.ready, true);
+  assert.equal(report.score, 100);
+  assert.equal(report.missing.some((item) => item.id === 'request'), false);
+  assert.equal(report.missing.some((item) => item.id === 'law'), false);
+  assert.ok(report.words > 50);
+});
+
+test('draft check lists missing parts instead of guessing', () => {
+  const report = inspectDraft('Прошу разобраться, меня задержали. Это беспредел и ложь.');
+  assert.equal(report.ready, false);
+  assert.ok(report.score < 50);
+  const missing = report.missing.map((item) => item.id);
+  assert.ok(missing.includes('addressee'));
+  assert.ok(missing.includes('law'));
+  assert.ok(missing.includes('signature'));
+  assert.ok(missing.includes('tone'), 'оценочные формулировки должны попадать в список замечаний');
+  assert.equal(report.checks.find((item) => item.id === 'request')?.status, 'ok');
+});
+
+test('draft check adds the appeal term only for complaints', () => {
+  const complaint = inspectDraft(completeDraft);
+  assert.equal(complaint.checks.some((item) => item.id === 'appeal-copy'), true);
+  const statement = inspectDraft(completeDraft.replace('ЖАЛОБА', 'ЗАЯВЛЕНИЕ').replace(/постановление/g, 'решение'));
+  assert.equal(statement.checks.some((item) => item.id === 'appeal-copy'), false);
+});
 
 test('detention timeline marks five checkpoints and the nearest one', () => {
   const start = new Date(2026, 9, 20, 9, 0);

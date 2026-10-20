@@ -1,0 +1,380 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ContactPrompt from '../components/ContactPrompt.astro';
+import HeroLedger from '../components/HeroLedger.astro';
+import Icon from '../components/Icon.astro';
+import { canonicalUrl, withBase } from '../lib/paths';
+import { site } from '../data/site';
+
+const title = 'Проверка черновика заявления или жалобы';
+const description =
+  'Вставьте текст заявления, жалобы или ходатайства — браузер проверит формальные признаки: адресат, данные заявителя, ссылка на норму, дата, просительная часть, приложения, подпись. Текст не отправляется на сервер.';
+
+const faq = [
+  {
+    q: 'Текст документа куда-то сохраняется?',
+    a: 'Нет. Проверка выполняется в браузере: текст не уходит на сервер, не пишется в cookie, localStorage и не попадает в аналитику. Даже если закрыть страницу, черновик нигде не останется — сохраните его у себя заранее.',
+  },
+  {
+    q: 'Проверка говорит, что документ правильный?',
+    a: 'Нет. Она находит только формальные признаки: есть ли адресат, данные заявителя, ссылка на норму, дата, просьба, приложения и подпись. Юридическую силу, подсудность и перспективы она не оценивает — для этого нужно читать материалы дела.',
+  },
+  {
+    q: 'Почему проверка ругается на мою просьбу?',
+    a: 'Чаще всего после слова «прошу» нет действия: «прошу разобраться» никого ни к чему не обязывает. Орган может выполнить конкретное действие — обязать устранить нарушение, признать постановление незаконным, истребовать документы. Такая формулировка и считается найденной.',
+  },
+  {
+    q: 'Можно проверить чужой текст?',
+    a: 'Да, если вы помогаете близкому. Но не вставляйте чужие персональные данные без согласия: проверка работает офлайн, однако сам текст остаётся у вас на устройстве и в буфере обмена.',
+  },
+];
+
+const schema = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebApplication',
+    name: title,
+    description,
+    url: canonicalUrl(site.url, '/proverka-zayavleniya/'),
+    applicationCategory: 'LegalService',
+    operatingSystem: 'Any',
+    inLanguage: 'ru-RU',
+    offers: { '@type': 'Offer', price: '0', priceCurrency: 'RUB' },
+    isAccessibleForFree: true,
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Главная', item: canonicalUrl(site.url, '/') },
+      { '@type': 'ListItem', position: 2, name: 'Материалы', item: canonicalUrl(site.url, '/materialy/') },
+      { '@type': 'ListItem', position: 3, name: 'Проверка черновика', item: canonicalUrl(site.url, '/proverka-zayavleniya/') },
+    ],
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faq.map((item) => ({
+      '@type': 'Question',
+      name: item.q,
+      acceptedAnswer: { '@type': 'Answer', text: item.a },
+    })),
+  },
+];
+---
+
+<BaseLayout title={`${title} — адвокат Юрий Кочевинов`} description={description} schema={schema}>
+  <section class="page-hero">
+    <div class="container page-hero__grid page-hero__grid--with-ledger">
+      <div class="page-hero__content">
+        <nav class="breadcrumbs" aria-label="Хлебные крошки">
+          <a href={withBase('/')}>Главная</a>
+          <span aria-hidden="true">/</span>
+          <a href={withBase('/materialy/')}>Материалы</a>
+          <span aria-hidden="true">/</span>
+          <span aria-current="page">Проверка черновика</span>
+        </nav>
+        <p class="eyebrow">Инструмент · документы</p>
+        <h1 class="page-hero__title">Проверить черновик<br /><em>до отправки</em></h1>
+        <p class="page-hero__lead">
+          Вставьте текст заявления, жалобы или ходатайства. Браузер отметит, каких формальных
+          признаков не хватает, и подскажет, что дописать. Текст никуда не отправляется.
+        </p>
+      </div>
+      <HeroLedger
+        items={[
+          { value: '10', label: 'признаков в проверке' },
+          { value: '0', label: 'отправок на сервер' },
+          { value: '22', label: 'образца рядом' },
+        ]}
+        note="Проверка идёт в браузере: текст не покидает устройство."
+      />
+    </div>
+  </section>
+
+  <section class="section section--paper" aria-labelledby="draft-title">
+    <div class="container">
+      <div class="compact-head">
+        <div>
+          <p class="eyebrow">Формальные признаки</p>
+          <h2 id="draft-title">Что в черновике</h2>
+        </div>
+        <p>
+          Проверка смотрит на структуру, а не на смысл. Она не знает обстоятельств дела и не
+          заменяет чтение документов.
+        </p>
+      </div>
+
+      <div class="draft" data-draft>
+        <div class="draft__input">
+          <label for="draft-text">Текст документа</label>
+          <textarea id="draft-text" rows="16" spellcheck="false" placeholder="Вставьте сюда текст заявления, жалобы или ходатайства целиком — вместе с адресатом, подписью и приложениями."></textarea>
+          <div class="draft__meta">
+            <span data-draft-count>0 слов</span>
+            <span class="draft__tools">
+              <button class="draft__link" type="button" data-draft-example>Вставить пример</button>
+              <button class="draft__link" type="button" data-draft-clear>Очистить</button>
+            </span>
+          </div>
+          <p class="draft__privacy">
+            <Icon name="shield" size={15} />
+            Текст остаётся в браузере. Он не отправляется на сервер и не сохраняется на сайте.
+          </p>
+        </div>
+
+        <div class="draft__report" data-draft-report aria-live="polite" aria-atomic="false">
+          <div class="draft__empty" data-draft-empty>
+            <p class="draft__empty-title">Здесь появится разбор</p>
+            <p>
+              Вставьте текст — проверка начнётся автоматически, когда в нём будет не меньше
+              20 слов. Ничего нажимать не нужно.
+            </p>
+            <ul>
+              <li>адресат и данные заявителя;</li>
+              <li>ссылка на норму и дата события;</li>
+              <li>просительная часть и приложения;</li>
+              <li>подпись, дата, оценочные формулировки.</li>
+            </ul>
+          </div>
+
+          <div class="draft__result" data-draft-result hidden>
+            <div class="draft__score">
+              <p class="draft__score-value"><span data-draft-score>0</span><i>из 100</i></p>
+              <p class="draft__score-label" data-draft-verdict>Проверка</p>
+              <div class="draft__bar" role="presentation"><span data-draft-bar></span></div>
+            </div>
+            <ul class="draft__checks" data-draft-checks></ul>
+            <p class="draft__note" data-draft-note></p>
+          </div>
+        </div>
+      </div>
+
+      <p class="detail-note draft__disclaimer">
+        Это ориентир по оформлению, а не юридическая консультация. Решение о том, что и как
+        писать, зависит от материалов дела и стадии процесса.
+      </p>
+    </div>
+  </section>
+
+  <section class="section section--milk" aria-labelledby="draft-limits">
+    <div class="container">
+      <div class="compact-head">
+        <div>
+          <p class="eyebrow">Границы проверки</p>
+          <h2 id="draft-limits">Чего она не делает</h2>
+        </div>
+        <p>Три вещи, которые остаются за пределами автоматической проверки.</p>
+      </div>
+      <div class="detention__advice">
+        <article>
+          <span aria-hidden="true">01</span>
+          <h3>Не оценивает перспективы</h3>
+          <p>
+            «Правильно оформлено» не значит «будет удовлетворено». Исход зависит от доказательств,
+            сроков и того, кто принимает решение.
+          </p>
+        </article>
+        <article>
+          <span aria-hidden="true">02</span>
+          <h3>Не проверяет подсудность</h3>
+          <p>
+            Адресат может быть указан формально верно, но документ уйдёт не в тот орган. Это видно
+            только по материалам дела.
+          </p>
+        </article>
+        <article>
+          <span aria-hidden="true">03</span>
+          <h3>Не заменяет защитника</h3>
+          <p>
+            Формулировки вроде «признать незаконным» меняют позицию по делу. Иногда лучшее действие
+            — не подавать документ сейчас.
+          </p>
+        </article>
+      </div>
+      <p class="detention__advice-links">
+        <a class="link-arrow" href={withBase('/materialy/obrazcy/')}>
+          Образцы документов<Icon name="arrow-right" size={15} />
+        </a>
+        <a class="link-arrow" href={withBase('/bezopasnaya-peredacha-dokumentov/')}>
+          Как безопасно передать документы<Icon name="arrow-right" size={15} />
+        </a>
+        <a class="link-arrow" href={withBase('/sroki/')}>
+          Проверить сроки<Icon name="arrow-right" size={15} />
+        </a>
+      </p>
+    </div>
+  </section>
+
+  <section class="section section--paper" aria-labelledby="draft-faq">
+    <div class="container">
+      <div class="compact-head">
+        <div>
+          <p class="eyebrow">Частые вопросы</p>
+          <h2 id="draft-faq">О проверке</h2>
+        </div>
+      </div>
+      <div class="faq">
+        {
+          faq.map((item) => (
+            <details class="accordion__item">
+              <summary class="accordion__summary">{item.q}</summary>
+              <div class="accordion__content"><p>{item.a}</p></div>
+            </details>
+          ))
+        }
+        <p class="faq__disclaimer">
+          Ответы носят информационный характер и не заменяют консультацию по конкретному делу.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <ContactPrompt title="Если сомневаетесь в формулировке, покажите черновик" />
+</BaseLayout>
+
+<script>
+  import { inspectDraft, type DraftCheck } from '../lib/draft';
+  import { trackGoal } from '../lib/events';
+
+  const root = document.querySelector<HTMLElement>('[data-draft]');
+  if (root) {
+    const textarea = document.querySelector<HTMLTextAreaElement>('#draft-text');
+    const counter = document.querySelector<HTMLElement>('[data-draft-count]');
+    const empty = document.querySelector<HTMLElement>('[data-draft-empty]');
+    const result = document.querySelector<HTMLElement>('[data-draft-result]');
+    const scoreOut = document.querySelector<HTMLElement>('[data-draft-score]');
+    const verdict = document.querySelector<HTMLElement>('[data-draft-verdict]');
+    const bar = document.querySelector<HTMLElement>('[data-draft-bar]');
+    const checksOut = document.querySelector<HTMLElement>('[data-draft-checks]');
+    const note = document.querySelector<HTMLElement>('[data-draft-note]');
+    const exampleButton = document.querySelector<HTMLButtonElement>('[data-draft-example]');
+    const clearButton = document.querySelector<HTMLButtonElement>('[data-draft-clear]');
+
+    const EXAMPLE = `В Прокуратуру города Твери
+от Петрова Ивана Сергеевича,
+проживающего по адресу: г. Тверь, ул. Ленина, д. 1, кв. 2,
+телефон +7 900 000-00-00
+
+ЖАЛОБА
+на постановление об отказе в возбуждении уголовного дела
+
+20 сентября 2026 года следователь вынес постановление об отказе в возбуждении уголовного дела по моему заявлению.
+
+Считаю постановление незаконным: ч. 1 ст. 125 УПК РФ, ст. 144 УПК РФ.
+
+На основании изложенного прошу признать постановление незаконным и обязать устранить допущенное нарушение.
+
+Приложения: копия постановления — 1 экз.
+
+Дата 20.10.2026    Подпись ____`;
+
+    let timer: number | undefined;
+    let goalSent = false;
+
+    const statusLabel = (check: DraftCheck) => {
+      if (check.id === 'tone') return check.status === 'ok' ? 'не найдено' : 'найдены';
+      return check.status === 'ok' ? 'есть' : check.status === 'attention' ? 'проверьте' : 'не найдено';
+    };
+
+    const render = (text: string) => {
+      const report = inspectDraft(text);
+      if (counter) {
+        counter.textContent = `${report.words} ${report.words % 10 === 1 && report.words % 100 !== 11 ? 'слово' : report.words % 10 >= 2 && report.words % 10 <= 4 && (report.words % 100 < 12 || report.words % 100 > 14) ? 'слова' : 'слов'}`;
+      }
+
+      const tooShort = report.words < 20;
+      if (empty) empty.hidden = !tooShort;
+      if (result) result.hidden = tooShort;
+      if (tooShort) return;
+
+      if (!goalSent) {
+        goalSent = true;
+        trackGoal('draft_check');
+      }
+
+      if (scoreOut) scoreOut.textContent = String(report.score);
+      if (bar) bar.style.transform = `scaleX(${(report.score / 100).toFixed(3)})`;
+      if (verdict) {
+        verdict.textContent = report.ready
+          ? 'Формальных пропусков почти нет'
+          : report.score >= 50
+            ? 'Есть что дописать'
+            : 'Документ пока не собран';
+      }
+
+      if (checksOut) {
+        checksOut.replaceChildren();
+        for (const check of report.checks) {
+          const item = document.createElement('li');
+          item.className = `draft__check draft__check--${check.status}`;
+
+          const mark = document.createElement('span');
+          mark.className = 'draft__check-mark';
+          mark.setAttribute('aria-hidden', 'true');
+          mark.textContent = check.status === 'ok' ? '✓' : check.status === 'attention' ? '!' : '—';
+
+          const body = document.createElement('div');
+          body.className = 'draft__check-body';
+
+          const head = document.createElement('p');
+          head.className = 'draft__check-head';
+          const label = document.createElement('strong');
+          label.textContent = check.label;
+          const state = document.createElement('span');
+          state.className = 'draft__check-state';
+          state.textContent = statusLabel(check);
+          head.append(label, state);
+
+          const hint = document.createElement('p');
+          hint.className = 'draft__check-hint';
+          hint.textContent = check.hint;
+
+          body.append(head, hint);
+
+          if (check.link) {
+            const link = document.createElement('a');
+            link.className = 'draft__check-link';
+            link.href = check.link.href.startsWith('http')
+              ? check.link.href
+              : `${import.meta.env.BASE_URL.replace(/\/$/, '')}${check.link.href}`;
+            link.textContent = check.link.label;
+            body.append(link);
+          }
+
+          item.append(mark, body);
+          checksOut.append(item);
+        }
+      }
+
+      if (note) {
+        note.textContent = report.missing.length
+          ? `Обратить внимание: ${report.missing.length} ${report.missing.length === 1 ? 'пункт' : report.missing.length < 5 ? 'пункта' : 'пунктов'}. Начните с верхних — они важнее.`
+          : 'Все формальные признаки на месте. Дальше важнее содержание: факты, даты и ссылки на документы.';
+      }
+    };
+
+    const schedule = () => {
+      window.clearTimeout(timer);
+      timer = window.setTimeout(() => render(textarea?.value ?? ''), 320);
+    };
+
+    textarea?.addEventListener('input', schedule);
+
+    exampleButton?.addEventListener('click', () => {
+      if (!textarea) return;
+      textarea.value = EXAMPLE;
+      render(EXAMPLE);
+      textarea.focus();
+    });
+
+    clearButton?.addEventListener('click', () => {
+      if (!textarea) return;
+      textarea.value = '';
+      textarea.focus();
+      render('');
+      if (counter) counter.textContent = '0 слов';
+    });
+
+    render(textarea?.value ?? '');
+  }
+</script>

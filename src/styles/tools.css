@@ -919,3 +919,322 @@
   outline: 2px solid var(--gold-soft);
   outline-offset: 3px;
 }
+
+/* --- 22. Проверка черновика: локальный разбор документа ------------------- */
+
+.draft {
+  display: grid;
+  grid-template-columns: minmax(0, 1.02fr) minmax(0, 0.98fr);
+  gap: clamp(20px, 2.6vw, 34px);
+  margin-top: clamp(26px, 3vw, 38px);
+  align-items: start;
+}
+
+.draft__input,
+.draft__report {
+  background: var(--plate);
+  border: 1px solid var(--rule);
+  padding: clamp(20px, 2.4vw, 30px);
+}
+
+.draft__input {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 12px;
+}
+
+.draft__input > label {
+  font-size: 0.82rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.draft__input textarea {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 320px;
+  padding: 14px 16px;
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  line-height: 1.65;
+  color: var(--ink);
+  background: var(--paper);
+  border: 1px solid var(--rule);
+  border-radius: 0;
+  resize: vertical;
+}
+
+.draft__input textarea:focus-visible {
+  outline: 2px solid var(--wine);
+  outline-offset: 2px;
+}
+
+.draft__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 18px;
+  align-items: baseline;
+  justify-content: space-between;
+  font-size: 0.82rem;
+  color: var(--ink-soft);
+}
+
+.draft__tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 16px;
+}
+
+.draft__link {
+  min-height: 44px;
+  padding: 0;
+  font: inherit;
+  font-size: 0.86rem;
+  color: var(--wine);
+  background: none;
+  border: 0;
+  border-bottom: 1px solid var(--rule);
+  cursor: pointer;
+}
+
+.draft__link:hover { border-bottom-color: var(--wine); }
+
+.draft__link:focus-visible {
+  outline: 2px solid var(--wine);
+  outline-offset: 3px;
+}
+
+.draft__privacy {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 0;
+  padding-top: 12px;
+  border-top: 1px solid var(--rule-soft);
+  font-size: 0.84rem;
+  line-height: 1.5;
+  color: var(--ink-soft);
+}
+
+.draft__privacy svg {
+  flex: none;
+  margin-top: 2px;
+  color: var(--gold-deep);
+}
+
+.draft__report {
+  display: grid;
+  gap: 18px;
+  align-content: start;
+  min-height: 100%;
+}
+
+.draft__empty {
+  display: grid;
+  gap: 10px;
+  align-content: start;
+  color: var(--ink-soft);
+}
+
+.draft__empty p { margin: 0; }
+
+.draft__empty-title {
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  color: var(--wine-deep);
+}
+
+.draft__empty ul {
+  margin: 4px 0 0;
+  padding-left: 18px;
+  display: grid;
+  gap: 4px;
+  font-size: 0.92rem;
+}
+
+.draft__empty ul li::marker { color: var(--gold); }
+
+.draft__result {
+  display: grid;
+  gap: 18px;
+  align-content: start;
+}
+
+.draft__score {
+  display: grid;
+  gap: 6px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--rule-soft);
+}
+
+.draft__score-value {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(2.6rem, 5vw, 3.4rem);
+  line-height: 1;
+  color: var(--wine-deep);
+  font-variant-numeric: tabular-nums;
+}
+
+.draft__score-value i {
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  font-style: normal;
+  letter-spacing: 0.04em;
+  color: var(--ink-soft);
+}
+
+.draft__score-label {
+  margin: 0;
+  font-size: 0.95rem;
+  color: var(--ink-soft);
+}
+
+.draft__bar {
+  height: 3px;
+  margin-top: 6px;
+  background: var(--rule-soft);
+  overflow: hidden;
+}
+
+.draft__bar span {
+  display: block;
+  height: 100%;
+  background: var(--wine);
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 520ms var(--ease-silk, ease);
+}
+
+.draft__checks {
+  display: grid;
+  gap: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.draft__check {
+  display: grid;
+  grid-template-columns: 22px minmax(0, 1fr);
+  gap: 10px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--rule-soft);
+}
+
+.draft__check:last-child { border-bottom: 0; padding-bottom: 0; }
+
+.draft__check-mark {
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  margin-top: 2px;
+  font-size: 0.72rem;
+  line-height: 1;
+  border: 1px solid var(--rule);
+  border-radius: 50%;
+  color: var(--ink-soft);
+}
+
+.draft__check--ok .draft__check-mark {
+  color: var(--paper);
+  background: var(--gold-deep);
+  border-color: var(--gold-deep);
+}
+
+.draft__check--attention .draft__check-mark {
+  color: var(--wine);
+  border-color: var(--wine);
+  background: transparent;
+  font-weight: 600;
+}
+
+.draft__check--missing .draft__check-mark {
+  color: var(--ink-soft);
+  border-style: dashed;
+}
+
+.draft__check-body {
+  display: grid;
+  gap: 4px;
+}
+
+.draft__check-head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+  align-items: baseline;
+  margin: 0;
+}
+
+.draft__check-head strong {
+  font-size: 0.98rem;
+  font-weight: 600;
+}
+
+.draft__check-state {
+  font-size: 0.7rem;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.draft__check--ok .draft__check-state { color: var(--gold-deep); }
+.draft__check--attention .draft__check-state { color: var(--wine); }
+
+.draft__check-hint {
+  margin: 0;
+  font-size: 0.88rem;
+  line-height: 1.55;
+  color: var(--ink-soft);
+}
+
+.draft__check--ok .draft__check-hint { color: var(--ink-soft); }
+
+.draft__check-link {
+  justify-self: start;
+  font-size: 0.84rem;
+  color: var(--wine);
+  text-decoration: none;
+  border-bottom: 1px solid var(--rule);
+  min-height: 32px;
+  display: inline-flex;
+  align-items: center;
+}
+
+.draft__check-link:hover { border-bottom-color: var(--wine); }
+
+.draft__note {
+  margin: 0;
+  padding-top: 14px;
+  border-top: 1px solid var(--rule);
+  font-size: 0.86rem;
+  line-height: 1.55;
+  color: var(--ink-soft);
+}
+
+.draft__disclaimer { margin-top: clamp(20px, 2.4vw, 28px); }
+
+.draft__empty[hidden],
+.draft__result[hidden] { display: none; }
+
+@media (min-width: 901px) {
+  .draft__input {
+    position: sticky;
+    top: 88px;
+  }
+}
+
+@media (max-width: 900px) {
+  .draft { grid-template-columns: minmax(0, 1fr); }
+  .draft__input textarea { min-height: 260px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .draft__bar span { transition: none; }
+}

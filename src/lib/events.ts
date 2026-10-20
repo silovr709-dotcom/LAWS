@@ -12,6 +12,7 @@ export type SiteGoal =
   | 'memo_download'
   | 'calc_use'
   | 'detention_timer'
+  | 'draft_check'
   | 'search_use'
   | 'registry_check';
 
@@ -28,6 +29,7 @@ const allowed: SiteGoal[] = [
   'memo_download',
   'calc_use',
   'detention_timer',
+  'draft_check',
   'search_use',
   'registry_check',
 ];

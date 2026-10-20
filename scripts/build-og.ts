@@ -126,6 +126,7 @@ const staticCards: Card[] = [
   { path: '/situacii/', kicker: 'Навигатор', title: 'Найдите свою ситуацию' },
   { path: '/sroki/', kicker: 'Инструменты', title: 'Калькуляторы процессуальных сроков' },
   { path: '/48-chasov/', kicker: 'Счётчик · задержание', title: '48 часов: каждый срок виден' },
+  { path: '/proverka-zayavleniya/', kicker: 'Инструмент · документы', title: 'Проверить черновик до отправки' },
   { path: '/memos/', kicker: 'Памятки', title: 'Первые 48 часов, обыск, допрос' },
   { path: '/bezopasnaya-peredacha-dokumentov/', kicker: 'Безопасность', title: 'Как передать документы адвокату' },
   { path: '/kak-my-rabotaem/', kicker: 'Порядок работы', title: 'Этапы и стоимость помощи' },

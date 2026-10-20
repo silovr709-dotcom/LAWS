@@ -75,6 +75,17 @@ const schema = {
         </div>
       </div>
 
+      <a class="detention-promo" href={withBase('/proverka-zayavleniya/')}>
+        <span class="detention-promo__eyebrow">Новый инструмент</span>
+        <strong class="detention-promo__title">Проверка черновика</strong>
+        <span class="detention-promo__text">
+          Вставили свой текст? Браузер проверит формальные признаки — адресат, данные заявителя,
+          ссылка на норму, дата, просительная часть, приложения, подпись — и подскажет, что
+          дописать. Текст не отправляется на сервер.
+        </span>
+        <span class="detention-promo__cta">Открыть проверку <span aria-hidden="true">→</span></span>
+      </a>
+
       <div class="doc-groups" data-doc-list>
         {
           documentGroupsWithCount.map((entry) => (
