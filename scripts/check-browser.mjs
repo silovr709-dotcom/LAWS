@@ -84,8 +84,8 @@ try {
       check(await page.evaluate(() => document.activeElement.matches('[data-menu-toggle]')), 'Escape did not restore menu trigger focus');
       check(Math.abs((await page.evaluate(() => scrollY)) - scroll) <= 1, 'Menu changed scroll position');
       await page.locator('[data-menu-toggle]').click();
-      await page.locator('dialog a[href$="#poryadok"]').click();
-      await page.waitForFunction(() => document.activeElement?.id === 'poryadok');
+      await page.locator('dialog a[href$="#napravleniya"]').click();
+      await page.waitForFunction(() => document.activeElement?.id === 'napravleniya');
       check(await page.locator('[data-menu-toggle]').getAttribute('aria-expanded') === 'false', 'Menu state did not reset on anchor navigation');
       await page.locator('[data-menu-toggle]').click();
       await page.setViewportSize({ width: 1440, height: 1000 });

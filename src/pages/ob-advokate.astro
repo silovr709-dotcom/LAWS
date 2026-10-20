@@ -3,13 +3,279 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import Portrait from '../components/Portrait.astro';
 import ContactPrompt from '../components/ContactPrompt.astro';
 import Geography from '../components/Geography.astro';
+import Icon from '../components/Icon.astro';
 import { about, site } from '../data/site';
 import { canonicalUrl, withBase } from '../lib/paths';
-const schema = { '@context': 'https://schema.org', '@type': 'Person', '@id': canonicalUrl(site.url, '/ob-advokate/#person'), name: site.fullName, jobTitle: 'Адвокат', url: canonicalUrl(site.url, '/ob-advokate/'), image: canonicalUrl(site.url, `${site.portraits.about}-960.webp`), description: about.lead, memberOf: { '@type': 'Organization', name: site.chamber, url: site.chamberUrl }, identifier: { '@type': 'PropertyValue', propertyID: 'Реестровый номер адвоката', value: site.registryNumber }, sameAs: [site.vk] };
+
+const gallery = about.gallery;
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  '@id': canonicalUrl(site.url, '/ob-advokate/#person'),
+  name: site.fullName,
+  alternateName: site.shortName,
+  jobTitle: 'Адвокат',
+  url: canonicalUrl(site.url, '/ob-advokate/'),
+  image: canonicalUrl(site.url, `${site.portraits.about}-960.webp`),
+  description: about.lead,
+  memberOf: { '@type': 'Organization', name: site.chamber, url: site.chamberUrl },
+  identifier: { '@type': 'PropertyValue', propertyID: 'Реестровый номер адвоката', value: site.registryNumber },
+  knowsAbout: ['Уголовное право', 'Уголовный процесс', 'Защита по уголовным делам', 'Представительство потерпевших'],
+  sameAs: [site.vk],
+};
+const srcset = (stem: string, format: string) => [320, 640, 960].map((width) => `${withBase(`${stem}-${width}.${format}`)} ${width}w`).join(', ');
 ---
-<BaseLayout title="Об адвокате — Юрий Анатольевич Кочевинов" description="Профессиональный путь Юрия Кочевинова: оперативная работа, служба в прокуратуре и адвокатская практика с 2023 года. Реестровый номер 51/862. Тверь, работа по всей России." schema={schema}>
-  <section class="biography-hero"><div class="container biography-hero__inner"><div><nav class="breadcrumbs" aria-label="Хлебные крошки"><a href={withBase('/')}>Главная</a><span aria-hidden="true">/</span><span aria-current="page">Об адвокате</span></nav><p class="eyebrow">Опыт проверки, надзора и защиты</p><h1>Юрий Анатольевич<br /><em>Кочевинов</em></h1><p class="biography-hero__lead">{about.lead}</p><dl class="biography-hero__facts"><div><dt>Юридическая практика</dt><dd>25 лет</dd></div><div><dt>Адвокатская практика</dt><dd>С 2023 года</dd></div></dl><p class="detail-note">Юридическая практика включает предыдущую профессиональную деятельность; она не означает 25 лет работы в статусе адвоката.</p></div><Portrait variant="about" priority sizes="(max-width: 600px) calc(100vw - 40px), (max-width: 760px) 420px, (max-width: 1024px) 40vw, 465px" /></div></section>
-  <section class="section section--paper"><div class="container biography-layout"><div><p class="eyebrow">Профессиональный путь</p><h2>От изучения обстоятельств<br />к позиции защиты</h2><div class="biography-timeline">{about.timeline.map((item) => <article><span>{item.period}</span><div><h3>{item.title}</h3><p>{item.text}</p></div></article>)}</div></div><aside class="biography-facts"><p class="eyebrow">Профессиональные сведения</p><dl>{about.facts.map((fact) => <div><dt>{fact.label}</dt><dd>{fact.value}</dd></div>)}</dl><a href={site.chamberUrl} target="_blank" rel="noopener noreferrer">Сайт адвокатской палаты</a><h2>Награды и знаки отличия</h2><ul>{about.awards.map((award) => <li>{award}</li>)}</ul><p class="detail-note">{about.note}</p></aside></div></section>
+
+<BaseLayout
+  title="Обо мне — адвокат Юрий Кочевинов"
+  description="Юрий Кочевинов о себе: 25 лет юридической практики, работа в оперативных подразделениях и прокуратуре, статус адвоката с 2023 года. Реестровый номер 51/862. Тверь, работа по всей России."
+  schema={schema}
+>
+  <section class="biography-hero">
+    <div class="container biography-hero__inner">
+      <div>
+        <nav class="breadcrumbs" aria-label="Хлебные крошки">
+          <a href={withBase('/')}>Главная</a>
+          <span aria-hidden="true">/</span>
+          <span aria-current="page">Обо мне</span>
+        </nav>
+        <p class="eyebrow">{about.eyebrow}</p>
+        <h1>Юрий Анатольевич<br /><em>Кочевинов</em></h1>
+        <p class="biography-hero__lead">{about.lead}</p>
+        <dl class="biography-hero__facts">
+          <div><dt>Юридическая практика</dt><dd>25 лет</dd></div>
+          <div><dt>Адвокатская практика</dt><dd>С 2023 года</dd></div>
+        </dl>
+        <p class="detail-note">
+          Юридическая практика включает предыдущую профессиональную деятельность; она не означает
+          25 лет работы в статусе адвоката.
+        </p>
+      </div>
+      <Portrait
+        variant="about"
+        priority
+        sizes="(max-width: 600px) calc(100vw - 40px), (max-width: 760px) 420px, (max-width: 1024px) 40vw, 465px"
+      />
+    </div>
+  </section>
+
+  <section class="section section--paper">
+    <div class="container about-intro">
+      <div class="about-intro__lead">
+        <p class="eyebrow">От первого лица</p>
+        <h2>Почему я работаю на стороне защиты</h2>
+      </div>
+      <div class="about-intro__cards">
+        {
+          about.intro.map((item, index) => (
+            <article class="about-card" data-reveal>
+              <span class="about-card__number" aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>
+              <h3>{item.title}</h3>
+              <p>{item.text}</p>
+            </article>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--milk" aria-labelledby="gallery-title">
+    <div class="container">
+      <div class="compact-head">
+        <div>
+          <p class="eyebrow">Фотографии</p>
+          <h2 id="gallery-title">Рабочие кадры</h2>
+        </div>
+        <p class="compact-head__note">
+          Кабинет, документы, консультации и выезды. Изображения постановочные и не являются
+          документальной съёмкой конкретного события.
+        </p>
+      </div>
+      <div class="about-gallery">
+        {
+          gallery.map((image, index) => (
+            <figure class:list={['about-gallery__item', image.wide && 'about-gallery__item--wide']} data-reveal>
+              <picture>
+                <source type="image/avif" srcset={srcset(image.src, 'avif')} sizes="(max-width: 700px) 100vw, (max-width: 1100px) 50vw, 460px" />
+                <img
+                  src={withBase(`${image.src}-640.webp`)}
+                  srcset={srcset(image.src, 'webp')}
+                  sizes="(max-width: 700px) 100vw, (max-width: 1100px) 50vw, 460px"
+                  width={image.width}
+                  height={image.height}
+                  alt={image.alt}
+                  loading={index === 0 ? 'eager' : 'lazy'}
+                  decoding="async"
+                />
+              </picture>
+              <figcaption>{image.caption}</figcaption>
+            </figure>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--paper">
+    <div class="container biography-layout">
+      <div>
+        <p class="eyebrow">Профессиональный путь</p>
+        <h2>От изучения обстоятельств<br />к позиции защиты</h2>
+        <div class="biography-timeline">
+          {
+            about.timeline.map((item) => (
+              <article>
+                <span>{item.period}</span>
+                <div>
+                  <h3>{item.title}</h3>
+                  <p>{item.text}</p>
+                </div>
+              </article>
+            ))
+          }
+        </div>
+        <p class="about-links">
+          <a class="link-arrow" href={withBase('/praktika/')}>
+            Результаты и дела
+            <Icon name="arrow-right" size={14} />
+          </a>
+          <a class="link-arrow" href={withBase('/obrazcy-zayavleniy/')}>
+            Образцы заявлений
+            <Icon name="arrow-right" size={14} />
+          </a>
+        </p>
+      </div>
+      <aside class="biography-facts">
+        <p class="eyebrow">Профессиональные сведения</p>
+        <dl>
+          {about.facts.map((fact) => (
+            <div><dt>{fact.label}</dt><dd>{fact.value}</dd></div>
+          ))}
+        </dl>
+        <a href={site.chamberUrl} target="_blank" rel="noopener noreferrer">Сайт адвокатской палаты</a>
+        <h2>Награды и знаки отличия</h2>
+        <ul>
+          {about.awards.map((award) => <li>{award}</li>)}
+        </ul>
+        <p class="detail-note">{about.note}</p>
+      </aside>
+    </div>
+  </section>
+
   <Geography />
-  <ContactPrompt title="Начните с короткого знакомства с ситуацией" />
+  <ContactPrompt title="Если вам нужна помощь — начните с короткого разговора" />
 </BaseLayout>
+
+<style>
+  .about-intro {
+    display: grid;
+    gap: clamp(24px, 4vw, 44px);
+  }
+
+  .about-intro__lead h2 {
+    font-size: clamp(1.8rem, 3.4vw, 2.6rem);
+    margin-top: 10px;
+    max-width: 22ch;
+  }
+
+  .about-intro__cards {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: clamp(20px, 3vw, 34px);
+  }
+
+  .about-card {
+    padding-top: 18px;
+    border-top: 1px solid var(--line);
+  }
+
+  .about-card__number {
+    display: block;
+    font-size: 0.72rem;
+    letter-spacing: 0.16em;
+    color: var(--gold-deep, #796039);
+    margin-bottom: 10px;
+  }
+
+  .about-card h3 {
+    font-family: var(--font-body);
+    font-size: 1.12rem;
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+
+  .about-card p {
+    font-size: 0.92rem;
+    line-height: 1.66;
+    color: var(--muted);
+  }
+
+  .about-gallery {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: clamp(14px, 2vw, 22px);
+    margin-top: clamp(24px, 4vw, 38px);
+  }
+
+  .about-gallery__item {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .about-gallery__item img {
+    width: 100%;
+    height: auto;
+    display: block;
+    object-fit: cover;
+    background: var(--paper, #f6f0e7);
+  }
+
+  .about-gallery__item figcaption {
+    font-size: 0.76rem;
+    line-height: 1.45;
+    color: var(--muted);
+  }
+
+  .about-gallery__item--wide {
+    grid-column: span 2;
+  }
+
+  .about-gallery__item--wide img {
+    aspect-ratio: 16 / 10;
+  }
+
+  .about-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 18px 28px;
+    margin-top: 28px;
+  }
+
+  @media (max-width: 960px) {
+    .about-intro__cards,
+    .about-gallery {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .about-gallery__item--wide {
+      grid-column: span 2;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .about-intro__cards,
+    .about-gallery {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .about-gallery__item--wide {
+      grid-column: span 1;
+    }
+
+    .about-gallery__item--wide img {
+      aspect-ratio: 4 / 5;
+    }
+  }
+</style>

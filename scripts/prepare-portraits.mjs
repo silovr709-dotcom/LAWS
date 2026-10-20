@@ -6,7 +6,9 @@ import { openSync } from 'fontkit';
 const source = process.argv[2] ?? 'assets/generated-portraits';
 await mkdir('public/images', { recursive: true });
 await mkdir('public/og', { recursive: true });
-for (const [name, ratio] of [['hero', 4 / 5], ['about', 3 / 4]]) {
+// Gallery frames share one 4:5 ratio so the masonry grid stays even.
+const gallery = ['office', 'standing', 'reading', 'consult', 'city'];
+for (const [name, ratio] of [['hero', 4 / 5], ['about', 3 / 4], ...gallery.map((name) => [name, 4 / 5])]) {
   const input = `${source}/yuriy-${name}.png`;
   for (const width of [320, 640, 960]) {
     const image = sharp(input).rotate().resize(width, Math.round(width / ratio), { fit: 'cover', position: 'attention' });
@@ -44,7 +46,7 @@ function lettering(text, x, y, size, color, family = sans, spacing = 0) {
   return markup;
 }
 const portrait = await sharp(`${source}/yuriy-hero.png`).resize(455, 630, { fit: 'cover', position: 'attention' }).png().toBuffer();
-const svg = `<svg width="1200" height="630" viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><title>Адвокат Юрий Кочевинов · Тверь и Россия</title><desc>ИИ-портрет по фотографиям адвоката. Не документальная съёмка.</desc><rect width="1200" height="630" fill="#35121d"/><path d="M65 81h100" stroke="#d3bd95"/><image xlink:href="data:image/png;base64,${portrait.toString('base64')}" x="745" y="0" width="455" height="630"/>${lettering('АДВОКАТ · ТВЕРЬ',65,135,19,'#d3bd95',sans,3)}${lettering('Юрий',61,241,88,'#f6f0e7',serif)}${lettering('Кочевинов',61,323,88,'#f6f0e7',serif)}${lettering('Уголовно-правовая защита',65,398,26,'#f6f0e7')}${lettering('Тверь. Работа по всей России.',65,442,21,'#d3bd95')}${lettering('Реестровый номер 51/862',65,554,17,'#d3bd95')}<path d="M65 583h600" stroke="#74515a"/><rect x="763" y="582" width="140" height="30" fill="#250b13" fill-opacity=".88"/>${lettering('ИИ-портрет',776,603,14,'#f6f0e7')}</svg>`;
+const svg = `<svg width="1200" height="630" viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><title>Адвокат Юрий Кочевинов · Тверь и Россия</title><desc>Адвокат Юрий Кочевинов</desc><rect width="1200" height="630" fill="#35121d"/><path d="M65 81h100" stroke="#d3bd95"/><image xlink:href="data:image/png;base64,${portrait.toString('base64')}" x="745" y="0" width="455" height="630"/>${lettering('АДВОКАТ · ТВЕРЬ',65,135,19,'#d3bd95',sans,3)}${lettering('Юрий',61,241,88,'#f6f0e7',serif)}${lettering('Кочевинов',61,323,88,'#f6f0e7',serif)}${lettering('Уголовно-правовая защита',65,398,26,'#f6f0e7')}${lettering('Тверь. Работа по всей России.',65,442,21,'#d3bd95')}${lettering('Реестровый номер 51/862',65,554,17,'#d3bd95')}<path d="M65 583h600" stroke="#74515a"/>${lettering('vk.com/advocat_yuriy51',65,610,17,'#d3bd95')}</svg>`;
 await writeFile('public/og/og-default.svg', svg);
 await sharp(Buffer.from(svg)).png({ compressionLevel: 9, palette: true }).toFile('public/og/og-default.png');
-for (const file of ['public/images/yuriy-hero-960.avif', 'public/images/yuriy-about-960.avif', 'public/og/og-default.png']) console.log(file, Math.round((await stat(file)).size / 1024), 'KB');
+for (const file of ['public/images/yuriy-hero-960.avif', 'public/images/yuriy-about-960.avif', ...gallery.map((name) => `public/images/yuriy-${name}-960.avif`), 'public/og/og-default.png']) console.log(file, Math.round((await stat(file)).size / 1024), 'KB');

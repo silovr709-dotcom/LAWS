@@ -6,10 +6,9 @@ interface Props {
   variant?: 'hero' | 'about' | 'avatar';
   priority?: boolean;
   sizes?: string;
-  credit?: boolean;
   class?: string;
 }
-const { variant = 'hero', priority = false, credit = variant !== 'avatar', class: className, sizes: imageSizes } = Astro.props;
+const { variant = 'hero', priority = false, class: className, sizes: imageSizes } = Astro.props;
 const isAvatar = variant === 'avatar';
 const stem = isAvatar ? site.portraits.hero : site.portraits[variant];
 const sizes = imageSizes ?? (variant === 'about' ? '(max-width: 360px) 100px, (max-width: 600px) 120px, (max-width: 1024px) 35vw, 360px' : '(max-width: 360px) 32vw, (max-width: 600px) 40vw, (max-width: 1024px) 42vw, 465px');
@@ -18,13 +17,12 @@ const srcset = (format: string) => [320, 640, 960].map((width) => `${withBase(`$
 <figure class:list={['portrait', `portrait--${variant}`, className]}>
   <div class="portrait__media">
     {isAvatar ? (
-      <img src={withBase(site.portraits.avatar)} width="192" height="192" alt={`Юрий Кочевинов — ИИ-портрет по фотографиям адвоката`} loading="lazy" decoding="async" />
+      <img src={withBase(site.portraits.avatar)} width="192" height="192" alt={`${site.shortName} — адвокат, реестровый номер ${site.registryNumber}`} loading="lazy" decoding="async" />
     ) : (
       <picture>
         <source type="image/avif" srcset={srcset('avif')} sizes={sizes} />
-        <img src={withBase(`${stem}-640.webp`)} srcset={srcset('webp')} sizes={sizes} width="960" height={variant === 'about' ? 1280 : 1200} alt={`Портрет адвоката Юрия Кочевинова. Изображение создано с помощью ИИ по предоставленным фотографиям.`} loading={priority ? 'eager' : 'lazy'} fetchpriority={priority ? 'high' : 'auto'} decoding="async" />
+        <img src={withBase(`${stem}-640.webp`)} srcset={srcset('webp')} sizes={sizes} width="960" height={variant === 'about' ? 1280 : 1200} alt={`Портрет адвоката ${site.fullName}, ${site.city}`} loading={priority ? 'eager' : 'lazy'} fetchpriority={priority ? 'high' : 'auto'} decoding="async" />
       </picture>
     )}
   </div>
-  {credit && <figcaption class="portrait__credit">{site.portraitCredit}</figcaption>}
 </figure>

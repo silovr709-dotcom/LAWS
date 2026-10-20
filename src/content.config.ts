@@ -44,7 +44,7 @@ const cases = defineCollection({
     court: z.string(),
     instance: z.enum(['первая инстанция', 'апелляция', 'кассация']),
     year: z.number().int().min(2000).max(2100),
-    role: z.enum(['защитник', 'представитель потерпевшего']),
+    role: z.enum(['защитник', 'представитель потерпевшего', 'представитель']),
     result: z.enum([
       'оправдание',
       'прекращение дела',
@@ -61,6 +61,13 @@ const cases = defineCollection({
     sourceUrl: z.url().optional(),
     sourceLabel: z.string().optional(),
     publicationBasis: z.string(),
+    /**
+     * Как подтверждено участие адвоката:
+     *  - 'document' — есть процессуальный документ (ордер, протокол, судебный акт);
+     *  - 'open-source' — сведения взяты из открытого отзыва доверителя или публикации
+     *    адвоката. В интерфейсе такое дело помечается явно.
+     */
+    verification: z.enum(['document', 'open-source']).default('open-source'),
     anonymized: z.literal(true),
     publishedAt: z.coerce.date(),
     draft: z.boolean().default(true),

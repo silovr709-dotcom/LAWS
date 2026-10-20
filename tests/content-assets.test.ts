@@ -21,7 +21,8 @@ test('biography distinguishes legal experience from advocate status', () => {
   assert.equal(site.registryNumber, '51/862'); assert.equal(site.city, 'Тверь');
 });
 test('all portrait variants have the declared dimensions and compact payloads', async () => {
-  for (const [name, ratio] of [['hero', 4 / 5], ['about', 3 / 4]] as const) {
+  const gallery = about.gallery.map((image) => image.src.replace('/images/yuriy-', ''));
+  for (const [name, ratio] of [['hero', 4 / 5], ['about', 3 / 4], ...gallery.map((name) => [name, 4 / 5] as const)] as const) {
     for (const width of [320, 640, 960]) for (const format of ['avif', 'webp']) {
       const file = `public/images/yuriy-${name}-${width}.${format}`;
       const meta = await sharp(file).metadata(); assert.equal(meta.width, width); assert.equal(meta.height, Math.round(width / ratio));
@@ -34,10 +35,10 @@ test('OG is 1200 × 630, contains portrait pixels and has the correct geography'
   const meta = await sharp('public/og/og-default.png').metadata(); assert.equal(meta.width, 1200); assert.equal(meta.height, 630);
   const stats = await sharp('public/og/og-default.png').extract({ left: 760, top: 20, width: 420, height: 540 }).stats();
   assert.ok(stats.channels.every(channel => channel.stdev > 20), 'Embedded portrait disappeared from OG raster');
-  const svg = await fs.readFile('public/og/og-default.svg', 'utf8'); assert.ok(svg.includes('Тверь')); assert.ok(svg.includes('ИИ-портрет')); assert.ok(!svg.includes('МУРМАНСК'));
+  const svg = await fs.readFile('public/og/og-default.svg', 'utf8'); assert.ok(svg.includes('Тверь')); assert.ok(!svg.includes('МУРМАНСК')); assert.ok(!svg.includes('ИИ-портрет'), 'OG must not carry an AI caption');
 });
 test('no identity-reference originals or generic portrait file exist in public images', async () => {
   const files = (await fs.readdir('public/images')).filter(file => file !== '.gitkeep'); assert.ok(files.length >= 13);
-  assert.ok(files.every(file => /^yuriy-(hero|about|avatar)(-\d+)?\.(avif|webp)$/.test(file)));
-  assert.equal(site.portraitCredit, 'ИИ-портрет по фотографиям адвоката');
+  assert.ok(files.every(file => /^yuriy-[a-z]+(-\d+)?\.(avif|webp)$/.test(file)));
+  assert.equal('portraitCredit' in site, false, 'AI captions were removed at the owner\'s request');
 });

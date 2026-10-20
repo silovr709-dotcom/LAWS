@@ -13,7 +13,8 @@
     "check:build": "node scripts/check-build.mjs",
     "portraits": "node scripts/prepare-portraits.mjs",
     "test:browser": "node scripts/check-browser.mjs",
-    "test:form-browser": "node scripts/check-form-browser.mjs"
+    "test:form-browser": "node scripts/check-form-browser.mjs",
+    "documents": "tsx scripts/build-documents.ts"
   },
   "repository": {
     "type": "git",

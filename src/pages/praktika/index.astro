@@ -3,6 +3,7 @@ import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Icon from '../../components/Icon.astro';
 import { site } from '../../data/site';
+import '../../styles/policy.css';
 import { canonicalUrl, withBase } from '../../lib/paths';
 
 const cases = (await getCollection('cases', ({ data }) => !data.draft)).sort(
@@ -13,9 +14,9 @@ const categories = [...new Set(cases.map((item) => item.data.category))].sort();
 const instances = [...new Set(cases.map((item) => item.data.instance))];
 const results = [...new Set(cases.map((item) => item.data.result))].sort();
 
-const title = 'Судебная практика — адвокат Юрий Кочевинов, Тверь';
+const title = 'Результаты и судебная практика — адвокат Юрий Кочевинов';
 const description =
-  'Каталог судебных дел с участием адвоката Юрия Кочевинова: категории, инстанции и результаты. Публикуются только подтверждённые и обезличенные материалы.';
+  'Дела с участием адвоката Юрия Кочевинова: категории, инстанции и результаты. Каждое дело указано с источником сведений; без имён, номеров дел и обещаний результата.';
 
 const schema = {
   '@context': 'https://schema.org',
@@ -49,12 +50,12 @@ const schema = {
         <span aria-hidden="true">/</span>
         <span aria-current="page">Практика</span>
       </nav>
-      <p class="eyebrow">Судебная практика</p>
+      <p class="eyebrow">Результаты</p>
       <h1 class="page-hero__title">Дела и правовые вопросы</h1>
       <p class="page-hero__lead">
-        Каталог пополняется вручную. Для каждого дела проверяется участие адвоката и
-        допустимость публикации, а обстоятельства излагаются без сведений, позволяющих
-        идентифицировать доверителя.
+        Каталог пополняется вручную. Участие в деле подтверждается процессуальными документами
+        либо открытой публикацией, обстоятельства излагаются без сведений, позволяющих
+        идентифицировать доверителя. Отдельная пометка показывает, чем именно подтверждено дело.
       </p>
     </div>
   </section>
@@ -125,6 +126,9 @@ const schema = {
                   <p class="case-card__summary">{item.data.summary}</p>
                   <div class="case-card__foot">
                     <span class="case-card__result">{item.data.result}</span>
+                    <span class="case-card__source">
+                      {item.data.verification === 'document' ? 'по документам' : 'по открытым данным'}
+                    </span>
                     <Icon name="arrow-up-right" size={15} />
                   </div>
                 </a>
@@ -188,6 +192,14 @@ const schema = {
             </p>
           </div>
           <div>
+            <h3>Источник сведений</h3>
+            <p>
+              Пометка «по документам» означает, что участие подтверждено процессуальным документом.
+              Пометка «по открытым данным» — что сведения взяты из открытого отзыва доверителя или
+              публикации адвоката; такие дела не заменяют выписку из материалов дела.
+            </p>
+          </div>
+          <div>
             <h3>Без обещаний результата</h3>
             <p>
               Исход конкретного дела не свидетельствует о результате других дел. Каталог носит
@@ -235,40 +247,5 @@ const schema = {
   }
 </script>
 <style>
-  .practice-policy {
-    margin-top: clamp(3rem, 6vw, 5rem);
-    padding-top: clamp(2rem, 4vw, 3rem);
-    border-top: 1px solid var(--line);
-  }
-
-  .practice-policy > h2 {
-    font-size: clamp(1.6rem, 2.6vw, 2.1rem);
-    margin-bottom: clamp(1.5rem, 3vw, 2rem);
-  }
-
-  .practice-policy__grid {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: clamp(20px, 3vw, 32px);
-  }
-
-  .practice-policy__grid h3 {
-    font-size: 1.15rem;
-    font-family: var(--font-body);
-    font-weight: 600;
-    margin-bottom: 8px;
-  }
-
-  .practice-policy__grid p {
-    font-size: 0.9rem;
-    line-height: 1.62;
-    color: var(--muted);
-  }
-
-  @media (max-width: 860px) {
-    .practice-policy__grid {
-      grid-template-columns: minmax(0, 1fr);
-    }
-  }
   </style>
 </BaseLayout>

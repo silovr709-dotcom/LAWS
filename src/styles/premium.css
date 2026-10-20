@@ -469,3 +469,5 @@ button, a { -webkit-tap-highlight-color: rgba(182,154,99,.16); }
   .contact-prompt, .hero__actions, .contact__form-wrap { display: none; }
   .service-detail__aside, .biography-timeline article, .biography-facts { break-inside: avoid; }
 }
+
+@import './policy.css';
