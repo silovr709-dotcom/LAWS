@@ -919,6 +919,10 @@
   flex-wrap: wrap;
 }
 
+.situation-card__code {
+  letter-spacing: 0.1em;
+}
+
 /* --- 15. Галерея и фотографии --------------------------------------------- */
 
 .about__gallery img,
