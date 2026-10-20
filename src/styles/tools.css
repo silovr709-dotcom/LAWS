@@ -431,3 +431,491 @@
 @media (min-width: 1025px) {
   .footer__top { grid-template-columns: 1.25fr repeat(4, minmax(0, 0.85fr)); }
 }
+
+/* --- 21. Счётчик 48 часов: шкала сроков после задержания ------------------ */
+
+.detention {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+  gap: clamp(20px, 2.6vw, 34px);
+  margin-top: clamp(26px, 3vw, 38px);
+}
+
+.detention__panel,
+.detention__clock {
+  background: var(--plate, var(--paper));
+  border: 1px solid var(--rule);
+  padding: clamp(22px, 2.6vw, 32px);
+}
+
+.detention__panel {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 18px;
+  align-content: start;
+}
+
+.detention__field label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 0.82rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.detention__field input {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  min-height: 48px;
+  padding: 10px 14px;
+  font: inherit;
+  font-size: 1.05rem;
+  color: var(--ink);
+  background: var(--paper);
+  border: 1px solid var(--rule);
+  border-radius: 0;
+}
+
+.detention__field input:focus-visible {
+  outline: 2px solid var(--wine);
+  outline-offset: 2px;
+}
+
+.detention__hint {
+  margin-top: 10px;
+  font-size: 0.9rem;
+  line-height: 1.55;
+  color: var(--ink-soft);
+}
+
+.detention__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.detention__actions .btn {
+  min-height: 46px;
+}
+
+.detention__share {
+  margin: 0;
+  font-size: 0.86rem;
+  line-height: 1.5;
+  color: var(--wine-deep);
+}
+
+.detention__share:empty {
+  display: none;
+}
+
+.detention__privacy {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 0;
+  padding-top: 14px;
+  border-top: 1px solid var(--rule-soft);
+  font-size: 0.84rem;
+  line-height: 1.5;
+  color: var(--ink-soft);
+}
+
+.detention__privacy svg {
+  flex: none;
+  margin-top: 2px;
+  color: var(--gold-deep);
+}
+
+.detention__clock {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 14px;
+  align-content: center;
+  background: var(--wine-deep);
+  border-color: var(--wine-deep);
+  color: var(--milk);
+}
+
+.detention__clock-label {
+  margin: 0;
+  font-size: 0.76rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--gold-soft);
+}
+
+.detention__clock-value {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin: 0;
+  font-family: var(--font-display, 'Cormorant Garamond', serif);
+  font-size: clamp(2.1rem, 7vw, 4rem);
+  flex-wrap: wrap;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.detention__clock-value i {
+  font-family: inherit;
+  font-size: 0.42em;
+  font-style: normal;
+  letter-spacing: 0.02em;
+  color: var(--gold-soft);
+}
+
+.detention__bar {
+  height: 3px;
+  background: rgba(246, 240, 231, 0.22);
+  overflow: hidden;
+}
+
+.detention__bar span {
+  display: block;
+  height: 100%;
+  background: var(--gold-soft);
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 900ms var(--ease-silk, ease);
+}
+
+.detention__clock-status {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.55;
+}
+
+.detention__clock-secondary {
+  margin: 0;
+  font-size: 0.82rem;
+  line-height: 1.5;
+  color: rgba(246, 240, 231, 0.7);
+}
+
+.detention__clock[data-state='urgent'] .detention__bar span { background: #e0a86a; }
+.detention__clock[data-state='urgent'] .detention__clock-label { color: #e0a86a; }
+.detention__clock[data-state='expired'] .detention__bar span { background: rgba(246, 240, 231, 0.4); }
+.detention__clock[data-state='expired'] .detention__clock-label { color: rgba(246, 240, 231, 0.65); }
+
+.detention__steps {
+  display: grid;
+  gap: 0;
+  margin: clamp(30px, 3.4vw, 46px) 0 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--rule);
+}
+
+.detention-step {
+  position: relative;
+  display: grid;
+  grid-template-columns: 22px minmax(120px, 0.24fr) minmax(0, 1fr);
+  gap: clamp(14px, 2vw, 26px);
+  padding: clamp(20px, 2.4vw, 28px) 0;
+  border-bottom: 1px solid var(--rule-soft);
+}
+
+.detention-step__mark {
+  position: relative;
+  width: 11px;
+  height: 11px;
+  margin-top: 6px;
+  border: 1px solid var(--rule);
+  border-radius: 50%;
+  background: var(--paper);
+}
+
+.detention-step__mark::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 13px;
+  width: 1px;
+  height: calc(100% + 34px);
+  background: var(--rule-soft);
+  transform: translateX(-50%);
+}
+
+.detention-step:last-child .detention-step__mark::after { display: none; }
+
+.detention-step__time {
+  display: grid;
+  gap: 2px;
+  align-content: start;
+}
+
+.detention-step__time strong {
+  font-family: var(--font-display, 'Cormorant Garamond', serif);
+  font-size: 1.5rem;
+  font-weight: 500;
+  line-height: 1.1;
+  color: var(--wine-deep);
+}
+
+.detention-step__time span {
+  font-size: 0.78rem;
+  line-height: 1.4;
+  color: var(--ink-soft);
+}
+
+.detention-step__body { display: grid; gap: 8px; }
+
+.detention-step__body h3 {
+  margin: 0;
+  font-family: var(--font-display, 'Cormorant Garamond', serif);
+  font-size: clamp(1.24rem, 1.7vw, 1.42rem);
+  font-weight: 500;
+  line-height: 1.25;
+  color: var(--wine-deep);
+}
+
+.detention-step__body p { margin: 0; }
+
+.detention-step__when {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  align-items: baseline;
+  padding: 8px 0 2px;
+  font-variant-numeric: tabular-nums;
+}
+
+.detention-step__when time {
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.detention-step__when span {
+  font-size: 0.86rem;
+  color: var(--ink-soft);
+}
+
+.detention-step__action {
+  font-size: 0.92rem;
+  line-height: 1.6;
+  color: var(--ink-soft);
+  border-left: 2px solid var(--gold-soft);
+  padding-left: 12px;
+}
+
+.detention-step__basis {
+  font-size: 0.78rem;
+  letter-spacing: 0.03em;
+  color: var(--ink-soft);
+}
+
+.detention-step.is-passed .detention-step__mark {
+  background: var(--gold-soft);
+  border-color: var(--gold);
+}
+
+.detention-step.is-passed .detention-step__time strong { color: var(--ink-soft); }
+
+.detention-step.is-next .detention-step__mark {
+  background: var(--wine);
+  border-color: var(--wine);
+  box-shadow: 0 0 0 4px rgba(84, 28, 43, 0.12);
+}
+
+.detention-step.is-next .detention-step__when time { color: var(--wine); }
+
+.detention-step.is-next .detention-step__body h3::after {
+  content: 'ближайший срок';
+  display: inline-block;
+  margin-left: 10px;
+  padding: 2px 8px;
+  vertical-align: 2px;
+  font-family: var(--font-body, 'Golos Text', sans-serif);
+  font-size: 0.66rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--wine);
+  border: 1px solid var(--rule);
+  background: var(--milk);
+}
+
+.detention__note { margin-top: clamp(22px, 2.6vw, 30px); }
+
+.detention__advice {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: clamp(18px, 2.2vw, 28px);
+  margin-top: clamp(24px, 2.8vw, 34px);
+}
+
+.detention__advice article {
+  display: grid;
+  gap: 8px;
+  align-content: start;
+  padding: clamp(20px, 2.4vw, 26px);
+  background: var(--paper);
+  border: 1px solid var(--rule);
+}
+
+.detention__advice article > span {
+  font-family: var(--font-display, 'Cormorant Garamond', serif);
+  font-size: 1.9rem;
+  line-height: 1;
+  color: var(--gold-deep);
+}
+
+.detention__advice h3 { margin: 0; font-size: 1.02rem; }
+.detention__advice p { margin: 0; font-size: 0.92rem; line-height: 1.6; color: var(--ink-soft); }
+
+.detention__advice-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 28px;
+  margin-top: clamp(22px, 2.4vw, 30px);
+}
+
+.detention__advice-links .link-arrow { min-height: 44px; }
+
+/* Карточка для печати: на экране скрыта, при печати заменяет страницу. */
+.print-card { display: none; }
+
+@media print {
+  .detention-live { display: none !important; }
+
+  .print-card {
+    display: block;
+    max-width: none;
+    padding: 0;
+    color: #000;
+  }
+
+  .print-card__title {
+    margin: 0 0 6px;
+    font-family: var(--font-display, 'Cormorant Garamond', serif);
+    font-size: 26pt;
+    font-weight: 500;
+  }
+
+  .print-card__meta {
+    margin: 0 0 18px;
+    font-size: 10pt;
+    color: #333;
+  }
+
+  .print-card table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 10pt;
+  }
+
+  .print-card th,
+  .print-card td {
+    padding: 7px 8px;
+    text-align: left;
+    vertical-align: top;
+    border-bottom: 1px solid #ccc;
+  }
+
+  .print-card th { font-size: 8.5pt; text-transform: uppercase; letter-spacing: 0.06em; color: #555; }
+  .print-card td:first-child { white-space: nowrap; font-weight: 600; }
+
+  .print-card__note {
+    margin-top: 16px;
+    padding-top: 10px;
+    border-top: 1px solid #ccc;
+    font-size: 8.5pt;
+    line-height: 1.5;
+    color: #444;
+  }
+
+  .print-card ~ * { display: none !important; }
+}
+
+@media (max-width: 900px) {
+  .detention { grid-template-columns: minmax(0, 1fr); }
+  .detention__clock { order: -1; }
+}
+
+@media (max-width: 720px) {
+  .detention-step {
+    grid-template-columns: 16px minmax(0, 1fr);
+    gap: 10px 14px;
+  }
+
+  .detention-step__time {
+    grid-column: 2;
+    grid-row: 1;
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+  }
+
+  .detention-step__time strong { font-size: 1.28rem; }
+  .detention-step__body { grid-column: 2; grid-row: 2; }
+  .detention__actions .btn { flex: 1 1 auto; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .detention__bar span { transition: none; }
+}
+
+/* Промо-полоса счётчика на странице калькуляторов. */
+.detention-promo {
+  position: relative;
+  display: grid;
+  gap: 8px;
+  margin-top: clamp(24px, 2.8vw, 34px);
+  padding: clamp(24px, 2.8vw, 34px);
+  background: var(--wine-deep);
+  border: 1px solid var(--wine-deep);
+  color: var(--milk);
+  text-decoration: none;
+  transition: background 420ms var(--ease-silk, ease);
+}
+
+.detention-promo::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold-soft), transparent);
+  opacity: 0.7;
+}
+
+.detention-promo:hover { background: var(--wine-darkest); }
+
+.detention-promo__eyebrow {
+  font-size: 0.72rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--gold-soft);
+}
+
+.detention-promo__title {
+  font-family: var(--font-display, 'Cormorant Garamond', serif);
+  font-size: clamp(1.6rem, 3vw, 2.1rem);
+  font-weight: 500;
+  line-height: 1.1;
+}
+
+.detention-promo__text {
+  max-width: 62ch;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: rgba(246, 240, 231, 0.82);
+}
+
+.detention-promo__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+  font-size: 0.86rem;
+  letter-spacing: 0.04em;
+  color: var(--gold-soft);
+}
+
+.detention-promo:focus-visible {
+  outline: 2px solid var(--gold-soft);
+  outline-offset: 3px;
+}

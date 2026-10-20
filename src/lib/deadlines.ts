@@ -91,3 +91,50 @@ export function alimonyAmount(monthlyIncome: number, children: number): number {
   if (!Number.isFinite(monthlyIncome) || monthlyIncome <= 0) return 0;
   return Math.round(monthlyIncome * alimonyShare(children));
 }
+
+/**
+ * Шкала контрольных точек после задержания.
+ *
+ * Часы считаются от момента фактического задержания. Исключение — протокол
+ * задержания и один телефонный разговор: три часа на них считаются с момента
+ * доставления (ч. 1 ст. 92, ч. 1 ст. 96 УПК РФ), а доставление может быть позже.
+ * Поэтому отметка «3 ч» здесь — ориентир от задержания, а не точный срок.
+ */
+export const DETENTION_HOURS = [3, 12, 24, 48, 72] as const;
+
+export type DetentionMilestone = {
+  hours: number;
+  /** Момент, когда срок истекает. */
+  at: Date;
+  /** Сколько осталось до истечения; отрицательное значение — срок прошёл. */
+  remaining: number;
+  passed: boolean;
+  /** Ближайшая точка впереди. После 48 часов не отмечается: продление — только по решению суда. */
+  next: boolean;
+};
+
+export type DetentionTimeline = {
+  release: Date;
+  /** Прошло с момента задержания. */
+  elapsed: number;
+  /** Осталось до 48 часов; отрицательное значение — срок истёк. */
+  remaining: number;
+  expired: boolean;
+  milestones: DetentionMilestone[];
+};
+
+export function detentionTimeline(start: Date, now: Date): DetentionTimeline {
+  const release = addHours(start, 48);
+  const elapsed = now.getTime() - start.getTime();
+  const remaining = release.getTime() - now.getTime();
+  const expired = remaining <= 0;
+  let marked = false;
+  const milestones = DETENTION_HOURS.map((hours) => {
+    const at = addHours(start, hours);
+    const left = at.getTime() - now.getTime();
+    const next = !expired && left > 0 && !marked;
+    if (next) marked = true;
+    return { hours, at, remaining: left, passed: left <= 0, next };
+  });
+  return { release, elapsed, remaining, expired, milestones };
+}

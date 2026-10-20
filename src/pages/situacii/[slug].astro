@@ -187,6 +187,11 @@ const schema = [
           <h2>Посчитать дату</h2>
           <p>48 часов, апелляция, проверка, приставы — без передачи персональных данных.</p>
           <a href={withBase('/sroki/')}>Калькуляторы сроков<Icon name="arrow-right" size={14} /></a>
+          {situation.slug === 'zaderzhali' && (
+            <a href={withBase('/48-chasov/')} style="margin-top: 10px;">
+              Счётчик 48 часов<Icon name="arrow-right" size={14} />
+            </a>
+          )}
         </div>
       </aside>
     </div>

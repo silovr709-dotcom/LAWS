@@ -1,0 +1,573 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ContactPrompt from '../components/ContactPrompt.astro';
+import Icon from '../components/Icon.astro';
+import HeroLedger from '../components/HeroLedger.astro';
+import { canonicalUrl, withBase } from '../lib/paths';
+import { site } from '../data/site';
+
+const title = 'Счётчик 48 часов — сколько осталось после задержания';
+const description =
+  'Живой таймер процессуальных сроков после задержания: 3 часа на протокол и звонок, 12 часов на уведомления, 24 часа на допрос, 48 часов до освобождения. Считает браузер, данные никуда не отправляются.';
+
+const milestones = [
+  {
+    hours: 3,
+    from: 'доставления',
+    title: 'Протокол задержания и один звонок близким',
+    text: 'Протокол составляется после доставления, в срок не более 3 часов. В это же время у человека есть право на один телефонный разговор, чтобы сообщить близким, где он находится.',
+    basis: 'ч. 1 ст. 92, ч. 1 ст. 96 УПК РФ',
+    action: 'Спросите время доставления: от него считаются эти три часа, а не от момента задержания.',
+  },
+  {
+    hours: 12,
+    from: 'задержания',
+    title: 'Уведомления: прокурор и близкий родственник',
+    text: 'О задержании письменно сообщают надзирающему прокурору, а близкого родственника уведомляют — либо дают возможность позвонить самому задержанному.',
+    basis: 'ч. 3 ст. 92, ч. 1 ст. 96 УПК РФ',
+    action: 'Если близкие до сих пор ничего не знают, это повод задать вопрос следователю и зафиксировать его ответ.',
+  },
+  {
+    hours: 24,
+    from: 'задержания',
+    title: 'Первый допрос подозреваемого',
+    text: 'Допрос должен состояться не позднее 24 часов с момента фактического задержания. До первого допроса человек вправе встретиться с защитником наедине.',
+    basis: 'ч. 4 ст. 92, п. 3 ч. 4 ст. 46 УПК РФ',
+    action: 'До допроса важно согласовать позицию с адвокатом: показания потом изменить сложно.',
+  },
+  {
+    hours: 48,
+    from: 'задержания',
+    title: 'Освобождение, если суд не избрал меру пресечения',
+    text: 'По истечении 48 часов человека обязаны освободить, если суд не заключил его под стражу и не продлил задержание.',
+    basis: 'ч. 1.1 ст. 94, ч. 1 ст. 108 УПК РФ',
+    action: 'К этому моменту готовят ходатайство защиты. Суд рассматривает его в пределах этих же 48 часов.',
+  },
+  {
+    hours: 72,
+    from: 'задержания',
+    title: 'Предел продления судом',
+    text: 'Суд вправе продлить задержание, если стороне нужно время для представления доказательств. Продление оформляется судебным решением, а не постановлением следователя.',
+    basis: 'п. 3 ч. 7 ст. 108 УПК РФ',
+    action: 'Проверьте, есть ли судебное решение. Продление без него — основание для жалобы.',
+  },
+];
+
+const faq = [
+  {
+    q: 'Почему счётчик считает от момента задержания, а не от доставления?',
+    a: '48 часов, 12 часов и 24 часа закон считает с момента фактического задержания — это момент, когда человека фактически ограничили в свободе. Три часа на протокол и телефонный разговор считаются с момента доставления в орган, а этот момент может быть позже. Поэтому по первым трём часам счётчик показывает ориентир, а точное время нужно смотреть в протоколе задержания.',
+  },
+  {
+    q: 'Данные, которые я ввожу, куда-то отправляются?',
+    a: 'Нет. Всё считается в браузере. Дата и время не уходят на сервер, не сохраняются в cookie и не попадают в аналитику. Если вы нажмёте «Скопировать ссылку», время задержания окажется в адресе страницы — это единственный способ передать отсчёт другому человеку, и ссылку вы отправляете сами.',
+  },
+  {
+    q: 'Что делать, если 48 часов уже прошли?',
+    a: 'Если человека не освободили и суд не избрал меру пресечения, нужно срочно выяснять, есть ли судебное решение о продлении. Отсутствие такого решения — основание для жалобы. В этой ситуации важнее не считать часы, а разговаривать с адвокатом: дальше начинают действовать другие сроки.',
+  },
+  {
+    q: 'Это заменяет консультацию?',
+    a: 'Нет. Счётчик показывает ориентиры по нормам УПК РФ. Конкретные сроки зависят от документов: времени доставления, момента составления протокола, решений суда. Ошибка в этих данных меняет расчёт.',
+  },
+];
+
+const schema = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebApplication',
+    name: title,
+    description,
+    url: canonicalUrl(site.url, '/48-chasov/'),
+    applicationCategory: 'LegalService',
+    operatingSystem: 'Any',
+    inLanguage: 'ru-RU',
+    offers: { '@type': 'Offer', price: '0', priceCurrency: 'RUB' },
+    isAccessibleForFree: true,
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Главная', item: canonicalUrl(site.url, '/') },
+      { '@type': 'ListItem', position: 2, name: 'Срочно', item: canonicalUrl(site.url, '/srochno/') },
+      { '@type': 'ListItem', position: 3, name: 'Счётчик 48 часов', item: canonicalUrl(site.url, '/48-chasov/') },
+    ],
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faq.map((item) => ({
+      '@type': 'Question',
+      name: item.q,
+      acceptedAnswer: { '@type': 'Answer', text: item.a },
+    })),
+  },
+];
+---
+
+<BaseLayout title={`${title} — адвокат Юрий Кочевинов`} description={description} schema={schema}>
+  <div class="detention-live">
+
+  <section class="page-hero">
+    <div class="container page-hero__grid page-hero__grid--with-ledger">
+      <div class="page-hero__content">
+        <nav class="breadcrumbs" aria-label="Хлебные крошки">
+          <a href={withBase('/')}>Главная</a>
+          <span aria-hidden="true">/</span>
+          <span aria-current="page">Счётчик 48 часов</span>
+        </nav>
+        <p class="eyebrow">Инструмент · задержание</p>
+        <h1 class="page-hero__title">48 часов.<br /><em>Каждый виден.</em></h1>
+        <p class="page-hero__lead">
+          Введите время задержания — и увидите, когда истекают процессуальные сроки и что должно
+          произойти до этого момента. Ничего не отправляется на сервер.
+        </p>
+      </div>
+      <HeroLedger
+        items={[
+          { value: '48 ч', label: 'предел задержания' },
+          { value: '5', label: 'контрольных точек' },
+          { value: '0', label: 'данных на сервере' },
+        ]}
+        note="Все расчёты идут в браузере: время задержания не покидает устройство."
+      />
+    </div>
+  </section>
+
+  <section class="section section--paper" aria-labelledby="tool-title">
+    <div class="container">
+      <div class="compact-head">
+        <div>
+          <p class="eyebrow">Расчёт в реальном времени</p>
+          <h2 id="tool-title">Отсчёт по вашему делу</h2>
+        </div>
+        <p>
+          Время считается по часам вашего устройства. Если часы сбиты, расчёт тоже будет сбит —
+          сверьтесь с протоколом.
+        </p>
+      </div>
+
+      <div class="detention" data-detention>
+        <div class="detention__panel">
+          <div class="detention__field">
+            <label for="detention-time">Дата и время фактического задержания</label>
+            <input id="detention-time" type="datetime-local" autocomplete="off" />
+            <p class="detention__hint" data-detention-hint>
+              Точность важна: 48 часов отсчитываются с момента фактического задержания, а не с
+              составления протокола.
+            </p>
+          </div>
+
+          <div class="detention__actions">
+            <button class="btn btn--primary" type="button" data-detention-now>
+              Задержали только что
+            </button>
+            <button class="btn btn--outline" type="button" data-detention-print hidden>
+              Распечатать карточку
+            </button>
+            <button class="btn btn--outline" type="button" data-detention-share hidden>
+              Скопировать ссылку
+            </button>
+          </div>
+
+          <p class="detention__share" data-detention-share-status role="status" aria-live="polite"></p>
+
+          <p class="detention__privacy">
+            <Icon name="shield" size={15} />
+            Считает браузер. Время задержания не отправляется на сервер и не сохраняется на сайте.
+          </p>
+        </div>
+
+        <div class="detention__clock" data-detention-clock aria-live="polite" aria-atomic="true">
+          <p class="detention__clock-label">До истечения 48 часов</p>
+          <p class="detention__clock-value">
+            <span data-clock-hours>--</span><i>ч</i>
+            <span data-clock-minutes>--</span><i>мин</i>
+            <span data-clock-seconds>--</span><i>с</i>
+          </p>
+          <div class="detention__bar" role="presentation"><span data-clock-bar></span></div>
+          <p class="detention__clock-status" data-clock-status>
+            Укажите время задержания — отсчёт начнётся сразу.
+          </p>
+          <p class="detention__clock-secondary" data-clock-secondary></p>
+        </div>
+      </div>
+
+      <ol class="detention__steps" data-detention-steps>
+        {
+          milestones.map((step) => (
+            <li class="detention-step" data-hours={step.hours} data-from={step.from}>
+              <span class="detention-step__mark" aria-hidden="true" />
+              <div class="detention-step__time">
+                <strong>{step.hours} ч</strong>
+                <span>с момента {step.from}</span>
+              </div>
+              <div class="detention-step__body">
+                <h3>{step.title}</h3>
+                <p>{step.text}</p>
+                <p class="detention-step__when">
+                  <time data-step-time>—</time>
+                  <span data-step-left></span>
+                </p>
+                <p class="detention-step__action">{step.action}</p>
+                <p class="detention-step__basis">{step.basis}</p>
+              </div>
+            </li>
+          ))
+        }
+      </ol>
+
+      <p class="detail-note detention__note">
+        Счётчик — ориентир по нормам, а не консультация. Три часа на протокол и звонок считаются
+        с момента доставления в орган, остальные сроки — с момента фактического задержания.
+        Продление до 72 часов возможно только по решению суда.
+      </p>
+    </div>
+  </section>
+
+  <section class="section section--milk" aria-labelledby="detention-next">
+    <div class="container">
+      <div class="compact-head">
+        <div>
+          <p class="eyebrow">Пока идёт отсчёт</p>
+          <h2 id="detention-next">Что сделать в эти часы</h2>
+        </div>
+        <p>Три действия, которые не требуют юридических знаний и не мешают защите.</p>
+      </div>
+      <div class="detention__advice">
+        <article>
+          <span aria-hidden="true">01</span>
+          <h3>Записать время и место</h3>
+          <p>
+            Кто, когда и где задержал, куда увезли. Даже короткая заметка в телефоне помогает
+            потом восстановить хронологию и проверить протокол.
+          </p>
+        </article>
+        <article>
+          <span aria-hidden="true">02</span>
+          <h3>Не обсуждать обстоятельства по телефону</h3>
+          <p>
+            Линия может быть не защищена, а сказанное — использовано. Обсуждайте только факт
+            задержания и место нахождения.
+          </p>
+        </article>
+        <article>
+          <span aria-hidden="true">03</span>
+          <h3>Сказать о защитнике до допроса</h3>
+          <p>
+            Право на встречу с адвокатом наедине до первого допроса есть по закону. Заявите его
+            прямо и попросите внести в протокол.
+          </p>
+        </article>
+      </div>
+      <p class="detention__advice-links">
+        <a class="link-arrow" href={withBase('/srochno/')}>
+          Что делать сейчас, по шагам<Icon name="arrow-right" size={15} />
+        </a>
+        <a class="link-arrow" href={withBase('/situacii/zaderzhali/')}>
+          Ситуация: задержали человека<Icon name="arrow-right" size={15} />
+        </a>
+        <a class="link-arrow" href={withBase('/memos/')}>
+          Памятки для печати<Icon name="arrow-right" size={15} />
+        </a>
+      </p>
+    </div>
+  </section>
+
+  <section class="section section--paper" aria-labelledby="detention-faq">
+    <div class="container">
+      <div class="compact-head">
+        <div>
+          <p class="eyebrow">Частые вопросы</p>
+          <h2 id="detention-faq">О счёте часов</h2>
+        </div>
+      </div>
+      <div class="faq">
+        {
+          faq.map((item) => (
+            <details class="accordion__item">
+              <summary class="accordion__summary">{item.q}</summary>
+              <div class="accordion__content"><p>{item.a}</p></div>
+            </details>
+          ))
+        }
+        <p class="faq__disclaimer">
+          Ответы носят информационный характер и не заменяют консультацию по конкретному делу.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  </div>
+
+  <section class="print-card" data-print-card aria-hidden="true" aria-label="Карточка сроков для печати">
+    <p class="print-card__title">Сроки после задержания</p>
+    <p class="print-card__meta" data-print-meta>Время задержания не указано</p>
+    <table>
+      <thead>
+        <tr><th>Срок</th><th>Что должно произойти</th><th>Когда истекает</th></tr>
+      </thead>
+      <tbody data-print-rows></tbody>
+    </table>
+    <p class="print-card__note">
+      Ориентир по нормам УПК РФ. Три часа считаются с момента доставления, остальные сроки — с
+      момента фактического задержания. Расчёт: {site.fullName}, реестровый номер {site.registryNumber}.
+      vk.com/advocat_yuriy51
+    </p>
+  </section>
+
+  <ContactPrompt title="Если отсчёт уже пошёл, лучше не ждать" />
+</BaseLayout>
+
+<script>
+  import { detentionTimeline } from '../lib/deadlines';
+  import { trackGoal } from '../lib/events';
+
+  const root = document.querySelector<HTMLElement>('[data-detention]');
+  if (root) {
+    const HOUR = 60 * 60 * 1000;
+    const input = document.querySelector<HTMLInputElement>('#detention-time');
+    const nowButton = document.querySelector<HTMLButtonElement>('[data-detention-now]');
+    const printButton = document.querySelector<HTMLButtonElement>('[data-detention-print]');
+    const shareButton = document.querySelector<HTMLButtonElement>('[data-detention-share]');
+    const shareStatus = document.querySelector<HTMLElement>('[data-detention-share-status]');
+    const clock = document.querySelector<HTMLElement>('[data-detention-clock]');
+    const hoursOut = document.querySelector<HTMLElement>('[data-clock-hours]');
+    const minutesOut = document.querySelector<HTMLElement>('[data-clock-minutes]');
+    const secondsOut = document.querySelector<HTMLElement>('[data-clock-seconds]');
+    const bar = document.querySelector<HTMLElement>('[data-clock-bar]');
+    const status = document.querySelector<HTMLElement>('[data-clock-status]');
+    const secondary = document.querySelector<HTMLElement>('[data-clock-secondary]');
+    const hint = document.querySelector<HTMLElement>('[data-detention-hint]');
+    const steps = Array.from(document.querySelectorAll<HTMLElement>('.detention-step'));
+    const printRows = document.querySelector<HTMLElement>('[data-print-rows]');
+    const printMeta = document.querySelector<HTMLElement>('[data-print-meta]');
+
+    let start: number | null = null;
+    let timer: number | undefined;
+    let goalSent = false;
+
+    const pad = (value: number) => String(Math.max(0, Math.floor(value))).padStart(2, '0');
+
+    const formatDateTime = (date: Date) =>
+      date.toLocaleString('ru-RU', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+      });
+
+    const formatShort = (date: Date) =>
+      date.toLocaleString('ru-RU', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+      });
+
+    const humanLeft = (ms: number) => {
+      const totalMinutes = Math.floor(ms / 60000);
+      const hours = Math.floor(totalMinutes / 60);
+      const minutes = totalMinutes % 60;
+      if (hours > 0) return `${hours} ч ${pad(minutes)} мин`;
+      return `${Math.max(minutes, 0)} мин`;
+    };
+
+    const toInputValue = (date: Date) => {
+      const offset = date.getTimezoneOffset() * 60000;
+      return new Date(date.getTime() - offset).toISOString().slice(0, 16);
+    };
+
+    const parseInput = (value: string): number | null => {
+      if (!value) return null;
+      const time = new Date(value).getTime();
+      return Number.isNaN(time) ? null : time;
+    };
+
+    const updateUrl = () => {
+      const url = new URL(window.location.href);
+      if (start) url.searchParams.set('t', String(Math.floor(start / 60000)));
+      else url.searchParams.delete('t');
+      window.history.replaceState({}, '', url);
+    };
+
+    const setShareVisible = (visible: boolean) => {
+      if (printButton) printButton.hidden = !visible;
+      if (shareButton) shareButton.hidden = !visible;
+    };
+
+    const paintPrintCard = () => {
+      if (!printRows) return;
+      printRows.replaceChildren();
+      if (!start) {
+        if (printMeta) printMeta.textContent = 'Время задержания не указано';
+        return;
+      }
+      if (printMeta) {
+        printMeta.textContent = `Задержание: ${formatShort(new Date(start))} · расчёт сделан ${formatShort(new Date())}`;
+      }
+      for (const step of steps) {
+        const hours = Number(step.dataset.hours);
+        const title = step.querySelector('h3')?.textContent ?? '';
+        const row = document.createElement('tr');
+        const term = document.createElement('td');
+        term.textContent = `${hours} ч`;
+        const what = document.createElement('td');
+        what.textContent = `${title}${step.dataset.from === 'доставления' ? ' (с момента доставления)' : ''}`;
+        const when = document.createElement('td');
+        when.textContent = formatShort(new Date(start + hours * HOUR));
+        row.append(term, what, when);
+        printRows.append(row);
+      }
+    };
+
+    const tick = () => {
+      if (!start) return;
+      const now = Date.now();
+      const elapsed = now - start;
+      const left = 48 * HOUR - elapsed;
+
+      if (elapsed < 0) {
+        if (status) status.textContent = 'Время задержания ещё не наступило. Проверьте дату и часы устройства.';
+        if (secondary) secondary.textContent = '';
+        if (bar) bar.style.transform = 'scaleX(0)';
+        return;
+      }
+
+      const leftHours = Math.floor(left / HOUR);
+      const leftMinutes = Math.floor((left % HOUR) / 60000);
+      const leftSeconds = Math.floor((left % 60000) / 1000);
+      if (hoursOut) hoursOut.textContent = left > 0 ? pad(leftHours) : '00';
+      if (minutesOut) minutesOut.textContent = left > 0 ? pad(leftMinutes) : '00';
+      if (secondsOut) secondsOut.textContent = left > 0 ? pad(leftSeconds) : '00';
+
+      const progress = Math.min(Math.max(elapsed / (48 * HOUR), 0), 1);
+      if (bar) bar.style.transform = `scaleX(${progress.toFixed(4)})`;
+
+      const passedHours = Math.floor(elapsed / HOUR) + 1;
+      if (status) {
+        if (left > 0) {
+          status.textContent = `Идёт ${passedHours}-й час задержания. Осталось ${humanLeft(left)}.`;
+        } else {
+          status.textContent = `48 часов истекли ${humanLeft(-left)} назад. Если человека не освободили, нужно выяснять, есть ли судебное решение о продлении.`;
+        }
+      }
+      if (clock) clock.dataset.state = left > 0 ? (left < 6 * HOUR ? 'urgent' : 'running') : 'expired';
+      if (secondary) {
+        secondary.textContent = `Прошло с момента задержания: ${humanLeft(elapsed)} · задержание ${formatDateTime(new Date(start))}`;
+      }
+
+      const timeline = detentionTimeline(new Date(start), new Date(now));
+      timeline.milestones.forEach((milestone, index) => {
+        const step = steps[index];
+        if (!step) return;
+        const timeCell = step.querySelector<HTMLElement>('[data-step-time]');
+        const leftCell = step.querySelector<HTMLElement>('[data-step-left]');
+        if (timeCell) timeCell.textContent = formatDateTime(milestone.at);
+        step.classList.toggle('is-passed', milestone.passed);
+        step.classList.toggle('is-next', milestone.next);
+        if (leftCell) {
+          leftCell.textContent = milestone.passed
+            ? `прошло ${humanLeft(-milestone.remaining)} назад`
+            : `осталось ${humanLeft(milestone.remaining)}`;
+        }
+      });
+
+      if (hint) {
+        hint.textContent =
+          elapsed > 0 && elapsed < 3 * HOUR
+            ? 'Три часа на протокол считаются с момента доставления. Если доставление было позже задержания, эти три часа ещё не начались.'
+            : 'Точность важна: 48 часов отсчитываются с момента фактического задержания, а не с составления протокола.';
+      }
+    };
+
+    const reset = () => {
+      if (timer) window.clearInterval(timer);
+      timer = undefined;
+      if (hoursOut) hoursOut.textContent = '--';
+      if (minutesOut) minutesOut.textContent = '--';
+      if (secondsOut) secondsOut.textContent = '--';
+      if (bar) bar.style.transform = 'scaleX(0)';
+      if (status) status.textContent = 'Укажите время задержания — отсчёт начнётся сразу.';
+      if (secondary) secondary.textContent = '';
+      if (clock) delete clock.dataset.state;
+      for (const step of steps) {
+        step.classList.remove('is-next', 'is-passed');
+        const timeCell = step.querySelector<HTMLElement>('[data-step-time]');
+        const leftCell = step.querySelector<HTMLElement>('[data-step-left]');
+        if (timeCell) timeCell.textContent = '—';
+        if (leftCell) leftCell.textContent = '';
+      }
+    };
+
+    const startTicking = () => {
+      if (timer) window.clearInterval(timer);
+      tick();
+      if (start && Date.now() - start < 96 * HOUR) {
+        timer = window.setInterval(tick, 1000);
+      }
+    };
+
+    const apply = (value: number | null, options: { syncUrl?: boolean } = {}) => {
+      start = value;
+      if (start) {
+        if (!goalSent) {
+          goalSent = true;
+          trackGoal('detention_timer');
+        }
+      }
+      setShareVisible(Boolean(start));
+      if (shareStatus) shareStatus.textContent = '';
+      if (start) startTicking();
+      else reset();
+      paintPrintCard();
+      if (options.syncUrl !== false) updateUrl();
+    };
+
+    input?.addEventListener('input', () => {
+      apply(parseInput(input.value));
+    });
+
+    nowButton?.addEventListener('click', () => {
+      const now = new Date();
+      if (input) input.value = toInputValue(now);
+      apply(now.getTime());
+      tick();
+    });
+
+    printButton?.addEventListener('click', () => {
+      paintPrintCard();
+      window.print();
+    });
+
+    shareButton?.addEventListener('click', async () => {
+      if (!start) return;
+      const url = new URL(window.location.href);
+      url.searchParams.set('t', String(Math.floor(start / 60000)));
+      const link = url.toString();
+      try {
+        await navigator.clipboard.writeText(link);
+        if (shareStatus) shareStatus.textContent = 'Ссылка скопирована. В ней есть только время задержания — отправляйте тому, кому доверяете.';
+      } catch {
+        if (shareStatus) shareStatus.textContent = `Скопируйте ссылку вручную: ${link}`;
+      }
+    });
+
+    // Восстановление из ссылки: ?t=<минуты с эпохи>
+    const initial = new URL(window.location.href).searchParams.get('t');
+    if (initial && /^\d{6,}$/.test(initial)) {
+      const restored = Number(initial) * 60000;
+      if (Number.isFinite(restored)) {
+        if (input) input.value = toInputValue(new Date(restored));
+        apply(restored, { syncUrl: false });
+      }
+    }
+
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden && start) tick();
+    });
+  }
+</script>

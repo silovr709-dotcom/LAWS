@@ -7,6 +7,7 @@ import {
   bailiffAppealDeadline,
   checkupDeadline,
   detentionDeadline,
+  detentionTimeline,
   alimonyAmount,
   alimonyShare,
   shiftToWorkingDay,
@@ -19,6 +20,28 @@ import { articleDocuments, articleSituations, serviceDocuments } from '../src/da
 
 const articleIds = async () =>
   new Set((await fs.readdir('src/content/articles')).filter((file) => file.endsWith('.md')).map((file) => file.replace(/\.md$/, '')));
+
+test('detention timeline marks five checkpoints and the nearest one', () => {
+  const start = new Date(2026, 9, 20, 9, 0);
+  const tenHours = detentionTimeline(start, new Date(2026, 9, 20, 19, 0));
+  assert.equal(tenHours.milestones.length, 5);
+  assert.deepEqual(tenHours.milestones.map((item) => item.hours), [3, 12, 24, 48, 72]);
+  assert.equal(tenHours.expired, false);
+  assert.deepEqual(tenHours.milestones.map((item) => item.passed), [true, false, false, false, false]);
+  assert.deepEqual(tenHours.milestones.map((item) => item.next), [false, true, false, false, false]);
+  assert.equal(tenHours.milestones[1].at.getHours(), 21);
+  assert.equal(tenHours.remaining, 38 * 60 * 60 * 1000);
+  assert.equal(tenHours.elapsed, 10 * 60 * 60 * 1000);
+});
+
+test('detention timeline stops highlighting a next step after 48 hours', () => {
+  const start = new Date(2026, 9, 18, 12, 0);
+  const expired = detentionTimeline(start, new Date(2026, 9, 20, 19, 47));
+  assert.equal(expired.expired, true);
+  assert.equal(expired.milestones.filter((item) => item.passed).length, 4);
+  assert.equal(expired.milestones.some((item) => item.next), false);
+  assert.ok(expired.remaining < 0);
+});
 
 test('48 hours are added exactly, without timezone drift', () => {
   const start = new Date(2026, 9, 20, 22, 30);
