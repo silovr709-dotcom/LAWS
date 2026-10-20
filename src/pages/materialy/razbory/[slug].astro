@@ -10,6 +10,8 @@ import Portrait from '../../../components/Portrait.astro';
 import { services } from '../../../data/services';
 import { documents } from '../../../data/documents';
 import { articleDocuments, articleSituations } from '../../../data/links';
+import { articlePhotos } from '../../../data/editorial';
+import EditorialImage from '../../../components/EditorialImage.astro';
 import { situations } from '../../../data/situations';
 
 export async function getStaticPaths() {
@@ -23,6 +25,7 @@ interface Props {
 
 const { item } = Astro.props;
 const data = item.data;
+const photo = articlePhotos[item.id];
 const relatedServices = services.filter((service) => service.articleIds.includes(item.id)).slice(0, 2);
 const relatedDocs = (articleDocuments[item.id] ?? [])
   .map((slug) => documents.find((document) => document.slug === slug))
@@ -97,6 +100,21 @@ const schema = {
         </div>
       </div>
     </header>
+
+    {
+      photo && (
+        <figure class="article-cover">
+          <div class="container">
+            <EditorialImage
+              name={photo.name}
+              alt={photo.alt}
+              sizes="(max-width: 900px) 92vw, 1180px"
+              eager
+            />
+          </div>
+        </figure>
+      )
+    }
 
     <div class="section section--paper">
       <div class="container article-layout">

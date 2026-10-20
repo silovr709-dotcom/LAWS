@@ -4,6 +4,8 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import Icon from '../../components/Icon.astro';
 import ContactPrompt from '../../components/ContactPrompt.astro';
 import HeroBrief from '../../components/HeroBrief.astro';
+import EditorialImage from '../../components/EditorialImage.astro';
+import { articlePhotos, situationPhotos } from '../../data/editorial';
 import { situations, type Situation } from '../../data/situations';
 import { documents } from '../../data/documents';
 import { services } from '../../data/services';
@@ -28,6 +30,7 @@ const docs = situation.docs
   .map((slug) => documents.find((document) => document.slug === slug))
   .filter((document) => document !== undefined);
 const service = situation.service ? services.find((item) => item.slug === situation.service) : undefined;
+const photo = articlePhotos[situationPhotos[situation.slug]];
 const sibling = situations.filter((item) => item.slug !== situation.slug).slice(0, 3);
 
 const title = `${situation.title} — что делать, права и документы`;
@@ -98,6 +101,16 @@ const schema = [
       </div>
     </div>
   </header>
+
+  {
+    photo && (
+      <figure class="situation-cover">
+        <div class="container">
+          <EditorialImage name={photo.name} alt={photo.alt} sizes="(max-width: 900px) 92vw, 1180px" />
+        </div>
+      </figure>
+    )
+  }
 
   <div class="section section--paper">
     <div class="container service-detail">

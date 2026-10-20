@@ -1,0 +1,40 @@
+---
+import { existsSync } from 'node:fs';
+import path from 'node:path';
+import { withBase } from '../lib/paths';
+
+interface Props {
+  name: string;
+  alt: string;
+  sizes?: string;
+  class?: string;
+  eager?: boolean;
+}
+
+const { name, alt, sizes = '100vw', class: className, eager = false } = Astro.props;
+
+const widths = [320, 640, 960, 1280].filter((width) =>
+  existsSync(path.join(process.cwd(), 'public/media/editorial', `${name}-${width}.avif`)),
+);
+
+const srcset = (extension: 'avif' | 'webp') =>
+  widths.map((width) => `${withBase(`/media/editorial/${name}-${width}.${extension}`)} ${width}w`).join(', ');
+---
+
+{
+  widths.length > 0 && (
+    <picture class:list={['editorial-photo', className]}>
+      <source type="image/avif" srcset={srcset('avif')} sizes={sizes} />
+      <source type="image/webp" srcset={srcset('webp')} sizes={sizes} />
+      <img
+        src={withBase(`/media/editorial/${name}-${widths.at(-1)}.webp`)}
+        alt={alt}
+        width="1280"
+        height="853"
+        loading={eager ? 'eager' : 'lazy'}
+        decoding="async"
+        fetchpriority={eager ? 'high' : 'auto'}
+      />
+    </picture>
+  )
+}

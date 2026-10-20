@@ -9,6 +9,8 @@ import { canonicalUrl, withBase } from '../../../lib/paths';
 import { breadcrumbs } from '../../../lib/schema';
 import { documents } from '../../../data/documents';
 import { plural } from '../../../lib/format';
+import { articlePhotos } from '../../../data/editorial';
+import EditorialImage from '../../../components/EditorialImage.astro';
 
 const articles = (await getCollection('articles', ({ data }) => !data.draft)).sort(
   (a, b) => b.data.publishedAt.getTime() - a.data.publishedAt.getTime(),
@@ -84,6 +86,17 @@ const schema = {
               data-category={item.data.category}
               data-reveal
             >
+              {
+                articlePhotos[item.id] && (
+                  <div class="article-row__media">
+                    <EditorialImage
+                      name={articlePhotos[item.id].name}
+                      alt={articlePhotos[item.id].alt}
+                      sizes="(max-width: 900px) 92vw, 190px"
+                    />
+                  </div>
+                )
+              }
               <div class="article-row__meta">
                 <span>{item.data.category}</span>
                 <span>{formatDate(item.data.publishedAt)}</span>
