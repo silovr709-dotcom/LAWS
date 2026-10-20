@@ -5,6 +5,7 @@ import Icon from '../../components/Icon.astro';
 import { site } from '../../data/site';
 import '../../styles/policy.css';
 import { canonicalUrl, withBase } from '../../lib/paths';
+import HeroLedger from '../../components/HeroLedger.astro';
 import { breadcrumbs } from '../../lib/schema';
 import { reviews } from '../../data/reviews';
 
@@ -46,7 +47,8 @@ const schema = {
   schema={[schema, breadcrumbs([{ name: 'Главная', path: '/' }, { name: 'Практика', path: '/praktika/' }])]}
 >
   <section class="page-hero">
-    <div class="container">
+    <div class="container page-hero__grid page-hero__grid--with-ledger">
+      <div class="page-hero__content">
       <nav class="breadcrumbs" aria-label="Хлебные крошки">
         <a href={withBase("/")}>Главная</a>
         <span aria-hidden="true">/</span>
@@ -59,6 +61,9 @@ const schema = {
         либо открытой публикацией, обстоятельства излагаются без сведений, позволяющих
         идентифицировать доверителя. Отдельная пометка показывает, чем именно подтверждено дело.
       </p>
+    
+      </div>
+      <HeroLedger items={[{ value: String(cases.length), label: 'дел в каталоге' }, { value: '2024–2026', label: 'годы практики' }]} note="Участие подтверждено процессуальным документом или открытой публикацией." />
     </div>
   </section>
 

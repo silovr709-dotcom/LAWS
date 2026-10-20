@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { canonicalUrl, withBase } from '../lib/paths';
+import HeroLedger from '../components/HeroLedger.astro';
 import { site } from '../data/site';
 
 const title = 'Поиск по сайту';
@@ -37,7 +38,8 @@ const suggestions = ['задержание', 'обыск', 'алименты', '
 
 <BaseLayout title={`${title} — адвокат Юрий Кочевинов`} description={description} schema={schema} noindex>
   <section class="page-hero">
-    <div class="container">
+    <div class="container page-hero__grid page-hero__grid--with-ledger">
+      <div class="page-hero__content">
       <nav class="breadcrumbs" aria-label="Хлебные крошки">
         <a href={withBase('/')}>Главная</a>
         <span aria-hidden="true">/</span>
@@ -49,6 +51,9 @@ const suggestions = ['задержание', 'обыск', 'алименты', '
         Ищем по разборам, образцам документов, направлениям, ситуациям и памяткам. Запрос не
         отправляется на сервер: индекс загружается один раз, поиск идёт в браузере.
       </p>
+    
+      </div>
+      <HeroLedger items={[{ value: '61', label: 'запись в индексе' }, { value: '6', label: 'разделов' }, { value: '0', label: 'запросов на сервер' }]} note="Поиск идёт в браузере: запрос никуда не отправляется." />
     </div>
   </section>
 

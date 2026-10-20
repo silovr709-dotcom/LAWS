@@ -4,6 +4,7 @@ import Icon from '../../components/Icon.astro';
 import ContactPrompt from '../../components/ContactPrompt.astro';
 import { situations } from '../../data/situations';
 import { canonicalUrl, withBase } from '../../lib/paths';
+import HeroLedger from '../../components/HeroLedger.astro';
 import { site } from '../../data/site';
 
 const title = 'Навигатор по ситуации — что делать и какие права есть';
@@ -38,7 +39,8 @@ const schema = [
 
 <BaseLayout title={`${title} — адвокат Юрий Кочевинов`} description={description} schema={schema}>
   <section class="page-hero">
-    <div class="container">
+    <div class="container page-hero__grid page-hero__grid--with-ledger">
+      <div class="page-hero__content">
       <nav class="breadcrumbs" aria-label="Хлебные крошки">
         <a href={withBase('/')}>Главная</a>
         <span aria-hidden="true">/</span>
@@ -51,6 +53,9 @@ const schema = [
         происходит сейчас: на странице будет короткий порядок действий, права и ссылки на разборы
         и образцы.
       </p>
+    
+      </div>
+      <HeroLedger items={[{ value: String(situations.length), label: 'ситуаций' }, { value: '22', label: 'образца документов' }, { value: '5', label: 'видов сроков' }]} note="Порядок действий, права и типичные ошибки — без обещаний результата." />
     </div>
   </section>
 

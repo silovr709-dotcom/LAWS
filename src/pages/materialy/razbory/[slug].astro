@@ -67,6 +67,7 @@ const schema = {
 ---
 
 <BaseLayout title={title} description={description} type="article" schema={[schema, breadcrumbs([{ name: 'Главная', path: '/' }, { name: 'Материалы', path: '/materialy/' }, { name: 'Разборы', path: '/materialy/razbory/' }, { name: data.title, path: `/materialy/razbory/${item.id}/` }])]}>
+  <div class="reading-progress" data-reading-progress aria-hidden="true"><span></span></div>
   <article>
     <header class="article-hero">
       <div class="container">
@@ -211,4 +212,20 @@ const schema = {
       )
     }
   </article>
+
+  <script>
+    const bar = document.querySelector('[data-reading-progress] span') as HTMLElement | null;
+    const article = document.querySelector('article');
+    if (bar && article) {
+      const update = () => {
+        const rect = article.getBoundingClientRect();
+        const total = rect.height - window.innerHeight + 160;
+        const passed = Math.min(Math.max(-rect.top + 80, 0), Math.max(total, 1));
+        bar.style.transform = `scaleX(${passed / Math.max(total, 1)})`;
+      };
+      update();
+      window.addEventListener('scroll', update, { passive: true });
+      window.addEventListener('resize', update);
+    }
+  </script>
 </BaseLayout>

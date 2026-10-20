@@ -2,6 +2,7 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import ContactPrompt from '../components/ContactPrompt.astro';
 import { canonicalUrl, withBase } from '../lib/paths';
+import HeroLedger from '../components/HeroLedger.astro';
 import { site } from '../data/site';
 
 const title = 'Калькуляторы процессуальных сроков';
@@ -58,7 +59,8 @@ const schema = [
 
 <BaseLayout title={`${title} — адвокат Юрий Кочевинов`} description={description} schema={schema}>
   <section class="page-hero">
-    <div class="container">
+    <div class="container page-hero__grid page-hero__grid--with-ledger">
+      <div class="page-hero__content">
       <nav class="breadcrumbs" aria-label="Хлебные крошки">
         <a href={withBase('/')}>Главная</a>
         <span aria-hidden="true">/</span>
@@ -67,9 +69,12 @@ const schema = [
       <p class="eyebrow">Инструменты · без передачи данных</p>
       <h1 class="page-hero__title">Посчитать срок,<br /><em>а не вспоминать потом</em></h1>
       <p class="page-hero__lead">
-        Пять калькуляторов по нормам УПК РФ, СК РФ и Закону об исполнительном производстве.
+        Шесть калькуляторов по нормам УПК РФ, СК РФ и Закону об исполнительном производстве.
         Расчёты идут в браузере: даты и суммы никуда не отправляются и не сохраняются.
       </p>
+    
+      </div>
+      <HeroLedger items={[{ value: '6', label: 'калькуляторов' }, { value: '48 ч', label: 'крайний срок задержания' }, { value: '0', label: 'данных на сервере' }]} note="Считает браузер: даты и суммы не покидают устройство." />
     </div>
   </section>
 

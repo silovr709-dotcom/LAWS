@@ -1,0 +1,969 @@
+/* --------------------------------------------------------------------------
+   Atelier II — второй проход «дороже».
+   Задача: убрать «веб-карточность», дать внутренним обложкам редакционную
+   композицию, вычистить типографику статьи и добавить сдержанные реакции.
+   Подключается после atelier.css.
+   -------------------------------------------------------------------------- */
+
+:root {
+  --gold-ink: #7c6034;
+  --paper-plate: #fffdf9;
+  --ease-quiet: cubic-bezier(0.22, 0.68, 0.2, 1);
+  --display-tracking: -0.028em;
+}
+
+/* --- 1. Типографика ------------------------------------------------------- */
+
+.hero__title,
+.page-hero__title,
+.detail-hero h1,
+.biography-hero h1,
+.article-hero__title {
+  letter-spacing: var(--display-tracking);
+  line-height: 0.96;
+  font-weight: 500;
+}
+
+.page-hero__title em,
+.detail-hero h1 em,
+.article-hero__title em {
+  font-style: italic;
+  color: var(--gold-soft);
+}
+
+.page-hero .eyebrow,
+.detail-hero .eyebrow {
+  font-size: 0.625rem;
+  letter-spacing: 0.26em;
+}
+
+.prose {
+  font-size: 1.09375rem;
+  line-height: 1.78;
+  max-width: 64ch;
+}
+
+.prose > p:first-of-type {
+  font-size: 1.21rem;
+  line-height: 1.7;
+  color: var(--graphite);
+  margin-bottom: 1.1em;
+}
+
+/* Классическая буквица ломала первое слово («Об ыск»): убираем её совсем. */
+.prose > p:first-of-type::first-letter {
+  float: none;
+  font: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  padding: 0;
+  margin: 0;
+  color: inherit;
+  letter-spacing: inherit;
+}
+
+.prose h2 {
+  font-size: clamp(1.7rem, 2.4vw, 2.15rem);
+  line-height: 1.18;
+  letter-spacing: -0.018em;
+  margin-top: 2.4em;
+}
+
+.prose h2::before {
+  width: 26px;
+  margin-bottom: 17px;
+  opacity: 0.8;
+}
+
+.prose h3 {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+  margin-top: 1.9em;
+}
+
+.prose blockquote {
+  border-left: 0;
+  border-top: 1px solid var(--hairline);
+  border-bottom: 1px solid var(--hairline);
+  margin: 2.2em 0;
+  padding: 26px 0 24px;
+  font-size: 1.45rem;
+  line-height: 1.45;
+  font-style: italic;
+  color: var(--wine);
+}
+
+.prose blockquote p { margin: 0; }
+
+.prose figure { margin: 2em 0; }
+.prose figcaption {
+  margin-top: 10px;
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+}
+
+.prose hr {
+  border: 0;
+  border-top: 1px solid var(--hairline);
+  margin: 2.4em 0;
+}
+
+/* --- 2. Шапка: тоньше, тише, с золотой линией ------------------------------ */
+
+.site-header.is-solid,
+.site-header.is-scrolled {
+  border-bottom: 1px solid var(--hairline-soft);
+  box-shadow: 0 18px 40px -38px rgba(53, 18, 29, 0.55);
+}
+
+.site-nav__link {
+  letter-spacing: 0.15em;
+}
+
+.site-nav__link[aria-current='page'] {
+  position: relative;
+}
+
+.site-nav__link[aria-current='page']::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 4px;
+  height: 1px;
+  background: linear-gradient(90deg, var(--gold), rgba(182, 154, 99, 0.25));
+}
+
+.header-cta {
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-size: 0.6875rem;
+  box-shadow: inset 0 0 0 1px rgba(211, 189, 149, 0.28);
+}
+
+.header-cta:hover {
+  box-shadow: inset 0 0 0 1px rgba(211, 189, 149, 0.6);
+}
+
+/* --- 3. Первый экран: медленное появление и точная рамка -------------------- */
+
+.hero__title { font-size: clamp(2.9rem, 5.3vw, 5.05rem); }
+
+.hero .portrait__media::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, rgba(53, 18, 29, 0.1), transparent 34%, transparent 72%, rgba(37, 11, 19, 0.24)),
+    radial-gradient(120% 90% at 50% 0%, transparent 52%, rgba(37, 11, 19, 0.24));
+  mix-blend-mode: multiply;
+}
+
+.hero .portrait__media::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  box-shadow: inset 0 0 0 1px rgba(246, 240, 231, 0.14);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .hero__content > * {
+    animation: hero-rise 900ms var(--ease-quiet) both;
+  }
+
+  .hero__content > *:nth-child(2) { animation-delay: 70ms; }
+  .hero__content > *:nth-child(3) { animation-delay: 140ms; }
+  .hero__content > *:nth-child(4) { animation-delay: 210ms; }
+  .hero__content > *:nth-child(5) { animation-delay: 270ms; }
+  .hero__content > *:nth-child(6) { animation-delay: 330ms; }
+
+  .hero__visual {
+    animation: hero-frame 1100ms var(--ease-quiet) 180ms both;
+  }
+}
+
+@keyframes hero-rise {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes hero-frame {
+  from { opacity: 0; transform: translateY(22px) scale(0.994); }
+  to { opacity: 1; transform: none; }
+}
+
+/* --- 4. Внутренние обложки: сетка и «леджер» ------------------------------- */
+
+.page-hero,
+.detail-hero,
+.biography-hero,
+.legal-hero {
+  background:
+    radial-gradient(58% 78% at 96% 0%, rgba(211, 189, 149, 0.16), transparent 58%),
+    linear-gradient(158deg, #541b2b 0%, #3f1522 54%, #2b0d16 100%);
+}
+
+/* Сетка из волосяных линий читалась как таблица — оставляем один световой срез. */
+.page-hero::after,
+.detail-hero::after,
+.biography-hero::after,
+.legal-hero::after {
+  background-image:
+    linear-gradient(104deg, transparent 46%, rgba(211, 189, 149, 0.05) 46.1%, transparent 46.5%),
+    var(--grain);
+  background-size: auto, 160px 160px;
+  mask-image: none;
+  opacity: 0.9;
+}
+
+.page-hero__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: clamp(28px, 4vw, 56px);
+  align-items: end;
+}
+
+.page-hero__grid--with-ledger {
+  grid-template-columns: minmax(0, 1fr) minmax(240px, 320px);
+}
+
+.page-hero__content { min-width: 0; }
+
+.hero-ledger {
+  width: 100%;
+  border-top: 1px solid rgba(211, 189, 149, 0.34);
+  padding-top: 2px;
+}
+
+.hero-ledger__row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: baseline;
+  gap: 16px;
+  padding: 14px 0;
+  border-bottom: 1px solid rgba(211, 189, 149, 0.16);
+}
+
+.hero-ledger__value {
+  font-family: var(--font-display);
+  font-size: clamp(1.9rem, 2.6vw, 2.35rem);
+  line-height: 1;
+  color: var(--milk);
+  font-variant-numeric: lining-nums tabular-nums;
+}
+
+.hero-ledger__label {
+  max-width: 13ch;
+  text-align: right;
+  font-size: 0.625rem;
+  line-height: 1.45;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(211, 189, 149, 0.82);
+}
+
+.hero-ledger__note {
+  margin-top: 12px;
+  font-size: 0.75rem;
+  line-height: 1.55;
+  color: rgba(246, 240, 231, 0.62);
+}
+
+/* Вертикальная подпись уходила за край секции и читалась как обрезок.
+   Убрана: визитка адвоката и так есть в шапке и подвале. */
+
+/* --- 5. Визитка адвоката на внутренних страницах --------------------------- */
+
+.detail-hero__person {
+  align-self: start;
+  margin-top: 6px;
+  padding: 22px 24px;
+  border: 1px solid rgba(211, 189, 149, 0.26);
+  background: linear-gradient(152deg, rgba(246, 240, 231, 0.075), rgba(246, 240, 231, 0.02));
+}
+
+.detail-hero__person span {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  line-height: 1.15;
+}
+
+.detail-hero__person p {
+  margin-top: 4px;
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+}
+
+.detail-hero__person a {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.6875rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+/* --- 6. Карточки: линия вместо тени --------------------------------------- */
+
+.service-card,
+.case-card,
+.publication-card,
+.situation-card,
+.memo-card,
+.calc,
+.link-grid a {
+  transition:
+    transform 420ms var(--ease-quiet),
+    border-color 320ms var(--ease-quiet),
+    box-shadow 420ms var(--ease-quiet),
+    background-color 320ms var(--ease-quiet);
+}
+
+.service-card,
+.case-card,
+.publication-card {
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.65) inset, 0 26px 40px -40px rgba(53, 18, 29, 0.42);
+}
+
+.service-card:hover,
+.case-card:hover,
+.publication-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--hairline-strong);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.7) inset, 0 34px 46px -38px rgba(53, 18, 29, 0.4);
+}
+
+.service-card__link svg,
+.publication-card__read svg,
+.situation-card__more svg,
+.case-card__foot svg {
+  transition: transform 320ms var(--ease-quiet);
+}
+
+.service-card:hover .service-card__link svg,
+.publication-card:hover .publication-card__read svg,
+.situation-card:hover .situation-card__more svg,
+.case-card:hover .case-card__foot svg {
+  transform: translate(2px, -2px);
+}
+
+/* «Судебный акт отменён» — не Title Case: регистр берём из данных. */
+.case-card__result {
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  font-size: 0.6875rem;
+}
+
+/* Карточки одного ряда заканчиваются одной линией, а не лестницей. */
+.service-card,
+.case-card,
+.publication-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.service-card p,
+.case-card p,
+.publication-card p {
+  flex: 1 1 auto;
+}
+
+.service-card__link,
+.case-card__foot,
+.publication-card__read {
+  margin-top: auto;
+}
+
+/* --- 7. Статья: обложка, мета, правая колонка ----------------------------- */
+
+.article-hero {
+  position: relative;
+  padding-top: calc(var(--header-h) + clamp(1.6rem, 2.6vw, 2.4rem));
+}
+
+.article-hero::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto;
+  height: 3px;
+  background: linear-gradient(90deg, var(--wine) 0%, var(--gold) 42%, transparent 78%);
+  opacity: 0.7;
+}
+
+.article-hero__title {
+  max-width: 21ch;
+  text-wrap: balance;
+}
+
+.article-meta {
+  display: grid;
+  grid-template-columns: repeat(3, max-content);
+  gap: 10px 34px;
+  justify-content: start;
+  align-items: baseline;
+  padding-top: 16px;
+  border-top: 1px solid var(--hairline);
+  font-size: 0.625rem;
+  letter-spacing: 0.14em;
+}
+
+.article-meta > span {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.article-meta > span + span::before {
+  content: '';
+  width: 1px;
+  height: 10px;
+  background: var(--hairline);
+  align-self: center;
+}
+
+.article-aside {
+  position: sticky;
+  top: calc(var(--header-h) + 24px);
+  align-self: start;
+}
+
+.article-aside .aside-card {
+  border: 1px solid var(--hairline-soft);
+  border-left: 2px solid rgba(182, 154, 99, 0.5);
+  background: var(--paper-plate);
+  box-shadow: none;
+  padding: 22px 22px 20px;
+}
+
+.article-aside .aside-card h2 {
+  font-size: 0.625rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--gold-ink);
+}
+
+.author-card {
+  display: grid;
+  grid-template-columns: 48px minmax(0, 1fr);
+  column-gap: 14px;
+  align-items: center;
+}
+
+.author-card .portrait--avatar {
+  grid-row: span 2;
+  width: 48px;
+  margin: 0;
+}
+
+.author-card__role {
+  order: -1;
+  font-size: 0.5625rem;
+  letter-spacing: 0.2em;
+  color: var(--gold-ink);
+}
+
+.author-card__name {
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  line-height: 1.2;
+  padding-bottom: 2px;
+}
+
+.author-card p,
+.author-card .link-arrow {
+  grid-column: 1 / -1;
+}
+
+.author-card .link-arrow {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--hairline);
+}
+
+.author-card p {
+  margin-top: 12px;
+  font-size: 0.8125rem;
+  line-height: 1.6;
+  color: var(--muted);
+}
+
+/* Полоса прочитанного: тонкая, под шапкой, без влияния на вёрстку. */
+.reading-progress {
+  position: fixed;
+  top: var(--header-h);
+  left: 0;
+  right: 0;
+  height: 2px;
+  z-index: 40;
+  background: transparent;
+  pointer-events: none;
+}
+
+.reading-progress span {
+  display: block;
+  height: 100%;
+  transform-origin: left center;
+  transform: scaleX(0);
+  background: linear-gradient(90deg, var(--gold-deep), var(--gold), var(--gold-soft));
+  transition: transform 120ms linear;
+}
+
+/* --- 8. Подвал: подписи колонок и нижняя строка --------------------------- */
+
+.footer__col h2 {
+  color: rgba(211, 189, 149, 0.9);
+  letter-spacing: 0.2em;
+}
+
+.footer__col a {
+  transition: color 260ms var(--ease-quiet);
+}
+
+.footer__bottom {
+  padding-top: 26px;
+}
+
+.footer__legal {
+  letter-spacing: 0.04em;
+}
+
+/* --- 9. Мобильная версия --------------------------------------------------- */
+
+@media (max-width: 1024px) {
+  .page-hero__grid--with-ledger {
+    grid-template-columns: minmax(0, 1fr) minmax(200px, 260px);
+    gap: 32px;
+  }
+
+  .article-aside {
+    position: static;
+  }
+}
+
+@media (max-width: 760px) {
+  .page-hero__grid--with-ledger {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .hero-ledger {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    border-top: 1px solid rgba(211, 189, 149, 0.3);
+  }
+
+  .hero-ledger__row {
+    display: flex;
+    flex-direction: column-reverse;
+    align-items: flex-start;
+    gap: 6px;
+    padding: 14px 14px 14px 0;
+  }
+
+  .hero-ledger__row:nth-child(odd) { padding-left: 0; }
+  .hero-ledger__label { text-align: left; max-width: 18ch; }
+  .hero-ledger__note { grid-column: 1 / -1; }
+
+  .page-hero,
+  .detail-hero,
+  .biography-hero,
+  .legal-hero {
+    padding-top: calc(var(--header-h) + 1.5rem);
+  }
+
+  /* Мета-строка дублирует леджер обложки: на телефоне оставляем только леджер. */
+  .page-hero__grid--with-ledger .eyebrow--meta {
+    display: none;
+  }
+
+  .article-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 16px;
+    font-size: 0.6875rem;
+  }
+
+  .article-meta > span + span::before { content: none; }
+
+  .prose {
+    font-size: 1.0625rem;
+    line-height: 1.74;
+  }
+
+  .prose > p:first-of-type { font-size: 1.125rem; }
+}
+
+@media (max-width: 420px) {
+  .hero-ledger { grid-template-columns: minmax(0, 1fr); }
+  .hero-ledger__row:nth-child(n + 2) { border-top: 1px solid rgba(211, 189, 149, 0.12); }
+}
+
+/* --- 10. Уважение к настройкам движения ----------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .hero__content > *,
+  .hero__visual {
+    animation: none !important;
+  }
+
+  .service-card:hover,
+  .case-card:hover,
+  .publication-card:hover {
+    transform: none;
+  }
+}
+
+/* --- 11. Печать ----------------------------------------------------------- */
+
+@media print {
+  .reading-progress,
+  .hero-ledger,
+  .breadcrumbs,
+  .mobile-callbar,
+  .cookie-notice { display: none !important; }
+
+  .article-meta {
+    border-top-color: #cfc7b8;
+    color: #3c3838;
+  }
+
+  .article-meta > span + span::before { background: #cfc7b8; }
+
+  .prose a { text-decoration-color: #9a8a6a; }
+}
+
+/* --- 12. Тёмные поверхности: один цвет для всех подписей ------------------- */
+
+.hero,
+.page-hero,
+.detail-hero,
+.biography-hero,
+.legal-hero,
+.sos-hero {
+  --on-dark: #f7f1e7;
+  --on-dark-soft: rgba(247, 241, 231, 0.8);
+  --on-dark-muted: rgba(247, 241, 231, 0.6);
+  --on-dark-line: rgba(211, 189, 149, 0.24);
+}
+
+.hero__lead,
+.page-hero__lead,
+.detail-hero__lead {
+  max-width: 54ch;
+  color: var(--on-dark-soft);
+}
+
+.hero__lead { max-width: 42ch; }
+
+.hero__facts {
+  margin-top: clamp(22px, 3vw, 34px);
+  padding-top: 26px;
+}
+
+.hero__fact-value {
+  font-size: clamp(1.65rem, 2.2vw, 1.95rem);
+}
+
+.hero__fact-label {
+  color: rgba(211, 189, 149, 0.78);
+  letter-spacing: 0.16em;
+}
+
+.detail-hero__person {
+  border-top: 1px solid rgba(211, 189, 149, 0.4);
+  border-right: 0;
+  border-bottom: 0;
+  border-left: 0;
+  background: rgba(20, 6, 11, 0.18);
+  padding: 20px 0 0;
+}
+
+.detail-hero__person span {
+  color: var(--on-dark);
+}
+
+.detail-hero__person p {
+  color: var(--on-dark-muted);
+}
+
+.detail-hero__person a {
+  color: var(--gold-soft);
+}
+
+.detail-hero__person a:hover {
+  color: var(--on-dark);
+}
+
+.detail-hero__person .portrait--avatar .portrait__media {
+  border: 1px solid var(--on-dark-line);
+}
+
+.detail-hero .detail-note,
+.biography-hero .detail-note {
+  color: var(--on-dark-muted);
+}
+
+.biography-hero__facts {
+  border-top-color: var(--on-dark-line);
+}
+
+.biography-hero__facts dt {
+  color: var(--on-dark-muted);
+  font-size: 0.625rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.biography-hero__facts dd {
+  color: var(--on-dark);
+}
+
+/* --- 13. Портрет: паспарту вместо обрезанной второй рамки ------------------ */
+
+.hero .portrait {
+  max-width: 466px;
+  padding: 7px;
+  border: 1px solid rgba(211, 189, 149, 0.36);
+  background: rgba(246, 240, 231, 0.035);
+  box-shadow: 0 42px 80px -56px rgba(0, 0, 0, 0.9);
+}
+
+/* Смещённая рамка обрезалась краем секции и читалась как случайная линия. */
+.hero .portrait::after {
+  display: none;
+}
+
+.hero .portrait__media {
+  aspect-ratio: 3 / 3.85;
+}
+
+.hero .portrait__frame {
+  inset: 7px;
+  border-color: rgba(211, 189, 149, 0.34);
+}
+
+.hero__signature span {
+  font-family: var(--font-display);
+  font-size: 1.7rem;
+  letter-spacing: 0.005em;
+}
+
+@media (max-width: 760px) {
+  .hero__inner {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+  }
+
+  .hero {
+    padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px));
+  }
+
+  .hero__content > * {
+    max-width: 100%;
+  }
+
+  .hero__title {
+    font-size: clamp(2.1rem, 8.8vw, 3rem);
+    line-height: 1;
+  }
+
+  .hero__content {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .hero__visual {
+    display: grid;
+    justify-items: end;
+    gap: 0;
+  }
+
+  .hero .portrait {
+    max-width: min(320px, 82vw);
+    margin-left: auto;
+  }
+
+  .hero__signature {
+    display: block;
+    width: min(320px, 82vw);
+    margin: 18px 0 0 auto;
+    padding-top: 12px;
+    text-align: right;
+  }
+
+  .hero__actions .btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .hero__secondary {
+    justify-content: center;
+  }
+
+  .hero__facts {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 420px) {
+  .hero__facts {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+  }
+
+  .hero__fact {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 11px 0;
+    border-left: 0;
+    border-top: 1px solid rgba(211, 189, 149, 0.16);
+  }
+
+  .hero__fact:first-child { border-top: 0; }
+  .hero__fact-label { text-align: right; max-width: 60%; }
+}
+
+/* --- 14. Кнопки, ссылки, фильтры ------------------------------------------ */
+
+.btn {
+  min-height: 50px;
+  padding: 0 26px;
+  border-radius: 0;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  transition:
+    background-color 320ms var(--ease-quiet),
+    color 320ms var(--ease-quiet),
+    border-color 320ms var(--ease-quiet),
+    box-shadow 320ms var(--ease-quiet),
+    transform 320ms var(--ease-quiet);
+}
+
+.btn svg {
+  transition: transform 320ms var(--ease-quiet);
+}
+
+.btn:hover svg {
+  transform: translateX(3px);
+}
+
+.btn--primary {
+  box-shadow: inset 0 0 0 1px rgba(211, 189, 149, 0.24);
+}
+
+.btn--primary:hover {
+  background: var(--wine-deep);
+  box-shadow: inset 0 0 0 1px rgba(211, 189, 149, 0.5);
+}
+
+.btn--light {
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.55);
+}
+
+.btn--outline {
+  border-color: var(--hairline-strong);
+}
+
+.btn--outline:hover {
+  border-color: var(--wine);
+  background: rgba(84, 28, 43, 0.04);
+}
+
+.link-arrow {
+  font-size: 0.8125rem;
+  letter-spacing: 0.02em;
+  text-decoration: none;
+  border-bottom: 1px solid var(--gold-line);
+  padding-bottom: 4px;
+  gap: 10px;
+}
+
+.link-arrow svg {
+  transition: transform 320ms var(--ease-quiet);
+}
+
+.link-arrow:hover svg {
+  transform: translateX(3px);
+}
+
+.filter-btn {
+  border-radius: 0;
+  min-height: 40px;
+  padding: 0 16px;
+  letter-spacing: 0.13em;
+  background: transparent;
+}
+
+.filter-btn[aria-pressed='true'] {
+  background: var(--wine);
+  border-color: var(--wine);
+}
+
+.filters {
+  gap: 14px 34px;
+  border-bottom: 1px solid var(--hairline);
+}
+
+.filters__group {
+  flex-wrap: wrap;
+}
+
+/* --- 15. Галерея и фотографии --------------------------------------------- */
+
+.about__gallery img,
+.about__body img {
+  transition: transform 700ms var(--ease-quiet);
+}
+
+.about__gallery a:hover img,
+.about__body figure:hover img {
+  transform: scale(1.018);
+}
+
+.about__gallery figure {
+  border: 1px solid var(--hairline);
+  padding: 6px;
+  background: rgba(255, 253, 249, 0.5);
+}
+
+/* --- 16. Ритм и мелкие детали --------------------------------------------- */
+
+:root {
+  --section-space: clamp(4.5rem, 7.6vw, 8rem);
+}
+
+.article-hero__desc {
+  font-size: 1.15rem;
+  line-height: 1.6;
+  color: var(--muted);
+  max-width: 56ch;
+}
+
+.prose a {
+  color: var(--wine);
+  text-decoration-color: rgba(182, 154, 99, 0.55);
+  text-underline-offset: 0.22em;
+}
+
+.prose a:hover {
+  text-decoration-color: var(--wine);
+}
+
+.footer__col h2 {
+  color: rgba(211, 189, 149, 0.92);
+}
+
+.footer__bottom {
+  border-top: 1px solid rgba(211, 189, 149, 0.16);
+}

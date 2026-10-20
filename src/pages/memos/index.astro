@@ -4,6 +4,7 @@ import Icon from '../../components/Icon.astro';
 import ContactPrompt from '../../components/ContactPrompt.astro';
 import { memos } from '../../data/memos';
 import { canonicalUrl, withBase } from '../../lib/paths';
+import HeroLedger from '../../components/HeroLedger.astro';
 import { site } from '../../data/site';
 
 const title = 'Памятки: первые 48 часов, обыск, допрос';
@@ -40,7 +41,8 @@ const schema = [
 
 <BaseLayout title={`${title} — адвокат Юрий Кочевинов`} description={description} schema={schema}>
   <section class="page-hero">
-    <div class="container">
+    <div class="container page-hero__grid page-hero__grid--with-ledger">
+      <div class="page-hero__content">
       <nav class="breadcrumbs" aria-label="Хлебные крошки">
         <a href={withBase('/')}>Главная</a>
         <span aria-hidden="true">/</span>
@@ -52,6 +54,9 @@ const schema = [
         Короткие памятки на одну страницу: что спросить, что сказать и чего не подписывать.
         Открываются в браузере, скачиваются в PDF и печатаются без лишних элементов.
       </p>
+    
+      </div>
+      <HeroLedger items={[{ value: String(memos.length), label: 'памятки' }, { value: '1', label: 'страница' }, { value: 'PDF', label: 'скачать или распечатать' }]} note="Без регистрации и без отправки данных." />
     </div>
   </section>
 
