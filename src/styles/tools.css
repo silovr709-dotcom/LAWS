@@ -908,12 +908,19 @@
 .detention-promo__cta {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   margin-top: 6px;
   font-size: 0.86rem;
   letter-spacing: 0.04em;
   color: var(--gold-soft);
 }
+
+.detention-promo__cta svg {
+  flex: none;
+  transition: transform 420ms var(--ease-silk, ease);
+}
+
+.detention-promo:hover .detention-promo__cta svg { transform: translateX(3px); }
 
 .detention-promo:focus-visible {
   outline: 2px solid var(--gold-soft);
@@ -1238,3 +1245,6 @@
 @media (prefers-reduced-motion: reduce) {
   .draft__bar span { transition: none; }
 }
+
+/* Промо не должно прилипать к первому заголовку списка. */
+.detention-promo + .doc-groups { margin-top: clamp(24px, 3vw, 36px); }

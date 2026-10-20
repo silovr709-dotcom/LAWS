@@ -3,6 +3,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import ContactPrompt from '../components/ContactPrompt.astro';
 import { canonicalUrl, withBase } from '../lib/paths';
 import HeroLedger from '../components/HeroLedger.astro';
+import Icon from '../components/Icon.astro';
 import { site } from '../data/site';
 
 const title = 'Калькуляторы процессуальных сроков';
@@ -200,7 +201,7 @@ const schema = [
           допрос — 24, освобождение — 48, продление судом — до 72. Отсчёт идёт в реальном времени
           и считается в браузере.
         </span>
-        <span class="detention-promo__cta">Открыть счётчик <span aria-hidden="true">→</span></span>
+        <span class="detention-promo__cta">Открыть счётчик <Icon name="arrow-right" size={16} /></span>
       </a>
     </div>
   </section>
