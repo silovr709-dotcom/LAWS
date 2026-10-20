@@ -1,179 +1,31 @@
 ---
-import { getCollection, render, type CollectionEntry } from 'astro:content';
+import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import Icon from '../../components/Icon.astro';
-import { formatDate, toIsoDate } from '../../lib/format';
-import { site } from '../../data/site';
-import { canonicalUrl, withBase } from '../../lib/paths';
-import Portrait from '../../components/Portrait.astro';
-import { services } from '../../data/services';
+import MovedPage from '../../components/MovedPage.astro';
+import { withBase } from '../../lib/paths';
 
 export async function getStaticPaths() {
   const articles = await getCollection('articles', ({ data }) => !data.draft);
-  return articles.map((item) => ({ params: { slug: item.id }, props: { item } }));
+  return articles.map((item) => ({
+    params: { slug: item.id },
+    props: { title: item.data.title },
+  }));
 }
 
-interface Props {
-  item: CollectionEntry<'articles'>;
-}
-
-const { item } = Astro.props;
-const data = item.data;
-const relatedServices = services.filter((service) => service.articleIds.includes(item.id)).slice(0, 2);
-const { Content } = await render(item);
-
-const related = (
-  await getCollection('articles', ({ data: other, id }) => !other.draft && id !== item.id)
-)
-  .sort((a, b) => b.data.publishedAt.getTime() - a.data.publishedAt.getTime())
-  .slice(0, 2);
-
-const title = `${data.title} — адвокат Юрий Кочевинов`;
-const description = data.description;
-const canonical = canonicalUrl(site.url, `/publikacii/${item.id}/`);
-
-const schema = {
-  '@context': 'https://schema.org',
-  '@type': 'Article',
-  headline: data.title,
-  description: data.description,
-  datePublished: data.publishedAt.toISOString(),
-  dateModified: (data.updatedAt ?? data.publishedAt).toISOString(),
-  inLanguage: 'ru-RU',
-  mainEntityOfPage: canonical,
-  author: {
-    '@type': 'Person',
-    name: site.fullName,
-    jobTitle: 'Адвокат',
-    url: canonicalUrl(site.url, '/ob-advokate/'),
-    image: canonicalUrl(site.url, site.portraits.avatar),
-  },
-  publisher: {
-    '@type': 'Person',
-    name: site.fullName,
-  },
-  about: data.category,
-};
+const { title } = Astro.props;
+const target = withBase(`/materialy/razbory/${Astro.params.slug}/`);
 ---
 
-<BaseLayout title={title} description={description} type="article" schema={schema}>
-  <article>
-    <header class="article-hero">
-      <div class="container">
-        <nav class="breadcrumbs breadcrumbs--light" aria-label="Хлебные крошки">
-          <a href={withBase("/")}>Главная</a>
-          <span aria-hidden="true">/</span>
-          <a href={withBase("/publikacii/")}>Публикации</a>
-          <span aria-hidden="true">/</span>
-          <span aria-current="page">{data.category}</span>
-        </nav>
-        <p class="eyebrow">{data.category}</p>
-        <h1 class="article-hero__title">{data.title}</h1>
-        <p class="article-hero__desc">{data.description}</p>
-        <div class="article-meta">
-          <span>
-            <time datetime={toIsoDate(data.publishedAt)}>{formatDate(data.publishedAt)}</time>
-          </span>
-          {
-            data.updatedAt && (
-              <span>
-                Обновлено: <time datetime={toIsoDate(data.updatedAt)}>{formatDate(data.updatedAt)}</time>
-              </span>
-            )
-          }
-          <span>{data.readingTime}</span>
-          <span>{site.fullName}</span>
-        </div>
-      </div>
-    </header>
-
-    <div class="section section--paper">
-      <div class="container article-layout">
-        <div class="prose">
-          <Content />
-
-          <p class="article-disclaimer">
-            Материал носит информационный характер и не является юридической консультацией.
-            Применимость приведённых норм и выводов зависит от обстоятельств конкретного дела.
-            Для оценки своей ситуации обратитесь к адвокату.
-          </p>
-        </div>
-
-        <aside class="article-aside">
-          <div class="aside-card">
-            <h2>Источники</h2>
-            {
-              data.sources.length > 0 ? (
-                <ul class="sources-list">
-                  {data.sources.map((source) => (
-                    <li>
-                      <a href={source.url} target="_blank" rel="noopener noreferrer">
-                        {source.label}
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <p>Ссылки на нормативные акты приведены в тексте.</p>
-              )
-            }
-          </div>
-
-          <div class="author-card">
-            <Portrait variant="avatar" />
-            <span class="author-card__role">Автор</span>
-            <span class="author-card__name">{site.fullName}</span>
-            <p>
-              Адвокат, реестровый номер {site.registryNumber}, {site.chamber}.
-              Уголовно-правовая защита. Тверь и вся Россия.
-            </p>
-            <a class="link-arrow" href={withBase("/ob-advokate/")}>
-              Об адвокате
-              <Icon name="arrow-right" size={14} />
-            </a>
-          </div>
-
-          {relatedServices.length > 0 && <div class="aside-card"><h2>Направления помощи</h2><ul class="sources-list">{relatedServices.map((service) => <li><a href={withBase(`/napravleniya/${service.slug}/`)}>{service.title}</a></li>)}</ul></div>}
-
-          <div class="aside-card">
-            <h2>Обсудить ситуацию</h2>
-            <p>
-              Если вопрос касается вас или близкого человека, разумнее обсудить обстоятельства
-              напрямую.
-            </p>
-            <p style="margin-top: 12px;">
-              <a class="btn btn--primary" href={withBase("/#kontakty")}>Связаться с адвокатом</a>
-            </p>
-          </div>
-        </aside>
-      </div>
-    </div>
-
-    {
-      related.length > 0 && (
-        <section class="section section--milk" aria-labelledby="related-title">
-          <div class="container">
-            <h2 id="related-title" style="margin-bottom: 24px;">
-              Другие публикации
-            </h2>
-            <div class="articles-list">
-              {related.map((other) => (
-                <a class="article-row" href={withBase(`/publikacii/${other.id}/`)}>
-                  <div class="article-row__meta">
-                    <span>{other.data.category}</span>
-                    <span>{formatDate(other.data.publishedAt)}</span>
-                  </div>
-                  <div>
-                    <h3 class="article-row__title">{other.data.title}</h3>
-                    <p class="article-row__desc">{other.data.description}</p>
-                  </div>
-                  <Icon name="arrow-up-right" size={18} class="article-row__arrow" />
-                </a>
-              ))}
-            </div>
-          </div>
-        </section>
-      )
-    }
-  </article>
+<BaseLayout
+  title={`${title} — страница переехала · адвокат Юрий Кочевинов`}
+  description="Материал опубликован в разделе «Материалы» на сайте адвоката Юрия Кочевинова."
+  noindex
+>
+  <meta slot="head" http-equiv="refresh" content={`0; url=${target}`} />
+  <MovedPage
+    to={`/materialy/razbory/${Astro.params.slug}/`}
+    heading="Материал переехал"
+    note="Разборы и образцы документов теперь находятся в одном разделе."
+  />
+  <script is:inline define:vars={{ target }}>window.location.replace(target);</script>
 </BaseLayout>

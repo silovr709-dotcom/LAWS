@@ -1,0 +1,160 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import Icon from '../../../components/Icon.astro';
+import ContactPrompt from '../../../components/ContactPrompt.astro';
+import { formatDate } from '../../../lib/format';
+import { site } from '../../../data/site';
+import { canonicalUrl, withBase } from '../../../lib/paths';
+import { documents } from '../../../data/documents';
+
+const articles = (await getCollection('articles', ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.publishedAt.getTime() - a.data.publishedAt.getTime(),
+);
+
+const categories = [...new Set(articles.map((item) => item.data.category))].sort();
+
+const title = 'Разборы — материалы адвоката Юрия Кочевинова';
+const description =
+  'Практические разборы по уголовному процессу, гражданским, семейным и трудовым спорам: обыск, допрос, задержание, алименты, приставы. Объяснения без обещаний результата.';
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'CollectionPage',
+  name: 'Разборы адвоката Юрия Кочевинова',
+  description,
+  url: canonicalUrl(site.url, '/materialy/razbory/'),
+  isPartOf: { '@type': 'WebSite', name: `Адвокат ${site.name}`, url: canonicalUrl(site.url, '/') },
+  mainEntity: {
+    '@type': 'ItemList',
+    itemListElement: articles.map((item, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      url: canonicalUrl(site.url, `/materialy/razbory/${item.id}/`),
+      name: item.data.title,
+    })),
+  },
+};
+---
+
+<BaseLayout title={title} description={description} schema={schema}>
+  <section class="page-hero">
+    <div class="container">
+      <nav class="breadcrumbs" aria-label="Хлебные крошки">
+        <a href={withBase('/')}>Главная</a>
+        <span aria-hidden="true">/</span>
+        <a href={withBase('/materialy/')}>Материалы</a>
+        <span aria-hidden="true">/</span>
+        <span aria-current="page">Разборы</span>
+      </nav>
+      <p class="eyebrow">Разборы · {articles.length}</p>
+      <h1 class="page-hero__title">Разобраться до того,<br /><em>как действовать</em></h1>
+      <p class="page-hero__lead">
+        Материалы о процессуальных ситуациях, с которыми люди сталкиваются чаще всего. Это не
+        замена консультации: применимость выводов зависит от обстоятельств конкретного дела.
+      </p>
+    </div>
+  </section>
+
+  <section class="section section--paper">
+    <div class="container">
+      <div class="filters" data-article-filters aria-label="Фильтры по теме">
+        <div class="filters__group">
+          <span class="filters__label">Тема</span>
+          <button class="filter-btn" type="button" aria-pressed="true" data-article-filter="all">Все</button>
+          {
+            categories.map((category) => (
+              <button class="filter-btn" type="button" aria-pressed="false" data-article-filter={category}>
+                {category}
+              </button>
+            ))
+          }
+        </div>
+      </div>
+
+      <div class="articles-list" data-article-list>
+        {
+          articles.map((item) => (
+            <a
+              class="article-row"
+              href={withBase(`/materialy/razbory/${item.id}/`)}
+              data-article-row
+              data-category={item.data.category}
+              data-reveal
+            >
+              <div class="article-row__meta">
+                <span>{item.data.category}</span>
+                <span>{formatDate(item.data.publishedAt)}</span>
+                <span>{item.data.readingTime}</span>
+              </div>
+              <div>
+                <h2 class="article-row__title">{item.data.title}</h2>
+                <p class="article-row__desc">{item.data.description}</p>
+              </div>
+              <Icon name="arrow-up-right" size={18} class="article-row__arrow" />
+            </a>
+          ))
+        }
+      </div>
+
+      <div class="materials-cross" data-reveal>
+        <div>
+          <p class="eyebrow">Ещё в разделе</p>
+          <h2>Образцы документов</h2>
+          <p>
+            {documents.length} шаблонов заявлений, жалоб, ходатайств и исков с правовым основанием,
+            адресатом и сроком подачи — с текстом на сайте и скачиванием в PDF.
+          </p>
+        </div>
+        <a class="btn btn--outline" href={withBase('/materialy/obrazcy/')}>
+          Открыть образцы
+          <Icon name="arrow-right" size={15} />
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <ContactPrompt title="Не нашли свою ситуацию?" />
+
+  <script>
+    const filterRoot = document.querySelector<HTMLElement>('[data-article-filters]');
+    const rows = document.querySelectorAll<HTMLElement>('[data-article-row]');
+    filterRoot?.querySelectorAll<HTMLButtonElement>('[data-article-filter]').forEach((button) => {
+      button.addEventListener('click', () => {
+        const value = button.dataset.articleFilter ?? 'all';
+        filterRoot
+          .querySelectorAll<HTMLButtonElement>('[data-article-filter]')
+          .forEach((item) => item.setAttribute('aria-pressed', String(item === button)));
+        rows.forEach((row) => {
+          row.hidden = value !== 'all' && row.dataset.category !== value;
+        });
+      });
+    });
+  </script>
+
+  <style>
+    .materials-cross {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px 32px;
+      margin-top: clamp(2.4rem, 4vw, 3.4rem);
+      padding: clamp(22px, 3vw, 32px);
+      border: 1px solid var(--line);
+      background: var(--paper, #f6f0e7);
+    }
+
+    .materials-cross h2 {
+      font-size: clamp(1.4rem, 2.2vw, 1.8rem);
+      margin: 8px 0 10px;
+    }
+
+    .materials-cross p {
+      max-width: 62ch;
+      font-size: 0.94rem;
+      line-height: 1.62;
+      color: var(--muted);
+    }
+  </style>
+</BaseLayout>

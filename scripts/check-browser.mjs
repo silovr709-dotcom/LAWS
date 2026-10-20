@@ -61,7 +61,7 @@ try {
         check(violations.length === 0, `${width} ${route}: axe ${violations.map(v => `${v.id}(${v.nodes.length})`).join(', ')}`);
       }
       results.push({ route, width, status: response?.status(), metrics, violations, jsErrors });
-      if (route === '/' || (width === 320 && ['/ob-advokate/', '/napravleniya/zashchita-vrachey/', '/publikacii/vyzov-na-dopros/'].includes(route))) {
+      if (route === '/' || (width === 320 && ['/ob-advokate/', '/napravleniya/zashchita-vrachey/', '/materialy/razbory/vyzov-na-dopros/'].includes(route))) {
         await page.screenshot({ path: path.join(out, `${route === '/' ? 'home' : route.replaceAll('/', '_')}-${width}.png`), fullPage: true });
       }
       page.off('pageerror', onError); page.off('request', onRequest);

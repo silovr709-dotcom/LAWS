@@ -20,15 +20,23 @@ const schema = {
   description: about.lead,
   memberOf: { '@type': 'Organization', name: site.chamber, url: site.chamberUrl },
   identifier: { '@type': 'PropertyValue', propertyID: 'Реестровый номер адвоката', value: site.registryNumber },
-  knowsAbout: ['Уголовное право', 'Уголовный процесс', 'Защита по уголовным делам', 'Представительство потерпевших'],
+  knowsAbout: [
+    'Уголовное право',
+    'Уголовный процесс',
+    'Защита по уголовным делам',
+    'Представительство потерпевших',
+    'Правоохранительные органы',
+  ],
   sameAs: [site.vk],
 };
-const srcset = (stem: string, format: string) => [320, 640, 960].map((width) => `${withBase(`${stem}-${width}.${format}`)} ${width}w`).join(', ');
+const srcset = (stem: string, format: string) =>
+  [320, 640, 960].map((width) => `${withBase(`${stem}-${width}.${format}`)} ${width}w`).join(', ');
+const imageSizes = '(max-width: 860px) calc(100vw - 40px), (max-width: 1180px) 40vw, 470px';
 ---
 
 <BaseLayout
   title="Обо мне — адвокат Юрий Кочевинов"
-  description="Юрий Кочевинов о себе: 25 лет юридической практики, работа в оперативных подразделениях и прокуратуре, статус адвоката с 2023 года. Реестровый номер 51/862. Тверь, работа по всей России."
+  description="Юрий Кочевинов о себе: более 25 лет юридической практики, оперативные подразделения и налоговая полиция, прокуратура Мурманской области, прокурор Кировска и Первомайского округа. Адвокат с 2023 года, кабинет № АО51/257."
   schema={schema}
 >
   <section class="biography-hero">
@@ -43,12 +51,14 @@ const srcset = (stem: string, format: string) => [320, 640, 960].map((width) => 
         <h1>Юрий Анатольевич<br /><em>Кочевинов</em></h1>
         <p class="biography-hero__lead">{about.lead}</p>
         <dl class="biography-hero__facts">
-          <div><dt>Юридическая практика</dt><dd>25 лет</dd></div>
-          <div><dt>Адвокатская практика</dt><dd>С 2023 года</dd></div>
+          <div><dt>Юридическая практика</dt><dd>более 25 лет</dd></div>
+          <div><dt>Адвокат</dt><dd>с 2023 года</dd></div>
+          <div><dt>Реестровый номер</dt><dd>{site.registryNumber}</dd></div>
         </dl>
         <p class="detail-note">
           Юридическая практика включает предыдущую профессиональную деятельность; она не означает
-          25 лет работы в статусе адвоката.
+          25 лет работы в статусе адвоката. Сведения приведены по открытым источникам и реестру
+          адвокатов.
         </p>
       </div>
       <Portrait
@@ -59,11 +69,68 @@ const srcset = (stem: string, format: string) => [320, 640, 960].map((width) => 
     </div>
   </section>
 
-  <section class="section section--paper">
-    <div class="container about-intro">
-      <div class="about-intro__lead">
-        <p class="eyebrow">От первого лица</p>
-        <h2>Почему я работаю на стороне защиты</h2>
+  <section class="section section--paper" aria-labelledby="story-title">
+    <div class="container">
+      <div class="compact-head about-story__head">
+        <div>
+          <p class="eyebrow">От первого лица</p>
+          <h2 id="story-title">Путь к защите</h2>
+        </div>
+        <p class="compact-head__note">
+          Служба, надзор и адвокатура — не три профессии, а три взгляда на одно и то же дело.
+          Ниже — как это складывалось.
+        </p>
+      </div>
+
+      <div class="about-story">
+        {
+          about.story.map((block, index) => {
+            const image = gallery[block.image];
+            return (
+              <article
+                class:list={['about-story__row', index % 2 === 1 && 'about-story__row--reverse']}
+                data-reveal
+              >
+                <figure class="about-story__figure">
+                  <picture>
+                    <source
+                      type="image/avif"
+                      srcset={srcset(image.src, 'avif')}
+                      sizes={imageSizes}
+                    />
+                    <img
+                      src={withBase(`${image.src}-640.webp`)}
+                      srcset={srcset(image.src, 'webp')}
+                      sizes={imageSizes}
+                      width={image.width}
+                      height={image.height}
+                      alt={image.alt}
+                      loading={index === 0 ? 'eager' : 'lazy'}
+                      decoding="async"
+                    />
+                  </picture>
+                  <figcaption>{image.caption}</figcaption>
+                </figure>
+                <div class="about-story__text">
+                  <p class="about-story__eyebrow">{block.eyebrow}</p>
+                  <h3>{block.title}</h3>
+                  {block.paragraphs.map((paragraph) => <p>{paragraph}</p>)}
+                </div>
+              </article>
+            );
+          })
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--milk" aria-labelledby="principles-title">
+    <div class="container">
+      <div class="compact-head">
+        <div>
+          <p class="eyebrow">Подход</p>
+          <h2 id="principles-title">Почему я работаю на стороне защиты</h2>
+        </div>
       </div>
       <div class="about-intro__cards">
         {
@@ -79,48 +146,11 @@ const srcset = (stem: string, format: string) => [320, 640, 960].map((width) => 
     </div>
   </section>
 
-  <section class="section section--milk" aria-labelledby="gallery-title">
-    <div class="container">
-      <div class="compact-head">
-        <div>
-          <p class="eyebrow">Фотографии</p>
-          <h2 id="gallery-title">Рабочие кадры</h2>
-        </div>
-        <p class="compact-head__note">
-          Кабинет, документы, консультации и выезды. Изображения постановочные и не являются
-          документальной съёмкой конкретного события.
-        </p>
-      </div>
-      <div class="about-gallery">
-        {
-          gallery.map((image, index) => (
-            <figure class:list={['about-gallery__item', image.wide && 'about-gallery__item--wide']} data-reveal>
-              <picture>
-                <source type="image/avif" srcset={srcset(image.src, 'avif')} sizes="(max-width: 700px) 100vw, (max-width: 1100px) 50vw, 460px" />
-                <img
-                  src={withBase(`${image.src}-640.webp`)}
-                  srcset={srcset(image.src, 'webp')}
-                  sizes="(max-width: 700px) 100vw, (max-width: 1100px) 50vw, 460px"
-                  width={image.width}
-                  height={image.height}
-                  alt={image.alt}
-                  loading={index === 0 ? 'eager' : 'lazy'}
-                  decoding="async"
-                />
-              </picture>
-              <figcaption>{image.caption}</figcaption>
-            </figure>
-          ))
-        }
-      </div>
-    </div>
-  </section>
-
   <section class="section section--paper">
     <div class="container biography-layout">
       <div>
-        <p class="eyebrow">Профессиональный путь</p>
-        <h2>От изучения обстоятельств<br />к позиции защиты</h2>
+        <p class="eyebrow">Хронология</p>
+        <h2>Коротко о главном</h2>
         <div class="biography-timeline">
           {
             about.timeline.map((item) => (
@@ -139,8 +169,12 @@ const srcset = (stem: string, format: string) => [320, 640, 960].map((width) => 
             Результаты и дела
             <Icon name="arrow-right" size={14} />
           </a>
-          <a class="link-arrow" href={withBase('/obrazcy-zayavleniy/')}>
-            Образцы заявлений
+          <a class="link-arrow" href={withBase('/materialy/razbory/')}>
+            Разборы ситуаций
+            <Icon name="arrow-right" size={14} />
+          </a>
+          <a class="link-arrow" href={withBase('/materialy/obrazcy/')}>
+            Образцы документов
             <Icon name="arrow-right" size={14} />
           </a>
         </p>
@@ -167,15 +201,83 @@ const srcset = (stem: string, format: string) => [320, 640, 960].map((width) => 
 </BaseLayout>
 
 <style>
-  .about-intro {
-    display: grid;
-    gap: clamp(24px, 4vw, 44px);
+  .biography-hero__facts {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
-  .about-intro__lead h2 {
-    font-size: clamp(1.8rem, 3.4vw, 2.6rem);
-    margin-top: 10px;
-    max-width: 22ch;
+  .about-story__head {
+    margin-bottom: clamp(26px, 3.6vw, 40px);
+  }
+
+  .about-story {
+    display: grid;
+    gap: clamp(38px, 5vw, 62px);
+  }
+
+  .about-story__row {
+    display: grid;
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+    align-items: center;
+    gap: clamp(22px, 4vw, 52px);
+    padding-bottom: clamp(30px, 4vw, 46px);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .about-story__row:last-child {
+    padding-bottom: 0;
+    border-bottom: 0;
+  }
+
+  .about-story__row--reverse .about-story__figure {
+    order: 2;
+  }
+
+  .about-story__figure {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .about-story__figure img {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+    display: block;
+    background: var(--paper, #f6f0e7);
+  }
+
+  .about-story__figure figcaption {
+    font-size: 0.76rem;
+    line-height: 1.45;
+    color: var(--muted);
+  }
+
+  .about-story__eyebrow {
+    font-size: 0.72rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--gold-deep, #796039);
+    margin-bottom: 10px;
+  }
+
+  .about-story__text h3 {
+    font-size: clamp(1.35rem, 2.4vw, 1.9rem);
+    line-height: 1.22;
+    margin-bottom: 14px;
+    max-width: 26ch;
+  }
+
+  .about-story__text p {
+    font-size: 0.96rem;
+    line-height: 1.7;
+    color: var(--muted);
+    max-width: 60ch;
+  }
+
+  .about-story__text p + p {
+    margin-top: 12px;
   }
 
   .about-intro__cards {
@@ -210,42 +312,6 @@ const srcset = (stem: string, format: string) => [320, 640, 960].map((width) => 
     color: var(--muted);
   }
 
-  .about-gallery {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: clamp(14px, 2vw, 22px);
-    margin-top: clamp(24px, 4vw, 38px);
-  }
-
-  .about-gallery__item {
-    margin: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
-
-  .about-gallery__item img {
-    width: 100%;
-    height: auto;
-    display: block;
-    object-fit: cover;
-    background: var(--paper, #f6f0e7);
-  }
-
-  .about-gallery__item figcaption {
-    font-size: 0.76rem;
-    line-height: 1.45;
-    color: var(--muted);
-  }
-
-  .about-gallery__item--wide {
-    grid-column: span 2;
-  }
-
-  .about-gallery__item--wide img {
-    aspect-ratio: 16 / 10;
-  }
-
   .about-links {
     display: flex;
     flex-wrap: wrap;
@@ -254,28 +320,31 @@ const srcset = (stem: string, format: string) => [320, 640, 960].map((width) => 
   }
 
   @media (max-width: 960px) {
-    .about-intro__cards,
-    .about-gallery {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+    .about-story__row {
+      grid-template-columns: minmax(0, 1fr);
+      align-items: start;
     }
 
-    .about-gallery__item--wide {
-      grid-column: span 2;
+    .about-story__row--reverse .about-story__figure {
+      order: 0;
+    }
+
+    .about-story__figure img {
+      aspect-ratio: 16 / 11;
+    }
+
+    .about-intro__cards {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
     }
   }
 
   @media (max-width: 640px) {
-    .about-intro__cards,
-    .about-gallery {
+    .biography-hero__facts {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .about-intro__cards {
       grid-template-columns: minmax(0, 1fr);
-    }
-
-    .about-gallery__item--wide {
-      grid-column: span 1;
-    }
-
-    .about-gallery__item--wide img {
-      aspect-ratio: 4 / 5;
     }
   }
 </style>

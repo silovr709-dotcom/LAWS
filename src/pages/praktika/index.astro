@@ -5,6 +5,7 @@ import Icon from '../../components/Icon.astro';
 import { site } from '../../data/site';
 import '../../styles/policy.css';
 import { canonicalUrl, withBase } from '../../lib/paths';
+import { reviews } from '../../data/reviews';
 
 const cases = (await getCollection('cases', ({ data }) => !data.draft)).sort(
   (a, b) => b.data.year - a.data.year,
@@ -167,7 +168,7 @@ const schema = {
                 Обсудить ситуацию
                 <Icon name="arrow-right" size={15} />
               </a>
-              <a class="btn btn--outline" href={withBase("/publikacii/")}>Читать публикации</a>
+              <a class="btn btn--outline" href={withBase("/materialy/")}>Читать материалы</a>
             </div>
           </div>
         )
@@ -210,6 +211,49 @@ const schema = {
       </div>
     </div>
   </section>
+
+  <section class="section section--milk" aria-labelledby="reviews-title">
+    <div class="container">
+      <div class="compact-head">
+        <div>
+          <p class="eyebrow">Отзывы</p>
+          <h2 id="reviews-title">Что говорят доверители</h2>
+        </div>
+        <p class="compact-head__note">
+          Фрагменты открытых отзывов. Орфография источника сохранена, фамилии и контакты не
+          публикуются. Отзыв отражает мнение доверителя и не подтверждает результат по другому делу.
+        </p>
+      </div>
+      <div class="reviews-grid">
+        {
+          reviews.map((review) => (
+            <figure class="review-card" data-reveal>
+              <blockquote>{review.quote}</blockquote>
+              <figcaption>
+                <span>{review.topic}</span>
+                <span>{review.date}</span>
+                <a href={review.sourceUrl} target="_blank" rel="noopener noreferrer">
+                  Источник
+                </a>
+              </figcaption>
+            </figure>
+          ))
+        }
+      </div>
+
+      <div class="sources-note" data-reveal>
+        <h3>Почему дел в каталоге меньше, чем отзывов</h3>
+        <p>
+          В открытых картотеках судебных актов фамилии защитников и представителей, как правило,
+          не публикуются или обезличиваются. По карточке дела нельзя достоверно установить, что в
+          нём участвовал конкретный адвокат, поэтому в каталог попадают только те дела, где участие
+          подтверждено процессуальным документом либо открытой публикацией с указанием исхода.
+          Остальные результаты видны в отзывах — без номеров дел и данных доверителей.
+        </p>
+      </div>
+    </div>
+  </section>
+
   <script>
   const root = document.querySelector<HTMLElement>('[data-filters]');
   const grid = document.querySelector<HTMLElement>('[data-cases]');
@@ -247,5 +291,72 @@ const schema = {
   }
 </script>
 <style>
-  </style>
+  
+  .reviews-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: clamp(16px, 2.4vw, 24px);
+  }
+
+  .review-card {
+    margin: 0;
+    padding: clamp(20px, 2.6vw, 28px);
+    border: 1px solid var(--line);
+    background: var(--paper, #f6f0e7);
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .review-card blockquote {
+    margin: 0;
+    font-size: 0.95rem;
+    line-height: 1.66;
+    color: var(--ink, #1c1917);
+  }
+
+  .review-card figcaption {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 16px;
+    margin-top: auto;
+    padding-top: 14px;
+    border-top: 1px solid var(--line);
+    font-size: 0.78rem;
+    letter-spacing: 0.03em;
+    color: var(--muted);
+  }
+
+  .review-card figcaption a {
+    margin-left: auto;
+  }
+
+  .sources-note {
+    margin-top: clamp(24px, 3.4vw, 34px);
+    padding: clamp(20px, 2.6vw, 28px);
+    border-left: 3px solid var(--gold-deep, #796039);
+    background: rgba(121, 96, 57, 0.06);
+  }
+
+  .sources-note h3 {
+    font-family: var(--font-body);
+    font-size: 1.05rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+
+  .sources-note p {
+    font-size: 0.92rem;
+    line-height: 1.66;
+    color: var(--muted);
+    max-width: 92ch;
+  }
+
+  @media (max-width: 860px) {
+    .reviews-grid {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+</style>
 </BaseLayout>

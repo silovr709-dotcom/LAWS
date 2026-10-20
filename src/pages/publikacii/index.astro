@@ -1,75 +1,21 @@
 ---
-import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import Icon from '../../components/Icon.astro';
-import { formatDate } from '../../lib/format';
-import { site } from '../../data/site';
-import { canonicalUrl, withBase } from '../../lib/paths';
+import MovedPage from '../../components/MovedPage.astro';
+import { withBase } from '../../lib/paths';
 
-const articles = (await getCollection('articles', ({ data }) => !data.draft)).sort(
-  (a, b) => b.data.publishedAt.getTime() - a.data.publishedAt.getTime(),
-);
-
-const title = 'Публикации — адвокат Юрий Кочевинов, Тверь';
-const description =
-  'Практические материалы по уголовному процессу: допрос, доследственная проверка, апелляция и кассация. Объяснения без обещаний результата.';
-
-const schema = {
-  '@context': 'https://schema.org',
-  '@type': 'Blog',
-  name: 'Публикации адвоката Юрия Кочевинова',
-  url: canonicalUrl(site.url, '/publikacii/'),
-  inLanguage: 'ru-RU',
-  blogPost: articles.map((item) => ({
-    '@type': 'BlogPosting',
-    headline: item.data.title,
-    url: canonicalUrl(site.url, `/publikacii/${item.id}/`),
-    datePublished: item.data.publishedAt.toISOString(),
-  })),
-};
+const target = withBase('/materialy/razbory/');
 ---
 
-<BaseLayout title={title} description={description} schema={schema}>
-  <section class="page-hero">
-    <div class="container">
-      <nav class="breadcrumbs" aria-label="Хлебные крошки">
-        <a href={withBase("/")}>Главная</a>
-        <span aria-hidden="true">/</span>
-        <span aria-current="page">Публикации</span>
-      </nav>
-      <p class="eyebrow">Публикации</p>
-      <h1 class="page-hero__title">Разобраться до того, как действовать</h1>
-      <p class="page-hero__lead">
-        Материалы о процессуальных ситуациях, с которыми люди сталкиваются чаще всего. Это не
-        замена консультации: применимость выводов зависит от обстоятельств конкретного дела.
-      </p>
-    </div>
-  </section>
-
-  <section class="section section--paper">
-    <div class="container">
-      {
-        articles.length > 0 ? (
-          <div class="articles-list">
-            {articles.map((item) => (
-              <a class="article-row" href={withBase(`/publikacii/${item.id}/`)} data-reveal>
-                <div class="article-row__meta">
-                  <span>{item.data.category}</span>
-                  <span>{formatDate(item.data.publishedAt)}</span>
-                  <span>{item.data.readingTime}</span>
-                </div>
-                <div>
-                  <h2 class="article-row__title">{item.data.title}</h2>
-                  <p class="article-row__desc">{item.data.description}</p>
-                </div>
-                <Icon name="arrow-up-right" size={18} class="article-row__arrow" />
-              </a>
-            ))}
-          </div>
-        ) : (
-          <p>Публикации готовятся к выпуску.</p>
-        )
-      }
-    </div>
-  </section>
+<BaseLayout
+  title="Материалы переехали — адвокат Юрий Кочевинов"
+  description="Разборы и образцы документов теперь находятся в одном разделе «Материалы» на сайте адвоката Юрия Кочевинова."
+  noindex
+>
+  <meta slot="head" http-equiv="refresh" content={`0; url=${target}`} />
+  <MovedPage
+    to="/materialy/razbory/"
+    heading="Разборы переехали"
+    note="Тексты и образцы документов теперь в одном разделе «Материалы»."
+  />
+  <script is:inline define:vars={{ target }}>window.location.replace(target);</script>
 </BaseLayout>

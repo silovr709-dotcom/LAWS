@@ -99,7 +99,7 @@ const schema = {
             <dd>{data.role}</dd>
           </div>
           <div>
-            <dt>Суд</dt>
+            <dt>{data.instance === 'досудебная стадия' ? 'Орган' : 'Суд'}</dt>
             <dd>{data.court}</dd>
           </div>
           <div>

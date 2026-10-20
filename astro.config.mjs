@@ -46,6 +46,9 @@ export default defineConfig({
       filter: (page) =>
         !page.includes('/api/') &&
         !page.includes('/soglasie-na-obrabotku-personalnyh-dannyh/') &&
+        // Старые адреса разделов: страницы-редиректы на /materialy/ закрыты от индексации.
+        !page.includes('/publikacii/') &&
+        !page.includes('/obrazcy-zayavleniy/') &&
         !page.endsWith('/404/') &&
         (hasPublishedCases() || !page.includes('/praktika/')),
     }),

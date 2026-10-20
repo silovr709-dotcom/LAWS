@@ -4,7 +4,7 @@ import { promises as fs } from 'node:fs';
 import { documents, documentGroupsWithCount } from '../src/data/documents';
 
 test('document samples have unique slugs, real norms and a filled template', () => {
-  assert.ok(documents.length >= 15, 'раздел должен покрывать основные документы');
+  assert.ok(documents.length >= 20, 'раздел должен покрывать основные документы');
   assert.equal(new Set(documents.map((item) => item.slug)).size, documents.length);
   const slugPattern = /^[a-z0-9-]+$/;
   for (const document of documents) {

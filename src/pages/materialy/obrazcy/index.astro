@@ -1,0 +1,261 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import Icon from '../../../components/Icon.astro';
+import ContactPrompt from '../../../components/ContactPrompt.astro';
+import { documents, documentGroupsWithCount } from '../../../data/documents';
+import { site } from '../../../data/site';
+import '../../../styles/policy.css';
+import { canonicalUrl, withBase } from '../../../lib/paths';
+
+const title = 'Образцы документов, жалоб и ходатайств — адвокат Юрий Кочевинов';
+const description =
+  'Образцы процессуальных документов: заявление о преступлении, ходатайства, жалобы, иски. Готовые шаблоны с правовым основанием, скачивание в PDF и полный текст на сайте.';
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'CollectionPage',
+  name: title,
+  description,
+  url: canonicalUrl(site.url, '/materialy/obrazcy/'),
+  isPartOf: { '@type': 'WebSite', name: `Адвокат ${site.name}`, url: canonicalUrl(site.url, '/') },
+  mainEntity: {
+    '@type': 'ItemList',
+    itemListElement: documents.map((document, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      url: canonicalUrl(site.url, `/materialy/obrazcy/${document.slug}/`),
+      name: document.title,
+    })),
+  },
+};
+---
+
+<BaseLayout title={title} description={description} schema={schema}>
+  <section class="page-hero">
+    <div class="container">
+      <nav class="breadcrumbs" aria-label="Хлебные крошки">
+        <a href={withBase('/')}>Главная</a>
+        <span aria-hidden="true">/</span>
+        <a href={withBase('/materialy/')}>Материалы</a>
+        <span aria-hidden="true">/</span>
+        <span aria-current="page">Образцы документов</span>
+      </nav>
+      <p class="eyebrow">Документы · {documents.length} образцов</p>
+      <h1 class="page-hero__title">Образцы документов,<br /><em>жалоб и ходатайств</em></h1>
+      <p class="page-hero__lead">
+        Шаблоны документов, с которыми чаще всего приходят на консультацию. Каждый можно открыть
+        на сайте, скачать в PDF и заполнить под свои обстоятельства. Указаны правовая основа,
+        адресат и срок подачи.
+      </p>
+    </div>
+  </section>
+
+  <section class="section section--paper">
+    <div class="container">
+      <div class="filters" data-doc-filters aria-label="Фильтры по типу документа">
+        <div class="filters__group">
+          <span class="filters__label">Раздел</span>
+          <button class="filter-btn" type="button" aria-pressed="true" data-doc-filter="all">Все</button>
+          {
+            documentGroupsWithCount.map((entry) => (
+              <button
+                class="filter-btn"
+                type="button"
+                aria-pressed="false"
+                data-doc-filter={entry.group}
+              >
+                {entry.group} · {entry.items.length}
+              </button>
+            ))
+          }
+        </div>
+      </div>
+
+      <div class="doc-groups" data-doc-list>
+        {
+          documentGroupsWithCount.map((entry) => (
+            <section class="doc-group" data-doc-group={entry.group}>
+              <h2 class="doc-group__title">{entry.group}</h2>
+              <div class="cases-grid doc-grid">
+                {entry.items.map((document) => (
+                  <article class="case-card doc-card" data-reveal>
+                    <p class="case-card__meta">
+                      <span>{document.group}</span>
+                      <span>{document.basis}</span>
+                    </p>
+                    <h3 class="case-card__title">
+                      <a class="doc-card__link" href={withBase(`/materialy/obrazcy/${document.slug}/`)}>
+                        {document.short}
+                      </a>
+                    </h3>
+                    <p class="case-card__summary">{document.summary}</p>
+                    <div class="doc-card__actions">
+                      <a
+                        class="btn btn--outline btn--small"
+                        href={withBase(`/documents/${document.slug}.pdf`)}
+                        download
+                        data-goal="document_download"
+                      >
+                        Скачать PDF
+                      </a>
+                      <a class="doc-card__text" href={withBase(`/materialy/obrazcy/${document.slug}/`)}>
+                        Текст
+                        <Icon name="arrow-right" size={14} />
+                      </a>
+                    </div>
+                  </article>
+                ))}
+              </div>
+            </section>
+          ))
+        }
+      </div>
+
+      <div class="materials-cross" data-reveal>
+        <div>
+          <p class="eyebrow">Ещё в разделе</p>
+          <h2>Разборы ситуаций</h2>
+          <p>
+            Обыск, допрос, задержание, апелляция, алименты, приставы — материалы о том, что
+            происходит на практике и какие шаги имеют смысл. Без обещаний результата.
+          </p>
+        </div>
+        <a class="btn btn--outline" href={withBase('/materialy/razbory/')}>Открыть разборы</a>
+      </div>
+
+      <div class="practice-policy" data-reveal>
+        <h2>Как пользоваться образцами</h2>
+        <div class="practice-policy__grid">
+          <div>
+            <h3>Адаптируйте под дело</h3>
+            <p>
+              Это формы, а не готовые документы. Перепишите обстоятельства своими словами, проверьте
+              адресата и приложения — суд оценивает содержание, а не красоту шаблона.
+            </p>
+          </div>
+          <div>
+            <h3>Следите за сроками</h3>
+            <p>
+              У жалоб и ходатайств разные сроки: апелляция на приговор — 10 суток, замечания на
+              протокол — 3 дня после ознакомления. Срок, пропущенный без уважительной причины,
+              восстановить сложно.
+            </p>
+          </div>
+          <div>
+            <h3>Когда без адвоката не обойтись</h3>
+            <p>
+              Если дело уже возбуждено, назначено заседание или срок истекает в ближайшие дни, лучше
+              показать документы специалисту: ошибка в правовой квалификации стоит дороже шаблона.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <ContactPrompt title="Не уверены, какой документ нужен в вашей ситуации?" />
+
+  <script>
+    const filterRoot = document.querySelector<HTMLElement>('[data-doc-filters]');
+    const groups = document.querySelectorAll<HTMLElement>('[data-doc-group]');
+    filterRoot?.querySelectorAll<HTMLButtonElement>('[data-doc-filter]').forEach((button) => {
+      button.addEventListener('click', () => {
+        const value = button.dataset.docFilter ?? 'all';
+        filterRoot
+          .querySelectorAll<HTMLButtonElement>('[data-doc-filter]')
+          .forEach((item) => item.setAttribute('aria-pressed', String(item === button)));
+        groups.forEach((group) => {
+          group.hidden = value !== 'all' && group.dataset.docGroup !== value;
+        });
+      });
+    });
+  </script>
+
+  <style>
+    .doc-groups {
+      display: grid;
+      gap: clamp(2rem, 4vw, 3rem);
+    }
+
+    .doc-group__title {
+      font-size: clamp(1.5rem, 2.4vw, 1.9rem);
+      margin-bottom: 1.2rem;
+      padding-bottom: 0.6rem;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .doc-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .doc-card {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .doc-card__link {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .doc-card__link:hover,
+    .doc-card__link:focus-visible {
+      text-decoration: underline;
+      text-underline-offset: 4px;
+    }
+
+    .doc-card__actions {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 14px;
+      margin-top: auto;
+      padding-top: 6px;
+    }
+
+    .doc-card__text {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.86rem;
+      letter-spacing: 0.02em;
+    }
+
+    .btn--small {
+      min-height: 40px;
+      padding: 9px 16px;
+      font-size: 0.78rem;
+    }
+
+    .materials-cross {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px 32px;
+      margin-top: clamp(2.4rem, 4vw, 3.2rem);
+      padding: clamp(22px, 3vw, 30px);
+      border: 1px solid var(--line);
+      background: var(--paper, #f6f0e7);
+    }
+
+    .materials-cross h2 {
+      font-size: clamp(1.4rem, 2.2vw, 1.8rem);
+      margin: 8px 0 10px;
+    }
+
+    .materials-cross p {
+      max-width: 62ch;
+      font-size: 0.94rem;
+      line-height: 1.62;
+      color: var(--muted);
+    }
+
+    @media (max-width: 860px) {
+      .doc-grid {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+  </style>
+</BaseLayout>
