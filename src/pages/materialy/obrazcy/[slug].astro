@@ -5,6 +5,7 @@ import { documents, type LegalDocument } from '../../../data/documents';
 import { site } from '../../../data/site';
 import { canonicalUrl, withBase } from '../../../lib/paths';
 import { breadcrumbs } from '../../../lib/schema';
+import HeroBrief from '../../../components/HeroBrief.astro';
 import { getCollection } from 'astro:content';
 import { articleDocuments } from '../../../data/links';
 
@@ -44,7 +45,8 @@ const schema = {
 
 <BaseLayout title={title} description={description} type="article" schema={[schema, breadcrumbs([{ name: 'Главная', path: '/' }, { name: 'Материалы', path: '/materialy/' }, { name: 'Образцы документов', path: '/materialy/obrazcy/' }, { name: document.short, path: `/materialy/obrazcy/${document.slug}/` }])]}>
   <section class="page-hero">
-    <div class="container">
+    <div class="container page-hero__grid">
+      <div class="page-hero__content">
       <nav class="breadcrumbs" aria-label="Хлебные крошки">
         <a href={withBase('/')}>Главная</a>
         <span aria-hidden="true">/</span>
@@ -69,6 +71,16 @@ const schema = {
         </a>
         <button class="btn btn--outline-light" type="button" data-print>Распечатать</button>
       </div>
+      </div>
+      <HeroBrief
+        title="Паспорт документа"
+        items={[
+          { label: 'Правовая основа', value: document.basis },
+          { label: 'Куда подаётся', value: document.addressee },
+          ...(document.deadline ? [{ label: 'Срок', value: document.deadline }] : []),
+        ]}
+        note="Образец требует адаптации к обстоятельствам дела."
+      />
     </div>
   </section>
 
@@ -203,8 +215,10 @@ const schema = {
       align-items: start;
     }
 
+    /* На экране реквизиты уже есть в «паспорте документа» на обложке.
+       В печати оставляем их перед текстом: лист должен быть самодостаточным. */
     .doc-meta {
-      display: grid;
+      display: none;
       grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 16px;
       margin: 0 0 clamp(24px, 4vw, 36px);
@@ -375,6 +389,10 @@ const schema = {
       .doc-meta {
         grid-template-columns: minmax(0, 1fr);
       }
+
+      .doc-meta {
+        display: none;
+      }
     }
 
     @media print {
@@ -385,6 +403,11 @@ const schema = {
       .doc-actions,
       :global(.mobile-call-bar) {
         display: none !important;
+      }
+
+      .doc-meta {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
       }
 
       .doc-sheet {

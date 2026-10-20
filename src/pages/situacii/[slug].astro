@@ -3,6 +3,7 @@ import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Icon from '../../components/Icon.astro';
 import ContactPrompt from '../../components/ContactPrompt.astro';
+import HeroBrief from '../../components/HeroBrief.astro';
 import { situations, type Situation } from '../../data/situations';
 import { documents } from '../../data/documents';
 import { services } from '../../data/services';
@@ -77,11 +78,24 @@ const schema = [
         <a href={withBase('/')}>Главная</a>
         <span aria-hidden="true">/</span>
         <a href={withBase('/situacii/')}>Ситуации</a>
+        <span aria-hidden="true">/</span>
+        <span aria-current="page">{situation.title}</span>
       </nav>
-      <p class="eyebrow">Ситуация {situation.code}</p>
-      <h1>{situation.title}</h1>
-      <p class="detail-hero__lead">{situation.lead}</p>
-      <p class="detail-hero__lead"><strong>{situation.urgency}</strong></p>
+      <div class="detail-hero__grid detail-hero__grid--brief">
+        <div>
+          <p class="eyebrow">Ситуация {situation.code}</p>
+          <h1>{situation.title}</h1>
+          <p class="detail-hero__lead">{situation.lead}</p>
+        </div>
+        <HeroBrief
+          title="Срок и порядок"
+          items={[
+            { label: 'Что важно по срокам', value: situation.urgency },
+            { label: 'Первый шаг', value: situation.steps[0] },
+          ]}
+          note="Это ориентир по норме, а не консультация по вашему делу."
+        />
+      </div>
     </div>
   </header>
 

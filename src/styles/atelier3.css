@@ -1,0 +1,909 @@
+/* --------------------------------------------------------------------------
+   Atelier III — «дорогая» сдержанность.
+   Задача третьего прохода: не добавлять декора, а упорядочить оптику.
+   · первый экран получает редакционную композицию и обложечную линейку;
+   · карточки становятся едиными «пластинами» с волосяным контуром;
+   · типографика — точная: короткая строка, крупный лид, спокойные интерлиньяжи;
+   · тёмные блоки получают золотой волосок сверху, светлые — мягкую тень края;
+   · движение одно: медленный подъём на 10 px, без пружин.
+   Подключается последним.
+   -------------------------------------------------------------------------- */
+
+:root {
+  --ink: #241f1e;
+  --ink-soft: #5f5551;
+  --plate: #fffdf9;
+  --rule: rgba(124, 96, 52, 0.22);
+  --rule-soft: rgba(124, 96, 52, 0.12);
+  --rule-gold: rgba(182, 154, 99, 0.5);
+  --edge-light: 0 1px 0 rgba(255, 255, 255, 0.9) inset;
+  --plate-shadow: 0 1px 0 rgba(255, 255, 255, 0.85) inset, 0 30px 60px -52px rgba(37, 11, 19, 0.5);
+  --plate-shadow-hover: 0 1px 0 rgba(255, 255, 255, 0.95) inset, 0 44px 70px -48px rgba(37, 11, 19, 0.42);
+  --ease-silk: cubic-bezier(0.16, 0.68, 0.24, 1);
+  --measure: 64ch;
+}
+
+/* --- 1. Точки опоры: краска и строка ------------------------------------- */
+
+body {
+  color: var(--ink);
+  font-synthesis-weight: none;
+  text-rendering: optimizeLegibility;
+}
+
+p,
+li,
+dd,
+blockquote {
+  text-wrap: pretty;
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--gold-deep);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+}
+
+.eyebrow::before {
+  content: '';
+  width: 26px;
+  height: 1px;
+  background: currentColor;
+  opacity: 0.55;
+}
+
+/* На тёмном золото светлее, иначе подпись «проваливается». */
+.section--wine .eyebrow,
+.section--wine-deep .eyebrow,
+.hero .eyebrow,
+.page-hero .eyebrow,
+.detail-hero .eyebrow,
+.biography-hero .eyebrow,
+.article-hero .eyebrow,
+.sos-hero .eyebrow,
+.site-footer .eyebrow {
+  color: var(--gold-soft);
+}
+
+.hero__lead,
+.page-hero__lead,
+.detail-hero__lead,
+.biography-hero__lead,
+.article-hero__desc {
+  max-width: 52ch;
+  text-wrap: pretty;
+}
+
+.prose {
+  max-width: var(--measure);
+  font-size: 1.075rem;
+  line-height: 1.76;
+  color: #2b2624;
+}
+
+.prose > p:first-of-type {
+  font-size: 1.19rem;
+  line-height: 1.66;
+  color: var(--ink);
+}
+
+.prose p + p {
+  margin-top: 1.05em;
+}
+
+.prose h2 {
+  margin-top: 2.6em;
+  letter-spacing: -0.018em;
+}
+
+.prose h3 {
+  letter-spacing: -0.01em;
+}
+
+.prose li + li {
+  margin-top: 0.5em;
+}
+
+.prose ul,
+.prose ol {
+  padding-left: 1.15em;
+}
+
+.prose a:not(.btn) {
+  color: var(--wine);
+  text-decoration-color: rgba(182, 154, 99, 0.55);
+  text-underline-offset: 0.22em;
+  transition: color 220ms var(--ease-silk), text-decoration-color 220ms var(--ease-silk);
+}
+
+.prose a:not(.btn):hover {
+  color: var(--wine-deep);
+  text-decoration-color: var(--gold);
+}
+
+/* Таблицы в разборах — тонкие линии вместо «сетки из Excel». */
+.prose table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.6em 0;
+  font-size: 0.95rem;
+}
+
+.prose th,
+.prose td {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--rule-soft);
+  text-align: left;
+  vertical-align: top;
+}
+
+.prose th {
+  font-family: var(--font-body);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--gold-deep);
+  border-bottom-color: var(--rule);
+}
+
+.prose figcaption {
+  margin-top: 10px;
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  color: var(--ink-soft);
+}
+
+/* --- 2. Кнопки: волосок внутри, подъём на пиксель ------------------------ */
+
+.btn {
+  position: relative;
+  letter-spacing: 0.045em;
+  font-weight: 500;
+  transition:
+    background 300ms var(--ease-silk),
+    border-color 300ms var(--ease-silk),
+    box-shadow 300ms var(--ease-silk),
+    transform 300ms var(--ease-silk),
+    color 300ms var(--ease-silk);
+}
+
+.btn::after {
+  content: '';
+  position: absolute;
+  inset: 3px;
+  border: 1px solid currentColor;
+  opacity: 0.12;
+  pointer-events: none;
+  transition: opacity 300ms var(--ease-silk);
+}
+
+.btn:hover::after {
+  opacity: 0.24;
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+}
+
+.btn:active {
+  transform: translateY(0);
+}
+
+.btn svg {
+  transition: transform 280ms var(--ease-silk);
+}
+
+.btn:hover svg {
+  transform: translateX(3px);
+}
+
+.btn--outline:hover svg,
+.btn--outline-light:hover svg {
+  transform: translateX(2px);
+}
+
+.link-arrow {
+  gap: 7px;
+  letter-spacing: 0.02em;
+}
+
+.link-arrow svg {
+  transition: transform 280ms var(--ease-silk);
+}
+
+.link-arrow:hover svg {
+  transform: translateX(3px);
+}
+
+/* --- 3. Первый экран: обложка, а не «баннер + фото» ---------------------- */
+
+.hero {
+  position: relative;
+  isolation: isolate;
+}
+
+/* Тонкая золотая линейка-«обрез» по нижней кромке обложки. */
+.hero::before {
+  content: '';
+  position: absolute;
+  inset: auto 0 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    rgba(211, 189, 149, 0) 0%,
+    rgba(211, 189, 149, 0.55) 22%,
+    rgba(211, 189, 149, 0.55) 78%,
+    rgba(211, 189, 149, 0) 100%
+  );
+  z-index: 3;
+}
+
+.hero__inner {
+  align-items: end;
+}
+
+.hero__eyebrow {
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  font-size: 0.68rem;
+}
+
+.hero__title {
+  margin-top: 18px;
+  /* Переносы заданы в данных (три строки): не ломаем их узкой мерой. */
+  max-width: 22ch;
+  letter-spacing: -0.026em;
+  line-height: 0.96;
+}
+
+.hero__title em {
+  font-style: italic;
+}
+
+.hero__lead {
+  margin-top: 22px;
+  max-width: 40ch;
+  font-size: clamp(1.02rem, 1.15vw, 1.11rem);
+  line-height: 1.68;
+}
+
+.hero__actions {
+  margin-top: 30px;
+}
+
+.hero__microcopy {
+  margin-top: 14px;
+  max-width: 44ch;
+  font-size: 0.8125rem;
+  line-height: 1.6;
+}
+
+.hero__facts {
+  margin-top: 34px;
+  padding-top: 22px;
+}
+
+.hero__fact-value {
+  font-size: 1.85rem;
+  letter-spacing: 0.004em;
+  font-variant-numeric: lining-nums tabular-nums;
+}
+
+.hero__fact-label {
+  color: rgba(211, 189, 149, 0.78);
+}
+
+/* Портрет: рама с уголками, подпись лежит на нижней кромке снимка. */
+.hero .portrait {
+  max-width: 452px;
+  margin-left: auto;
+}
+
+.hero .portrait::after {
+  inset: -10px -10px 10px 10px;
+  border-color: rgba(211, 189, 149, 0.3);
+}
+
+.hero__signature {
+  position: relative;
+  z-index: 2;
+  margin: -34px 0 0 auto;
+  width: min(86%, 360px);
+  padding: 14px 20px 15px;
+  text-align: left;
+  color: var(--milk);
+  background: rgba(37, 11, 19, 0.72);
+  border: 1px solid rgba(211, 189, 149, 0.28);
+  border-left-color: rgba(211, 189, 149, 0.55);
+  backdrop-filter: blur(8px) saturate(1.1);
+  box-shadow: 0 24px 40px -32px rgba(0, 0, 0, 0.9);
+}
+
+.hero__signature span {
+  display: block;
+  font-size: 1.45rem;
+  letter-spacing: 0.01em;
+}
+
+.hero__signature small {
+  display: block;
+  margin-top: 3px;
+}
+
+/* --- 4. Внутренние обложки: воздух и порядок в шапке --------------------- */
+
+.page-hero__grid,
+.detail-hero__grid {
+  align-items: end;
+}
+
+.page-hero__title,
+.detail-hero h1,
+.article-hero__title,
+.biography-hero h1 {
+  text-wrap: balance;
+}
+
+.breadcrumbs {
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-size: 0.625rem;
+}
+
+.breadcrumbs a {
+  opacity: 0.72;
+  transition: opacity 200ms var(--ease-silk);
+}
+
+.breadcrumbs a:hover {
+  opacity: 1;
+}
+
+.page-hero__lead,
+.detail-hero__lead {
+  margin-top: 20px;
+  line-height: 1.7;
+  max-width: 46ch;
+}
+
+/* Визитка адвоката на внутренних обложках — как вклейка в книге. */
+.detail-hero__person {
+  position: relative;
+  padding-left: 22px;
+  border-left: 1px solid rgba(211, 189, 149, 0.32);
+  background: none;
+  border-radius: 0;
+}
+
+.detail-hero__person::before {
+  content: '';
+  position: absolute;
+  left: -1px;
+  top: 0;
+  width: 1px;
+  height: 42px;
+  background: var(--gold-soft);
+}
+
+.hero-ledger__value {
+  font-variant-numeric: lining-nums tabular-nums;
+}
+
+/* --- 5. Пластины: единая карточка сайта ---------------------------------- */
+
+.service-card,
+.case-card,
+.publication-card,
+.situation-card,
+.memo-card,
+.calc,
+.link-grid a {
+  position: relative;
+  background: var(--plate);
+  border: 1px solid var(--rule-soft);
+  box-shadow: var(--plate-shadow);
+  overflow: hidden;
+}
+
+/* Золотая линия, прорастающая слева при наведении. */
+.service-card::after,
+.case-card::after,
+.publication-card::after,
+.situation-card::after,
+.memo-card::after,
+.calc::after,
+.link-grid a::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: linear-gradient(180deg, var(--gold), rgba(182, 154, 99, 0.15));
+  transform: scaleY(0);
+  transform-origin: top center;
+  transition: transform 460ms var(--ease-silk);
+}
+
+.service-card:hover::after,
+.case-card:hover::after,
+.publication-card:hover::after,
+.situation-card:hover::after,
+.memo-card:hover::after,
+.link-grid a:hover::after {
+  transform: scaleY(1);
+}
+
+.service-card:hover,
+.case-card:hover,
+.publication-card:hover,
+.situation-card:hover,
+.memo-card:hover,
+.link-grid a:hover {
+  background: #fffefb;
+  border-color: var(--rule);
+  box-shadow: var(--plate-shadow-hover);
+  transform: translateY(-2px);
+}
+
+.service-card__number,
+.situation-card__code {
+  font-variant-numeric: lining-nums tabular-nums;
+  /* Тёмное золото без прозрачности: мелкий кегль обязан держать 4.5:1. */
+  color: #6f5836;
+}
+
+.service-card h3,
+.publication-card h3,
+.case-card__title,
+.situation-card__title,
+.memo-card h3 {
+  letter-spacing: -0.014em;
+  transition: color 260ms var(--ease-silk);
+}
+
+.service-card:hover h3,
+.publication-card:hover h3,
+.case-card:hover .case-card__title,
+.situation-card:hover .situation-card__title {
+  color: var(--wine-deep);
+}
+
+.publication-card__read,
+.service-card__link,
+.case-card__foot,
+.situation-card__more {
+  letter-spacing: 0.03em;
+}
+
+/* --- 6. Ритм секций: волосок сверху и мягкий край ------------------------ */
+
+.section {
+  position: relative;
+}
+
+.section--wine > .container::before,
+.section--wine-deep > .container::before,
+.urgent > .container::before,
+.sos-hero .container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: var(--gutter);
+  right: var(--gutter);
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(211, 189, 149, 0.42) 18%, rgba(211, 189, 149, 0.42) 82%, transparent);
+  pointer-events: none;
+}
+
+.section--wine > .container,
+.section--wine-deep > .container,
+.urgent > .container {
+  position: relative;
+  padding-top: clamp(1px, 0.2vw, 2px);
+}
+
+/* Светлые секции отделяются не линией, а сменой бумаги и тенью края. */
+.section--milk {
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7), inset 0 24px 34px -34px rgba(37, 11, 19, 0.18);
+}
+
+.section--paper + .section--milk,
+.section--milk + .section--paper {
+  border-top: 1px solid rgba(124, 96, 52, 0.08);
+}
+
+.compact-head,
+.section-head {
+  margin-bottom: clamp(28px, 4vw, 46px);
+}
+
+.section-head h2,
+.compact-head h2 {
+  letter-spacing: -0.022em;
+}
+
+/* --- 7. Шапка: тоньше линия, спокойнее состояние ------------------------- */
+
+.site-header {
+  transition: background 320ms var(--ease-silk), box-shadow 320ms var(--ease-silk), border-color 320ms var(--ease-silk);
+}
+
+.site-header.is-solid,
+.site-header.is-scrolled {
+  border-bottom: 1px solid rgba(124, 96, 52, 0.14);
+  background: rgba(255, 252, 247, 0.94);
+  backdrop-filter: saturate(1.15) blur(10px);
+}
+
+.site-header.is-scrolled {
+  box-shadow: 0 18px 32px -30px rgba(37, 11, 19, 0.55);
+}
+
+/* --- 8. Подвал: колофон вместо «ещё одного списка» ----------------------- */
+
+.site-footer {
+  border-top: 1px solid rgba(211, 189, 149, 0.24);
+}
+
+.footer__col a {
+  position: relative;
+}
+
+.footer__col a::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+  width: 100%;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 300ms var(--ease-silk);
+  opacity: 0.5;
+}
+
+.footer__col a:hover::after {
+  transform: scaleX(1);
+}
+
+/* --- 9. Движение: один сценарий ----------------------------------------- */
+
+@media (prefers-reduced-motion: no-preference) {
+  /* Скрытие — без перехода: иначе блоки ниже сгиба успевают «погаснуть»
+     на глазах при инициализации наблюдателя. Анимируется только появление. */
+  .has-reveal [data-reveal]:not(.is-visible) {
+    transition: none;
+  }
+
+  .has-reveal [data-reveal].is-visible {
+    transition: opacity 720ms var(--ease-silk), transform 720ms var(--ease-silk);
+  }
+
+  .service-grid > *:nth-child(2),
+  .situation-grid > *:nth-child(2),
+  .memo-grid > *:nth-child(2),
+  .calc-grid > *:nth-child(2) {
+    transition-delay: 70ms;
+  }
+
+  .service-grid > *:nth-child(3),
+  .situation-grid > *:nth-child(3),
+  .memo-grid > *:nth-child(3),
+  .calc-grid > *:nth-child(3) {
+    transition-delay: 140ms;
+  }
+
+  .hero__visual {
+    animation: plate-in 1000ms var(--ease-silk) 120ms both;
+  }
+}
+
+@keyframes plate-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.995);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* --- 10. Адаптив: сохранить композицию, а не сжать её -------------------- */
+
+@media (max-width: 1024px) {
+  .hero__title {
+    max-width: 100%;
+  }
+
+  .hero__signature {
+    margin-top: -26px;
+    width: min(92%, 340px);
+  }
+
+  .detail-hero__person {
+    padding-left: 18px;
+  }
+}
+
+@media (max-width: 720px) {
+  .hero__title {
+    margin-top: 14px;
+    max-width: 100%;
+    font-size: clamp(1.8rem, 7.9vw, 2.4rem);
+    line-height: 1;
+  }
+
+  .hero__lead {
+    margin-top: 16px;
+    max-width: 100%;
+  }
+
+  .hero__actions {
+    margin-top: 24px;
+  }
+
+  .hero__facts {
+    margin-top: 24px;
+    padding-top: 16px;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0 12px;
+  }
+
+  .hero__fact {
+    /* order у dt/dd задан выше: обычный column даёт «значение над подписью». */
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 3px;
+    padding: 0;
+    border-top: 0;
+  }
+
+  .hero__fact + .hero__fact {
+    padding-left: 12px;
+    border-left: 1px solid rgba(211, 189, 149, 0.18);
+  }
+
+  .hero__fact-value {
+    font-size: 1.06rem;
+    line-height: 1.1;
+  }
+
+  .hero__fact-label {
+    max-width: 12ch;
+    text-align: left;
+    font-size: 0.55rem;
+    letter-spacing: 0.1em;
+    line-height: 1.4;
+  }
+
+  .hero__signature {
+    margin: 18px 0 0;
+    width: 100%;
+    padding: 13px 16px;
+    backdrop-filter: none;
+  }
+
+  .hero__signature span {
+    font-size: 1.3rem;
+  }
+
+  .btn::after {
+    inset: 2px;
+  }
+
+  .prose {
+    font-size: 1.03rem;
+  }
+
+  .prose > p:first-of-type {
+    font-size: 1.1rem;
+  }
+
+  .section--wine > .container::before,
+  .section--wine-deep > .container::before {
+    left: var(--gutter);
+    right: var(--gutter);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn:hover,
+  .service-card:hover,
+  .case-card:hover,
+  .publication-card:hover,
+  .situation-card:hover,
+  .memo-card:hover,
+  .link-grid a:hover {
+    transform: none;
+  }
+}
+
+/* --- 11. Крошки: на узком экране не обрезаем путь, а сокращаем его ------- */
+
+.breadcrumbs {
+  gap: 6px 8px;
+  min-width: 0;
+}
+
+.breadcrumbs > * {
+  min-width: 0;
+}
+
+.breadcrumbs [aria-current='page'] {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
+}
+
+@media (max-width: 720px) {
+  .breadcrumbs {
+    font-size: 0.5625rem;
+    letter-spacing: 0.1em;
+    margin-bottom: 18px;
+  }
+
+  /* Первый и последний элементы важнее середины: путь читается и без них. */
+  .breadcrumbs > a:not(:first-child) {
+    display: none;
+  }
+
+  .breadcrumbs > span[aria-hidden='true'] {
+    display: none;
+  }
+
+  .breadcrumbs > a:first-child::after {
+    content: ' /';
+    opacity: 0.5;
+  }
+}
+
+/* --- 12. «Паспорт» на обложке: заполняет правую колонку по делу ---------- */
+
+.hero-brief {
+  width: 100%;
+  padding-top: 14px;
+  border-top: 1px solid rgba(211, 189, 149, 0.34);
+}
+
+.hero-brief__title {
+  margin-bottom: 10px;
+  font-size: 0.625rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(211, 189, 149, 0.8);
+}
+
+.hero-brief__list {
+  display: grid;
+  gap: 0;
+  margin: 0;
+}
+
+.hero-brief__row {
+  display: grid;
+  gap: 3px;
+  padding: 11px 0;
+  border-bottom: 1px solid rgba(211, 189, 149, 0.16);
+}
+
+.hero-brief__row dt {
+  font-size: 0.5625rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(211, 189, 149, 0.72);
+}
+
+.hero-brief__row dd {
+  margin: 0;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: rgba(246, 240, 231, 0.92);
+  text-wrap: pretty;
+}
+
+.hero-brief__note {
+  margin-top: 12px;
+  font-size: 0.75rem;
+  line-height: 1.55;
+  color: rgba(246, 240, 231, 0.6);
+}
+
+@media (max-width: 1024px) {
+  .hero-brief__row dd {
+    font-size: 0.8125rem;
+  }
+}
+
+@media (max-width: 760px) {
+  .hero-brief {
+    margin-top: 26px;
+  }
+
+  /* На телефоне паспорт превращается в компактную строку под лидом. */
+  .hero-brief__row {
+    grid-template-columns: minmax(92px, 0.42fr) minmax(0, 1fr);
+    align-items: baseline;
+    gap: 12px;
+    padding: 9px 0;
+  }
+}
+
+/* Обложка с «паспортом»: текст не прижимается к правому краю. */
+.detail-hero__grid--brief,
+.page-hero__grid:has(.hero-brief) {
+  grid-template-columns: minmax(0, 1fr) minmax(260px, 340px);
+  gap: clamp(28px, 4vw, 64px);
+  align-items: start;
+}
+
+.page-hero__grid:has(.hero-brief) .page-hero__content {
+  min-width: 0;
+}
+
+.detail-hero__grid--brief .detail-hero__lead {
+  margin-bottom: 6px;
+}
+
+@media (max-width: 900px) {
+  .detail-hero__grid--brief,
+  .page-hero__grid:has(.hero-brief) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* --- 13. Блок «Обо мне» на главной: подпись под портретом как в каталоге - */
+
+.home-about__caption {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-top: 18px;
+  max-width: 34ch;
+  font-size: 0.75rem;
+  line-height: 1.55;
+  color: var(--ink-soft);
+}
+
+.home-about__caption-rule {
+  flex: none;
+  width: 26px;
+  height: 1px;
+  margin-top: 0.62em;
+  background: var(--gold);
+}
+
+.home-about__fact dd,
+.home-about__facts dd {
+  font-variant-numeric: lining-nums tabular-nums;
+}
+
+/* --- 15. Надзаголовки: один кегль во всех блоках -------------------------- */
+/* `.faq__head p` задаёт 0.9rem обычным абзацам и задевал eyebrow — выравниваем. */
+
+.faq__head > p.eyebrow,
+.contact__intro > p.eyebrow,
+.urgent-compact__inner > p.eyebrow {
+  max-width: none;
+  font-size: 0.6875rem;
+  letter-spacing: 0.21em;
+  line-height: 1.4;
+  color: var(--gold-deep);
+}
+
+.section--wine .faq__head > p.eyebrow,
+.section--wine-deep .faq__head > p.eyebrow,
+.section--wine .contact__intro > p.eyebrow,
+.section--wine-deep .contact__intro > p.eyebrow,
+.section--wine .urgent-compact__inner > p.eyebrow,
+.section--wine-deep .urgent-compact__inner > p.eyebrow {
+  color: var(--gold-soft);
+}
