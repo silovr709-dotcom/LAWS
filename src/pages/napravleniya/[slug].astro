@@ -1,6 +1,8 @@
 ---
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import EditorialImage from '../../components/EditorialImage.astro';
+import { servicePhotos } from '../../data/editorial';
 import Portrait from '../../components/Portrait.astro';
 import ContactPrompt from '../../components/ContactPrompt.astro';
 import Icon from '../../components/Icon.astro';
@@ -19,10 +21,20 @@ const serviceDocs = (serviceDocuments[service.slug] ?? [])
   .filter((document) => document !== undefined);
 const serviceSituations = situations.filter((situation) => situation.service === service.slug);
 const url = canonicalUrl(site.url, `/napravleniya/${service.slug}/`);
+const photo = servicePhotos[service.slug];
 const schema = [{ '@context': 'https://schema.org', '@type': 'Service', name: service.title, description: service.lead, url, areaServed: { '@type': 'Country', name: 'Россия' }, provider: { '@type': 'Person', '@id': canonicalUrl(site.url, '/ob-advokate/#person'), name: site.fullName, url: canonicalUrl(site.url, '/ob-advokate/') } }, { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: 'Главная', item: canonicalUrl(site.url, '/') }, { '@type': 'ListItem', position: 2, name: service.title, item: url }] }];
 ---
 <BaseLayout title={`${service.title} — адвокат Юрий Кочевинов, Тверь и Россия`} description={service.lead} schema={schema}>
-  <header class="detail-hero"><div class="container"><nav class="breadcrumbs" aria-label="Хлебные крошки"><a href={withBase('/')}>Главная</a><span aria-hidden="true">/</span><a href={withBase('/#napravleniya')}>Направления</a></nav><div class="detail-hero__grid"><div><p class="eyebrow"><span>Уголовно-правовая защита</span> <span class="eyebrow__num">· {service.number}</span></p><h1>{service.title}</h1><p class="detail-hero__lead">{service.lead}</p></div><div class="detail-hero__person"><Portrait variant="avatar" /><div><span>{site.name}</span><p>Адвокат · {site.registryNumber}<br />Тверь и вся Россия</p><a href={withBase('/ob-advokate/')}>Об адвокате<Icon name="arrow-right" size={14} /></a></div></div></div></div></header>
+  <header class="detail-hero"><div class="container"><nav class="breadcrumbs" aria-label="Хлебные крошки"><a href={withBase('/')}>Главная</a><span aria-hidden="true">/</span><a href={withBase('/#napravleniya')}>Направления</a><span aria-hidden="true">/</span><span aria-current="page">{service.title}</span></nav><div class="detail-hero__grid"><div><p class="eyebrow"><span>Уголовно-правовая защита</span> <span class="eyebrow__num">· {service.number}</span></p><h1>{service.title}</h1><p class="detail-hero__lead">{service.lead}</p></div><div class="detail-hero__person"><Portrait variant="avatar" /><div><span>{site.name}</span><p>Адвокат · {site.registryNumber}<br />Тверь и вся Россия</p><a href={withBase('/ob-advokate/')}>Об адвокате<Icon name="arrow-right" size={14} /></a></div></div></div></div></header>
+  {
+    photo && (
+      <figure class="service-cover">
+        <div class="container">
+          <EditorialImage name={photo.name} alt={photo.alt} sizes="(max-width: 900px) 92vw, 1180px" />
+        </div>
+      </figure>
+    )
+  }
   <div class="section section--paper"><div class="container service-detail"><div>
     <section class="service-detail__section" id="kogda"><p class="eyebrow">Когда обратиться</p><h2>Если вы узнали свою ситуацию</h2><ul class="editorial-list">{service.scenarios.map((item) => <li>{item}</li>)}</ul><p class="service-focus">{service.focus}</p></section>
     <section class="service-detail__section" id="rabota"><p class="eyebrow">Содержание помощи</p><h2>Что может входить в работу</h2><div class="service-work">{service.work.map((item, index) => <article><span aria-hidden="true">0{index + 1}</span><div><h3>{item.title}</h3><p>{item.text}</p></div></article>)}</div><p class="detail-note">Конкретные действия зависят от материалов, процессуального статуса и принятого поручения. Это описание направления, а не обещание определённого результата.</p></section>

@@ -9,7 +9,7 @@ import { canonicalUrl, withBase } from '../../../lib/paths';
 import { breadcrumbs } from '../../../lib/schema';
 import { documents } from '../../../data/documents';
 import { plural } from '../../../lib/format';
-import { articlePhotos } from '../../../data/editorial';
+import { articlePhotos, pagePhotos } from '../../../data/editorial';
 import EditorialImage from '../../../components/EditorialImage.astro';
 
 const articles = (await getCollection('articles', ({ data }) => !data.draft)).sort(
@@ -59,6 +59,17 @@ const schema = {
       </p>
     </div>
   </section>
+
+  <figure class="razbory-cover">
+    <div class="container">
+      <EditorialImage
+        name={pagePhotos.razbory.name}
+        alt={pagePhotos.razbory.alt}
+        sizes="(max-width: 900px) 92vw, 1180px"
+        eager
+      />
+    </div>
+  </figure>
 
   <section class="section section--paper">
     <div class="container">

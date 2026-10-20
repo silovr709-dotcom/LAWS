@@ -5,6 +5,8 @@ import path from 'node:path';
 // Иллюстрации к разборам и ситуациям: единая серия, 3:2, без текста в кадре.
 // Источники лежат вне репозитория (.cache), в public попадают только оптимизированные файлы.
 const source = process.argv[2] ?? '.cache/editorial/src';
+// Необязательный список имён: node scripts/build-editorial.mjs .cache/editorial/src pristavy
+const only = process.argv.slice(3);
 const target = 'public/media/editorial';
 await mkdir(target, { recursive: true });
 
@@ -12,7 +14,7 @@ const widths = [320, 640, 960, 1280];
 const ratio = 3 / 2;
 let total = 0;
 
-for (const entry of (await readdir(source)).filter((file) => file.endsWith('.png')).sort()) {
+for (const entry of (await readdir(source)).filter((file) => file.endsWith('.png') && (only.length === 0 || only.includes(path.basename(file, '.png')))).sort()) {
   const name = path.basename(entry, '.png');
   const input = path.join(source, entry);
   for (const width of widths) {

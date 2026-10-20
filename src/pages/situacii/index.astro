@@ -6,6 +6,8 @@ import { situations } from '../../data/situations';
 import { canonicalUrl, withBase } from '../../lib/paths';
 import HeroLedger from '../../components/HeroLedger.astro';
 import { site } from '../../data/site';
+import EditorialImage from '../../components/EditorialImage.astro';
+import { articlePhotos, situationPhotos } from '../../data/editorial';
 
 const title = 'Навигатор по ситуации — что делать и какие права есть';
 const description =
@@ -65,6 +67,13 @@ const schema = [
       <div class="situation-grid">
         {situations.map((item) => (
           <a class="situation-card" href={withBase(`/situacii/${item.slug}/`)} data-goal="situation_open">
+            <span class="situation-card__media">
+              <EditorialImage
+                name={articlePhotos[situationPhotos[item.slug]].name}
+                alt={articlePhotos[situationPhotos[item.slug]].alt}
+                sizes="(max-width: 600px) 92vw, (max-width: 1100px) 45vw, 380px"
+              />
+            </span>
             <span class="situation-card__code">{item.code}</span>
             <h3 class="situation-card__title">{item.title}</h3>
             <p class="situation-card__lead">{item.lead}</p>

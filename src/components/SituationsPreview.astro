@@ -2,6 +2,8 @@
 import { situations } from '../data/situations';
 import { withBase } from '../lib/paths';
 import Icon from './Icon.astro';
+import EditorialImage from './EditorialImage.astro';
+import { articlePhotos, situationPhotos } from '../data/editorial';
 
 const featured = ['zaderzhali', 'obysk', 'dopros', 'pristavy']
   .map((slug) => situations.find((item) => item.slug === slug))
@@ -22,6 +24,13 @@ const featured = ['zaderzhali', 'obysk', 'dopros', 'pristavy']
     <div class="situation-grid">
       {featured.map((item) => (
         <a class="situation-card" href={withBase(`/situacii/${item.slug}/`)} data-goal="situation_open">
+          <span class="situation-card__media">
+            <EditorialImage
+              name={articlePhotos[situationPhotos[item.slug]].name}
+              alt={articlePhotos[situationPhotos[item.slug]].alt}
+              sizes="(max-width: 720px) 92vw, 300px"
+            />
+          </span>
           <span class="situation-card__code">{item.code}</span>
           <h3 class="situation-card__title">{item.title}</h3>
           <p class="situation-card__lead">{item.lead}</p>

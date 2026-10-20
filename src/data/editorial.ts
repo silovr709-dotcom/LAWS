@@ -63,6 +63,35 @@ export const articlePhotos: Record<string, EditorialPhoto> = {
   },
 };
 
+/** Направления работы: те же кадры, что у профильных разборов. */
+export const servicePhotos: Record<string, EditorialPhoto> = {
+  'dosledstvennaya-proverka': articlePhotos['dosledstvennaya-proverka'],
+  'ekonomicheskie-prestupleniya': {
+    name: 'ekonomicheskie-prestupleniya',
+    alt: 'Открытая конторская книга с графами, счётная машинка и авторучка на столе',
+  },
+  'dolzhnostnye-prestupleniya': {
+    name: 'dolzhnostnye-prestupleniya',
+    alt: 'Кожаный портфель на стуле и папка с бумагами на столе под лампой',
+  },
+  'zashchita-vrachey': {
+    name: 'zashchita-vrachey',
+    alt: 'Стетоскоп, стопка медицинских карт и авторучка на светлом столе',
+  },
+  'predstavitelstvo-poterpevshih': {
+    name: 'predstavitelstvo-poterpevshih',
+    alt: 'Пустое кресло в зале суда с папкой и ручкой на сиденье',
+  },
+};
+
+/** Обложка раздела «Разборы». */
+export const pagePhotos = {
+  razbory: {
+    name: 'materialy',
+    alt: 'Раскрытые книги, листы бумаги и лупа на письменном столе у окна',
+  },
+} satisfies Record<string, EditorialPhoto>;
+
 /** Ситуации показывают кадр разбора по той же теме. */
 export const situationPhotos: Record<string, string> = {
   zaderzhali: 'zaderzhanie-pervye-48-chasov',
