@@ -1,5 +1,6 @@
 ---
 import { getCollection, render, type CollectionEntry } from 'astro:content';
+import GithubSlugger from 'github-slugger';
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import Icon from '../../../components/Icon.astro';
 import { formatDate, toIsoDate } from '../../../lib/format';
@@ -34,6 +35,17 @@ const relatedSituations = (articleSituations[item.id] ?? [])
   .map((slug) => situations.find((situation) => situation.slug === slug))
   .filter((situation) => situation !== undefined);
 const { Content } = await render(item);
+
+// Содержание статьи: заголовки второго уровня, идентификаторы — как их строит Astro.
+const slugger = new GithubSlugger();
+const headings: { id: string; label: string }[] = [];
+for (const line of (item.body ?? '').split('\n')) {
+  const match = /^(#{2,3})\s+(.+)$/.exec(line.trim());
+  if (!match) continue;
+  const label = match[2].replace(/[*_`]/g, '').trim();
+  const id = slugger.slug(label);
+  if (match[1].length === 2) headings.push({ id, label });
+}
 
 const related = (
   await getCollection('articles', ({ data: other, id }) => !other.draft && id !== item.id)
@@ -129,6 +141,18 @@ const schema = {
         </div>
 
         <aside class="article-aside">
+          {
+            headings.length > 1 && (
+              <nav class="aside-card article-toc" aria-labelledby="article-toc-title" data-article-toc>
+                <h2 id="article-toc-title">Содержание</h2>
+                <ol>
+                  {headings.map((heading) => (
+                    <li><a href={`#${heading.id}`} data-toc-link>{heading.label}</a></li>
+                  ))}
+                </ol>
+              </nav>
+            )
+          }
           <div class="aside-card">
             <h2>Источники</h2>
             {
@@ -244,6 +268,32 @@ const schema = {
       update();
       window.addEventListener('scroll', update, { passive: true });
       window.addEventListener('resize', update);
+    }
+
+    // Подсветка текущего раздела в содержании.
+    const toc = document.querySelector<HTMLElement>('[data-article-toc]');
+    if (toc && 'IntersectionObserver' in window) {
+      const links = Array.from(toc.querySelectorAll<HTMLAnchorElement>('[data-toc-link]'));
+      const sections = links
+        .map((link) => document.getElementById(decodeURIComponent(link.hash.slice(1))))
+        .filter((section): section is HTMLElement => Boolean(section));
+      const setCurrent = (id: string) => {
+        for (const link of links) {
+          const active = decodeURIComponent(link.hash.slice(1)) === id;
+          link.toggleAttribute('aria-current', active);
+          if (active) link.setAttribute('aria-current', 'true');
+        }
+      };
+      const observer = new IntersectionObserver(
+        (entries) => {
+          const visible = entries
+            .filter((entry) => entry.isIntersecting)
+            .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top)[0];
+          if (visible) setCurrent(visible.target.id);
+        },
+        { rootMargin: '-96px 0px -64% 0px', threshold: 0 },
+      );
+      sections.forEach((section) => observer.observe(section));
     }
   </script>
 </BaseLayout>

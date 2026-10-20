@@ -155,7 +155,59 @@ const suggestions = ['задержание', 'обыск', 'алименты', '
       return total;
     };
 
-    const render = (results: SearchItem[]) => {
+    const highlight = (node: HTMLElement, text: string, tokens: string[]) => {
+      node.replaceChildren();
+      if (tokens.length === 0) {
+        node.textContent = text;
+        return;
+      }
+      const lower = text.toLowerCase().replace(/ё/g, 'е');
+      let index = 0;
+      while (index < text.length) {
+        let best = -1;
+        let bestToken = '';
+        for (const token of tokens) {
+          const found = lower.indexOf(token, index);
+          if (found !== -1 && (best === -1 || found < best)) {
+            best = found;
+            bestToken = token;
+          }
+        }
+        if (best === -1) {
+          node.append(text.slice(index));
+          break;
+        }
+        if (best > index) node.append(text.slice(index, best));
+        const mark = document.createElement('mark');
+        mark.textContent = text.slice(best, best + bestToken.length);
+        node.append(mark);
+        index = best + bestToken.length;
+      }
+    };
+
+    const links = () => Array.from(list.querySelectorAll<HTMLAnchorElement>('a'));
+
+    const move = (from: HTMLAnchorElement, step: number) => {
+      const all = links();
+      const next = all[all.indexOf(from) + step];
+      if (next) {
+        next.focus();
+      } else if (step < 0) {
+        input?.focus();
+      }
+    };
+
+    list.addEventListener('keydown', (event) => {
+      const link = (event.target as HTMLElement).closest('a');
+      if (!link) return;
+      if (event.key === 'ArrowDown') { event.preventDefault(); move(link, 1); }
+      if (event.key === 'ArrowUp') { event.preventDefault(); move(link, -1); }
+      if (event.key === 'Home') { event.preventDefault(); links()[0]?.focus(); }
+      if (event.key === 'End') { event.preventDefault(); links().at(-1)?.focus(); }
+      if (event.key === 'Escape') { event.preventDefault(); input?.focus(); }
+    });
+
+    const render = (results: SearchItem[], tokens: string[]) => {
       list.replaceChildren();
       for (const item of results) {
         const li = document.createElement('li');
@@ -168,17 +220,19 @@ const suggestions = ['задержание', 'обыск', 'алименты', '
         const heading = document.createElement('h3');
         const link = document.createElement('a');
         link.href = item.url;
-        link.textContent = item.title;
+        highlight(link, item.title, tokens);
         heading.append(link);
 
         const text = document.createElement('p');
-        text.textContent = item.description;
+        highlight(text, item.description, tokens);
 
         li.append(meta, heading, text);
         list.append(li);
       }
       if (empty) empty.hidden = results.length > 0;
     };
+
+    let timer: number | undefined;
 
     const update = async (raw: string) => {
       const query = raw.trim();
@@ -201,9 +255,9 @@ const suggestions = ['задержание', 'обыск', 'алименты', '
         .sort((a, b) => b.value - a.value)
         .slice(0, 20)
         .map((entry) => entry.item);
-      render(results);
+      render(results, tokens);
       status.textContent = results.length
-        ? `Найдено: ${results.length}. Показаны первые совпадения.`
+        ? `Найдено: ${results.length}. Стрелки — выбор, Enter — открыть.`
         : 'Ничего не нашлось.';
       const url = new URL(window.location.href);
       if (query) url.searchParams.set('q', query);
@@ -211,7 +265,24 @@ const suggestions = ['задержание', 'обыск', 'алименты', '
       window.history.replaceState({}, '', url);
     };
 
-    input.addEventListener('input', () => update(input.value));
+    const schedule = (value: string) => {
+      window.clearTimeout(timer);
+      timer = window.setTimeout(() => void update(value), 140);
+    };
+
+    input.addEventListener('input', () => schedule(input.value));
+
+    input.addEventListener('keydown', (event) => {
+      if (event.key === 'ArrowDown') {
+        event.preventDefault();
+        links()[0]?.focus();
+      }
+      if (event.key === 'Escape') {
+        input.value = '';
+        void update('');
+        input.blur();
+      }
+    });
 
     document.querySelectorAll<HTMLButtonElement>('[data-suggestion]').forEach((button) => {
       button.addEventListener('click', () => {
@@ -225,6 +296,8 @@ const suggestions = ['задержание', 'обыск', 'алименты', '
     if (initial) {
       input.value = initial;
       void update(initial);
+    } else if (!window.matchMedia('(max-width: 1024px)').matches) {
+      input.focus({ preventScroll: true });
     }
   }
 </script>

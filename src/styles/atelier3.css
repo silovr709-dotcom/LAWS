@@ -1096,3 +1096,255 @@ blockquote {
     display: none;
   }
 }
+
+/* --- 17. Поиск: подсветка совпадений и вход из шапки --------------------- */
+
+.header-search {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  margin-right: 2px;
+  color: inherit;
+  border-radius: 50%;
+  opacity: 0.72;
+  transition: opacity 240ms var(--ease-silk), background-color 240ms var(--ease-silk);
+}
+
+.header-search:hover,
+.header-search:focus-visible {
+  opacity: 1;
+  background: rgba(246, 240, 231, 0.12);
+}
+
+.search-result mark {
+  padding: 0 1px;
+  background: rgba(182, 154, 99, 0.26);
+  color: inherit;
+  border-radius: 1px;
+}
+
+.search-result a:focus-visible {
+  outline: 2px solid var(--gold-deep);
+  outline-offset: 3px;
+}
+
+.search-result:hover,
+.search-result:focus-within {
+  background: #fffdfa;
+}
+
+.search-box input:focus-visible {
+  outline: 2px solid var(--gold-deep);
+  outline-offset: 2px;
+}
+
+/* На узком экране поиск живёт в меню — иконка в шапке не нужна. */
+@media (max-width: 1024px) {
+  .header-search {
+    display: none;
+  }
+}
+
+/* --- 18. Содержание разбора --------------------------------------------- */
+
+.article-toc ol {
+  display: grid;
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: toc;
+}
+
+.article-toc li {
+  counter-increment: toc;
+}
+
+.article-toc a {
+  display: flex;
+  gap: 10px;
+  padding: 5px 0;
+  font-size: 0.8125rem;
+  line-height: 1.45;
+  color: var(--ink-soft);
+  text-decoration: none;
+  border-left: 1px solid transparent;
+  padding-left: 10px;
+  margin-left: -11px;
+  transition: color 200ms var(--ease-silk), border-color 200ms var(--ease-silk);
+}
+
+.article-toc a::before {
+  content: counter(toc, decimal-leading-zero);
+  flex: none;
+  font-size: 0.625rem;
+  letter-spacing: 0.08em;
+  color: var(--gold-deep);
+  padding-top: 0.25em;
+}
+
+.article-toc a:hover,
+.article-toc a:focus-visible {
+  color: var(--wine);
+}
+
+.article-toc a[aria-current='true'] {
+  color: var(--wine);
+  border-left-color: var(--gold);
+}
+
+/* --- 19. 404: не тупик, а точка входа -------------------------------- */
+
+.notfound__help .container {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr);
+  gap: clamp(28px, 4vw, 64px);
+  align-items: start;
+}
+
+.notfound__intro h2 {
+  margin: 18px 0 14px;
+  font-size: clamp(1.6rem, 2.4vw, 2.1rem);
+}
+
+.notfound__intro > p:not(.eyebrow) {
+  max-width: 40ch;
+  margin-bottom: 20px;
+  color: var(--ink-soft);
+}
+
+.notfound__situations {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1px;
+  background: var(--rule);
+  border: 1px solid var(--rule);
+}
+
+.notfound__card {
+  display: grid;
+  gap: 6px;
+  padding: 20px 22px;
+  min-height: 88px;
+  align-content: center;
+  background: var(--paper);
+  color: var(--wine);
+  text-decoration: none;
+  transition: background-color 240ms var(--ease-silk);
+}
+
+.notfound__card:hover,
+.notfound__card:focus-visible {
+  background: #fffdfa;
+}
+
+.notfound__card > span {
+  font-size: 0.6875rem;
+  letter-spacing: 0.16em;
+  color: var(--gold-deep);
+}
+
+.notfound__card h3 {
+  font-size: 1.15rem;
+  line-height: 1.25;
+}
+
+.notfound__docs {
+  grid-column: 2;
+  margin-top: clamp(4px, 1.4vw, 18px);
+  padding-top: clamp(18px, 2.4vw, 26px);
+  border-top: 1px solid var(--rule-soft);
+}
+
+.notfound__docs h3 {
+  margin-bottom: 10px;
+  font-family: var(--font-body);
+  font-size: 0.625rem;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--gold-deep);
+}
+
+@media (max-width: 900px) {
+  .notfound__help .container {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .notfound__docs {
+    grid-column: 1;
+  }
+}
+
+@media (max-width: 520px) {
+  .notfound__situations {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* --- 20. Удобство на телефоне: крупные цели нажатия --------------------- */
+/* Правило: если элемент выглядит ссылкой (стрелка, кнопка) — он должен
+   приниматься пальцем без прицеливания. Текст внутри абзацев не трогаем. */
+
+@media (max-width: 1024px) {
+  .link-arrow,
+  .header-urgent,
+  .breadcrumbs a,
+  .btn--small {
+    min-height: 44px;
+    align-items: center;
+  }
+
+  .link-arrow {
+    padding-block: 11px;
+    border-bottom-color: var(--rule-soft);
+  }
+
+  .btn--outline,
+  .btn--ghost,
+  .filter-btn,
+  .contact-prompt__actions a,
+  [data-suggestion],
+  .hero__secondary {
+    min-height: 44px;
+  }
+
+  .contact-prompt__actions {
+    align-items: stretch;
+  }
+
+  .article-toc a,
+  .search-result a {
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+  }
+
+  .article-toc a {
+    align-items: flex-start;
+    padding-block: 10px;
+  }
+
+  .sources-list a,
+  .link-grid a span {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  /* «Скачать PDF», «Текст» и заголовки документов в разделе «Материалы» */
+  .doc-card__actions .btn,
+  .doc-card__text,
+  .doc-card__link {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .doc-card__link {
+    display: block;
+    padding-block: 9px;
+  }
+}

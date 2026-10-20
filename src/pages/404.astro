@@ -1,6 +1,14 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { withBase } from '../lib/paths';
+import { situations } from '../data/situations';
+import { documents } from '../data/documents';
+import Icon from '../components/Icon.astro';
+
+const urgent = situations.slice(0, 4);
+const popularDocs = ['zayavlenie-o-prestuplenii', 'zhaloba-125-upk', 'isk-o-vzyskanii-alimentov']
+  .map((slug) => documents.find((document) => document.slug === slug))
+  .filter((document) => document !== undefined);
 ---
 
 <BaseLayout
@@ -21,6 +29,44 @@ import { withBase } from '../lib/paths';
         <a class="btn btn--light" href={withBase("/")}>На главную</a>
         <a class="btn btn--outline-light" href={withBase("/#kontakty")}>Связаться с адвокатом</a>
       </div>
+    </div>
+  </section>
+
+  <section class="section section--paper notfound__help">
+    <div class="container">
+      <div class="notfound__intro">
+        <p class="eyebrow">Если нужного адреса нет</p>
+        <h2>Можно начать с ситуации</h2>
+        <p>
+          Самые частые обращения — задержание, обыск, допрос и приставы. На каждой странице есть
+          первый шаг, сроки и права.
+        </p>
+        <a class="link-arrow" href={withBase('/poisk/')}>
+          Поиск по сайту<Icon name="arrow-right" size={15} />
+        </a>
+      </div>
+
+      <div class="notfound__situations">
+        {urgent.map((item) => (
+          <a class="notfound__card" href={withBase(`/situacii/${item.slug}/`)}>
+            <span aria-hidden="true">{item.code}</span>
+            <h3>{item.title}</h3>
+          </a>
+        ))}
+      </div>
+
+      {popularDocs.length > 0 && (
+        <div class="notfound__docs">
+          <h3>Образцы документов</h3>
+          <ul class="sources-list">
+            {popularDocs.map((document) => (
+              <li>
+                <a href={withBase(`/materialy/obrazcy/${document.slug}/`)}>{document.short}</a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </div>
   </section>
 </BaseLayout>

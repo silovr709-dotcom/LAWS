@@ -13,6 +13,9 @@ const current = stripBase(currentPath);
     </a>
     <nav class="site-nav" aria-label="Основная навигация">{menuItems.map((item) => <a class="site-nav__link" href={withBase(item.href)} aria-current={current === item.href ? 'page' : undefined}>{item.label}</a>)}</nav>
     <div class="header-actions">
+      <a class="header-search" href={withBase('/poisk/')} aria-label="Поиск по сайту" title="Поиск (/)">
+        <svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true" focusable="false"><circle cx="8.6" cy="8.6" r="5.4" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="M12.7 12.7 17 17" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+      </a>
       <a class="header-urgent" href={withBase('/srochno/')}>Срочно</a>
       {hasPhone && <a class="header-phone" href={`tel:${site.phone.href}`} data-goal="contact_phone">{site.phone.display}</a>}
       <a class="header-cta" href={withBase('/#kontakty')}>Обсудить ситуацию<Icon name="arrow-right" size={14} /></a>
@@ -23,11 +26,25 @@ const current = stripBase(currentPath);
 <dialog class="mobile-menu" id="mobile-menu" data-mobile-menu aria-labelledby="mobile-menu-title">
   <div class="mobile-menu__head"><p id="mobile-menu-title">Юрий Кочевинов<span>Адвокат · Тверь</span></p><button type="button" class="mobile-menu__close" data-menu-close aria-label="Закрыть меню">Закрыть<span aria-hidden="true">×</span></button></div>
   <nav class="mobile-menu__nav" aria-label="Мобильная навигация">{menuItems.map((item, index) => <a class="mobile-menu__link" href={withBase(item.href)}><span aria-hidden="true">0{index + 1}</span>{item.label}</a>)}</nav>
+  <a class="mobile-menu__link" href={withBase('/poisk/')}><span aria-hidden="true">⌕</span>Поиск по сайту</a>
   <a class="mobile-menu__link mobile-menu__link--urgent" href={withBase('/srochno/')}><span aria-hidden="true">!</span>Срочно: задержали, обыск</a>
   <div class="mobile-menu__footer"><a class="mobile-menu__phone" href={hasPhone ? `tel:${site.phone.href}` : site.vkChat} target={hasPhone ? undefined : '_blank'} rel={hasPhone ? undefined : 'noopener noreferrer'} data-goal={hasPhone ? 'contact_phone' : 'contact_vk'}>{hasPhone ? site.phone.display : 'Написать во ВКонтакте'}</a><span>{site.hours}</span><p class="mobile-menu__note">Не отправляйте документы и чувствительные сведения до согласования безопасного канала.</p></div>
 </dialog>
 <noscript><nav class="noscript-nav" aria-label="Навигация без JavaScript">{menuItems.map((item) => <a href={withBase(item.href)}>{item.label}</a>)}</nav><style>.menu-toggle{display:none!important}</style></noscript>
 <script>
+  const searchHref = document.querySelector<HTMLAnchorElement>('.header-search')?.href;
+  if (searchHref) {
+    document.addEventListener('keydown', (event) => {
+      const target = event.target as HTMLElement | null;
+      const typing = target?.closest('input, textarea, select, [contenteditable="true"]');
+      const combo = (event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k';
+      const slash = event.key === '/' && !event.metaKey && !event.ctrlKey && !event.altKey;
+      if (typing || event.altKey || !(combo || slash)) return;
+      event.preventDefault();
+      window.location.assign(searchHref);
+    });
+  }
+
   const header = document.querySelector<HTMLElement>('[data-header]');
   const menu = document.querySelector<HTMLDialogElement>('[data-mobile-menu]');
   const toggle = document.querySelector<HTMLButtonElement>('[data-menu-toggle]');
