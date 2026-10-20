@@ -1,0 +1,225 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { canonicalUrl, withBase } from '../lib/paths';
+import { site } from '../data/site';
+
+const title = 'Поиск по сайту';
+const description =
+  'Поиск по разборам, образцам документов, направлениям работы, ситуациям и памяткам. Работает без передачи запроса на сервер.';
+
+const schema = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    name: title,
+    description,
+    url: canonicalUrl(site.url, '/poisk/'),
+    inLanguage: 'ru-RU',
+    isPartOf: { '@type': 'WebSite', name: `Адвокат ${site.name}`, url: canonicalUrl(site.url, '/') },
+    potentialAction: {
+      '@type': 'SearchAction',
+      target: `${canonicalUrl(site.url, '/poisk/')}?q={search_term_string}`,
+      'query-input': 'required name=search_term_string',
+    },
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Главная', item: canonicalUrl(site.url, '/') },
+      { '@type': 'ListItem', position: 2, name: 'Поиск', item: canonicalUrl(site.url, '/poisk/') },
+    ],
+  },
+];
+
+const suggestions = ['задержание', 'обыск', 'алименты', 'приставы', 'ДТП', 'апелляция'];
+---
+
+<BaseLayout title={`${title} — адвокат Юрий Кочевинов`} description={description} schema={schema} noindex>
+  <section class="page-hero">
+    <div class="container">
+      <nav class="breadcrumbs" aria-label="Хлебные крошки">
+        <a href={withBase('/')}>Главная</a>
+        <span aria-hidden="true">/</span>
+        <span aria-current="page">Поиск</span>
+      </nav>
+      <p class="eyebrow">Поиск по сайту</p>
+      <h1 class="page-hero__title">Найти ответ,<br /><em>а не листать всё</em></h1>
+      <p class="page-hero__lead">
+        Ищем по разборам, образцам документов, направлениям, ситуациям и памяткам. Запрос не
+        отправляется на сервер: индекс загружается один раз, поиск идёт в браузере.
+      </p>
+    </div>
+  </section>
+
+  <section class="section section--paper">
+    <div class="container">
+      <form class="search-box" role="search" onsubmit="return false">
+        <label for="search-input">Что ищем</label>
+        <input
+          id="search-input"
+          type="search"
+          name="q"
+          placeholder="например: обыск, алименты, жалоба приставу"
+          autocomplete="off"
+          spellcheck="false"
+          aria-describedby="search-status"
+        />
+      </form>
+
+      <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px;">
+        {suggestions.map((suggestion) => (
+          <button class="btn btn--outline" type="button" data-suggestion={suggestion} style="min-height: 38px; padding: 6px 14px; font-size: 0.8125rem;">
+            {suggestion}
+          </button>
+        ))}
+      </div>
+
+      <p class="search-meta" id="search-status" aria-live="polite">
+        Введите слово или фразу — например, «обыск» или «алименты».
+      </p>
+      <ul class="search-results" id="search-results"></ul>
+      <div class="search-empty" id="search-empty" hidden>
+        <p>Ничего не нашлось. Попробуйте одно слово или посмотрите разделы:</p>
+        <p>
+          <a href={withBase('/materialy/')}>Материалы</a> ·
+          <a href={withBase('/situacii/')}>Ситуации</a> ·
+          <a href={withBase('/srochno/')}>Срочно</a> ·
+          <a href={withBase('/sroki/')}>Сроки</a>
+        </p>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<script>
+  import { trackGoal } from '../lib/events';
+
+  type SearchItem = {
+    title: string;
+    description: string;
+    url: string;
+    type: string;
+    text: string;
+  };
+
+  const input = document.getElementById('search-input') as HTMLInputElement | null;
+  const status = document.getElementById('search-status');
+  const list = document.getElementById('search-results');
+  const empty = document.getElementById('search-empty');
+
+  if (input && status && list) {
+    const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+    let items: SearchItem[] = [];
+    let loading: Promise<void> | null = null;
+    let tracked = false;
+
+    const normalize = (value: string) =>
+      value
+        .toLowerCase()
+        .replace(/ё/g, 'е')
+        .replace(/[^a-zа-я0-9\s/.-]/gi, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+
+    const load = () => {
+      if (!loading) {
+        loading = fetch(`${base}/search-index.json`)
+          .then((response) => (response.ok ? response.json() : { items: [] }))
+          .then((data: { items?: SearchItem[] }) => {
+            items = data.items ?? [];
+          })
+          .catch(() => {
+            items = [];
+          });
+      }
+      return loading;
+    };
+
+    const score = (item: SearchItem, tokens: string[]) => {
+      const title = normalize(item.title);
+      const description = normalize(item.description);
+      const text = normalize(item.text);
+      let total = 0;
+      for (const token of tokens) {
+        if (title === token) total += 20;
+        if (title.includes(token)) total += 8;
+        if (description.includes(token)) total += 3;
+        if (text.includes(token)) total += 1;
+      }
+      return total;
+    };
+
+    const render = (results: SearchItem[]) => {
+      list.replaceChildren();
+      for (const item of results) {
+        const li = document.createElement('li');
+        li.className = 'search-result';
+
+        const meta = document.createElement('span');
+        meta.className = 'search-result__meta';
+        meta.textContent = item.type;
+
+        const heading = document.createElement('h3');
+        const link = document.createElement('a');
+        link.href = item.url;
+        link.textContent = item.title;
+        heading.append(link);
+
+        const text = document.createElement('p');
+        text.textContent = item.description;
+
+        li.append(meta, heading, text);
+        list.append(li);
+      }
+      if (empty) empty.hidden = results.length > 0;
+    };
+
+    const update = async (raw: string) => {
+      const query = raw.trim();
+      const tokens = normalize(query).split(' ').filter((token) => token.length > 1);
+      if (!query) {
+        list.replaceChildren();
+        status.textContent = 'Введите слово или фразу — например, «обыск» или «алименты».';
+        if (empty) empty.hidden = true;
+        return;
+      }
+      if (!tracked) {
+        tracked = true;
+        trackGoal('search_use');
+      }
+      status.textContent = 'Ищем…';
+      await load();
+      const results = items
+        .map((item) => ({ item, value: score(item, tokens) }))
+        .filter((entry) => entry.value > 0)
+        .sort((a, b) => b.value - a.value)
+        .slice(0, 20)
+        .map((entry) => entry.item);
+      render(results);
+      status.textContent = results.length
+        ? `Найдено: ${results.length}. Показаны первые совпадения.`
+        : 'Ничего не нашлось.';
+      const url = new URL(window.location.href);
+      if (query) url.searchParams.set('q', query);
+      else url.searchParams.delete('q');
+      window.history.replaceState({}, '', url);
+    };
+
+    input.addEventListener('input', () => update(input.value));
+
+    document.querySelectorAll<HTMLButtonElement>('[data-suggestion]').forEach((button) => {
+      button.addEventListener('click', () => {
+        input.value = button.dataset.suggestion ?? '';
+        void update(input.value);
+        input.focus();
+      });
+    });
+
+    const initial = new URL(window.location.href).searchParams.get('q');
+    if (initial) {
+      input.value = initial;
+      void update(initial);
+    }
+  }
+</script>

@@ -1,0 +1,36 @@
+---
+/**
+ * Приватная аналитика: только по явно заданным переменным окружения.
+ *
+ * По умолчанию ничего не подключается. Поддерживаются два cookieless-варианта
+ * без идентификаторов и межсайтового трекинга:
+ *   PUBLIC_ANALYTICS_PROVIDER=plausible  PUBLIC_ANALYTICS_DOMAIN=kochevinov.ru
+ *   PUBLIC_ANALYTICS_PROVIDER=umami      PUBLIC_ANALYTICS_DOMAIN=<website-id>
+ *
+ * События целей (data-goal) отправляются как кастомные события провайдера.
+ */
+const provider = (import.meta.env.PUBLIC_ANALYTICS_PROVIDER ?? '').trim();
+const domain = (import.meta.env.PUBLIC_ANALYTICS_DOMAIN ?? '').trim();
+const src = (import.meta.env.PUBLIC_ANALYTICS_SRC ?? '').trim();
+const enabled = provider !== '' && domain !== '';
+const plausibleSrc = src || 'https://plausible.io/js/script.tagged-events.js';
+---
+
+{enabled && provider === 'plausible' && (
+  <script is:inline defer data-domain={domain} src={plausibleSrc}></script>
+)}
+{enabled && provider === 'umami' && src !== '' && (
+  <script is:inline defer data-website-id={domain} src={src}></script>
+)}
+
+{enabled && (
+  <script is:inline>
+    // Цели уже отправляются как CustomEvent('law:goal'); здесь они уходят провайдеру.
+    window.addEventListener('law:goal', function (event) {
+      var name = event.detail && event.detail.name;
+      if (!name) return;
+      if (typeof window.plausible === 'function') window.plausible(name);
+      if (window.umami && typeof window.umami.track === 'function') window.umami.track(name);
+    });
+  </script>
+)}

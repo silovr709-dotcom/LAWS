@@ -6,6 +6,7 @@ import ContactPrompt from '../../../components/ContactPrompt.astro';
 import { formatDate } from '../../../lib/format';
 import { site } from '../../../data/site';
 import { canonicalUrl, withBase } from '../../../lib/paths';
+import { breadcrumbs } from '../../../lib/schema';
 import { documents } from '../../../data/documents';
 import { plural } from '../../../lib/format';
 
@@ -38,7 +39,7 @@ const schema = {
 };
 ---
 
-<BaseLayout title={title} description={description} schema={schema}>
+<BaseLayout title={title} description={description} schema={[schema, breadcrumbs([{ name: 'Главная', path: '/' }, { name: 'Материалы', path: '/materialy/' }, { name: 'Разборы', path: '/materialy/razbory/' }])]}>
   <section class="page-hero">
     <div class="container">
       <nav class="breadcrumbs" aria-label="Хлебные крошки">

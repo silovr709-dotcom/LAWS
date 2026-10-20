@@ -1,0 +1,199 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Icon from '../components/Icon.astro';
+import ContactPrompt from '../components/ContactPrompt.astro';
+import FirstMessage from '../components/FirstMessage.astro';
+import { canonicalUrl, withBase } from '../lib/paths';
+import { site } from '../data/site';
+
+const title = 'Как безопасно передать документы адвокату';
+const description =
+  'Что можно писать в первом сообщении, какие документы не стоит отправлять в мессенджере и как передать материалы так, чтобы не создать лишних рисков. Практические правила без технического жаргона.';
+
+const levels = [
+  {
+    title: 'Низкая чувствительность',
+    text: 'Общие вопросы, стадия дела, город, срок. Можно передать в первом сообщении в мессенджере.',
+  },
+  {
+    title: 'Средняя',
+    text: 'Номер дела, процессуальный статус, даты, наименование органа. Обсуждается после первого контакта; лишние детали не нужны.',
+  },
+  {
+    title: 'Высокая',
+    text: 'Сканы паспорта, медицинские документы, сведения о третьих лицах, банковские выписки, оригиналы процессуальных документов. Только по согласованному каналу или лично.',
+  },
+];
+
+const rules = [
+  'Сначала — короткое описание без фамилий, адресов и номеров документов. Подробности — после ответа адвоката.',
+  'Передавайте только те страницы и фрагменты, которые относятся к вопросу. Не отправляйте «всё на всякий случай».',
+  'Оригиналы — лично или по описи. Копии — по согласованному каналу, с подписью, что это копия.',
+  'Проверьте получателя: адрес или аккаунт должен совпадать с тем, что вы согласовали ранее. Сомневаетесь — позвоните по известному вам каналу.',
+  'Если архив с паролем — пароль передаётся отдельным каналом, не в том же сообщении.',
+  'Не пересылайте документы через родственников, знакомых и «помощников», даже если они представились сотрудниками.',
+];
+
+const channels = [
+  { name: 'Личная встреча', best: 'Оригиналы, паспорт, медицинские документы', note: 'Оптимально для чувствительных материалов. Составьте опись передачи.' },
+  { name: 'Согласованный защищённый канал', best: 'Сканы и копии по делу', note: 'Конкретный способ обсуждается при первом контакте; не публикуйте ссылку на него.' },
+  { name: 'Электронная почта', best: 'Короткие документы, не содержащие лишних данных', note: 'Письмо хранится на серверах, копия остаётся в «Отправленных». Не для паспортов и медкарт.' },
+  { name: 'Мессенджер и соцсеть', best: 'Первый контакт, вопрос, запись на консультацию', note: 'Удобно и быстро, но переписка хранится на стороне платформы; аккаунт можно потерять.' },
+  { name: 'Телефон', best: 'Срочный вопрос, уточнение статуса', note: 'Не канал для документов: нет вложений и письменной фиксации.' },
+];
+
+const faq = [
+  {
+    q: 'Разве переписка с адвокатом не защищена адвокатской тайной?',
+    a: 'Сведения, полученные адвокатом в связи с оказанием помощи, охраняются законом независимо от канала (ст. 8 Федерального закона № 63-ФЗ). Но техническая конфиденциальность канала — отдельный вопрос: переписка в соцсети хранится на стороне платформы. Поэтому чувствительные документы лучше передавать лично или по согласованному защищённому каналу.',
+  },
+  {
+    q: 'Можно ли отправить скан паспорта в первом сообщении?',
+    a: 'Не нужно. Для первого разговора достаточно города, статуса и срока. Паспорт потребуется для соглашения, и порядок его передачи лучше согласовать заранее.',
+  },
+  {
+    q: 'Что делать, если я уже отправил лишнее?',
+    a: 'Сообщите адвокату, какие данные попали в переписку, и уточните, нужно ли удалить сообщения. Если речь о банковских данных — обратитесь в банк; если об аккаунте — смените пароль и включите двухфакторную аутентификацию.',
+  },
+  {
+    q: 'Вы храните мои документы?',
+    a: 'Материалы, переданные в рамках поручения, используются только для его исполнения. Порядок хранения и возврата оригиналов фиксируется в соглашении; оригиналы возвращаются по описи.',
+  },
+];
+
+const schema = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    name: title,
+    description,
+    url: canonicalUrl(site.url, '/bezopasnaya-peredacha-dokumentov/'),
+    inLanguage: 'ru-RU',
+    isPartOf: { '@type': 'WebSite', name: `Адвокат ${site.name}`, url: canonicalUrl(site.url, '/') },
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Главная', item: canonicalUrl(site.url, '/') },
+      { '@type': 'ListItem', position: 2, name: 'Передача документов', item: canonicalUrl(site.url, '/bezopasnaya-peredacha-dokumentov/') },
+    ],
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faq.map((item) => ({
+      '@type': 'Question',
+      name: item.q,
+      acceptedAnswer: { '@type': 'Answer', text: item.a },
+    })),
+  },
+];
+---
+
+<BaseLayout title={`${title} — адвокат Юрий Кочевинов`} description={description} schema={schema}>
+  <section class="page-hero">
+    <div class="container">
+      <nav class="breadcrumbs" aria-label="Хлебные крошки">
+        <a href={withBase('/')}>Главная</a>
+        <span aria-hidden="true">/</span>
+        <span aria-current="page">Передача документов</span>
+      </nav>
+      <p class="eyebrow">Практические правила</p>
+      <h1 class="page-hero__title">Меньше лишних данных,<br /><em>больше порядка</em></h1>
+      <p class="page-hero__lead">
+        Безопасность обращения — это не только техническая защита канала. Прежде всего это
+        минимальный объём сведений и понятный порядок передачи. Ниже — как не создать рисков себе
+        и другим участникам.
+      </p>
+    </div>
+  </section>
+
+  <FirstMessage />
+
+  <section class="section section--paper" aria-labelledby="urovni">
+    <div class="container">
+      <div class="compact-head">
+        <div>
+          <p class="eyebrow">Три уровня</p>
+          <h2 id="urovni">Что можно передавать и когда</h2>
+        </div>
+        <p>Если сомневаетесь, к какому уровню относится документ, считайте его высокочувствительным.</p>
+      </div>
+      <div class="situation-grid" style="grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));">
+        {levels.map((level, index) => (
+          <article style="background: var(--paper); padding: 26px;">
+            <span class="situation-card__code">0{index + 1}</span>
+            <h3 class="situation-card__title" style="margin-top: 8px;">{level.title}</h3>
+            <p class="situation-card__lead" style="margin-top: 8px;">{level.text}</p>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--milk" aria-labelledby="pravila">
+    <div class="container">
+      <div class="compact-head">
+        <div>
+          <p class="eyebrow">Правила</p>
+          <h2 id="pravila">Шесть привычек, которые снижают риски</h2>
+        </div>
+      </div>
+      <ul class="rule-list" style="max-width: 860px;">
+        {rules.map((rule) => <li>{rule}</li>)}
+      </ul>
+    </div>
+  </section>
+
+  <section class="section section--paper" aria-labelledby="kanaly">
+    <div class="container">
+      <div class="compact-head">
+        <div>
+          <p class="eyebrow">Каналы</p>
+          <h2 id="kanaly">Что для чего подходит</h2>
+        </div>
+        <p>Универсально безопасного канала нет. Есть подходящий под задачу и объём сведений.</p>
+      </div>
+      <div class="situation-grid" style="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));">
+        {channels.map((channel) => (
+          <article style="background: var(--paper); padding: 24px;">
+            <h3 class="situation-card__title" style="font-size: 1.3rem;">{channel.name}</h3>
+            <p class="situation-card__lead" style="margin: 8px 0;"><strong>Для чего:</strong> {channel.best}</p>
+            <p class="situation-card__lead">{channel.note}</p>
+          </article>
+        ))}
+      </div>
+      <p class="detail-note" style="margin-top: 22px;">
+        Переписка и обращения через сайт не являются каналом экстренной связи и не гарантируют
+        немедленного ответа. Если человек задержан, заявите о необходимости защитника процессуально.
+      </p>
+    </div>
+  </section>
+
+  <section class="section section--milk" aria-labelledby="faq-dokumenty">
+    <div class="container">
+      <div class="compact-head">
+        <div>
+          <p class="eyebrow">Частые вопросы</p>
+          <h2 id="faq-dokumenty">О документах и тайне</h2>
+        </div>
+      </div>
+      <div class="faq">
+        {faq.map((item) => (
+          <details class="accordion__item">
+            <summary class="accordion__summary">{item.q}</summary>
+            <div class="accordion__content"><p>{item.a}</p></div>
+          </details>
+        ))}
+      </div>
+      <p style="margin-top: 22px;">
+        <a class="link-arrow" href={withBase('/kak-proverit-advokata/')}>
+          Как проверить статус адвоката <Icon name="arrow-right" size={15} />
+        </a>
+      </p>
+    </div>
+  </section>
+
+  <ContactPrompt title="Начните с короткого описания без документов" />
+</BaseLayout>

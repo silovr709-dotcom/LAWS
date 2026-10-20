@@ -5,6 +5,7 @@ import Icon from '../../components/Icon.astro';
 import { site } from '../../data/site';
 import '../../styles/policy.css';
 import { canonicalUrl, withBase } from '../../lib/paths';
+import { breadcrumbs } from '../../lib/schema';
 import { reviews } from '../../data/reviews';
 
 const cases = (await getCollection('cases', ({ data }) => !data.draft)).sort(
@@ -42,7 +43,7 @@ const schema = {
   title={title}
   description={description}
   noindex={cases.length === 0}
-  schema={schema}
+  schema={[schema, breadcrumbs([{ name: 'Главная', path: '/' }, { name: 'Практика', path: '/praktika/' }])]}
 >
   <section class="page-hero">
     <div class="container">

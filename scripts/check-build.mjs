@@ -1,4 +1,5 @@
 import { readFile, readdir, access } from 'node:fs/promises';
+import { existsSync } from 'node:fs';
 import path from 'node:path';
 import assert from 'node:assert/strict';
 
@@ -61,7 +62,16 @@ for (const [route, { html, metas }] of pages) {
   const canonical = [...html.matchAll(/<link\b[^>]*>/g)].map(match => attrs(match[0])).find(item => item.rel === 'canonical')?.href;
   check(canonical === `${site.origin}${base}${route === '/404.html' ? '/404/' : route}`, `${route}: wrong canonical ${canonical}`);
   check(metas['og:url'] === canonical, `${route}: OG URL differs from canonical`);
-  check(metas['og:image'] === `${site.origin}${base}/og/og-default.png`, `${route}: incorrect OG image`);
+  // Персональная OG-картинка: /og/<путь-через-дефисы>.png; иначе — общая.
+  const ogKey = route === '/404.html'
+    ? null
+    : (route === '/' ? 'home' : route.replace(/^\/+|\/+$/g, '').replace(/\//g, '-'));
+  const ogFile = ogKey ? path.join(dir, 'og', `${ogKey}.png`) : null;
+  const expectedOg = ogFile && existsSync(ogFile)
+    ? `${site.origin}${base}/og/${ogKey}.png`
+    : `${site.origin}${base}/og/og-default.png`;
+  check(metas['og:image'] === expectedOg, `${route}: incorrect OG image`);
+  check(metas['og:image:alt'] === metas['twitter:image:alt'] && Boolean(metas['og:image:alt']), `${route}: OG alt missing`);
   const shouldNoindex = noindex || route.includes('/soglasie-na-') || (route === '/praktika/' && publishedCases === 0) || route === '/404.html';
   check(Boolean(metas.robots?.includes('noindex')) === shouldNoindex, `${route}: incorrect indexability`);
   for (const match of html.matchAll(/<a\b[^>]*>/g)) {

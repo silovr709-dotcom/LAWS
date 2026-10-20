@@ -44,6 +44,17 @@ npm run documents
 Скрипт печатает `public/documents/*.pdf` из `src/data/documents.ts`. Файлы коммитятся; сборка
 сайта браузер не запускает. После правки шаблонов пересоберите PDF и прогоните `npm test`.
 
+## Пересборка OG и памяток
+
+```bash
+npm run og                                    # public/og/*.png, resvg + TTF из scripts/fonts/
+npm install --prefix .cache/audit-tools --no-save playwright-core @sparticuz/chromium
+npm run memos                                 # public/memos/*.pdf из src/data/memos.ts
+```
+
+OG-картинки и PDF коммитятся: сборка сайта не запускает ни браузер, ни рендер. После правки
+заголовков страниц пересоберите OG, после правки памяток — PDF, затем `npm test`.
+
 ## Браузерный прогон (опциональные инструменты отдельно)
 
 Для Linux-песочницы, без увеличения зависимостей приложения на Chromium:

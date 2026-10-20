@@ -13,6 +13,7 @@ const current = stripBase(currentPath);
     </a>
     <nav class="site-nav" aria-label="Основная навигация">{menuItems.map((item) => <a class="site-nav__link" href={withBase(item.href)} aria-current={current === item.href ? 'page' : undefined}>{item.label}</a>)}</nav>
     <div class="header-actions">
+      <a class="header-urgent" href={withBase('/srochno/')}>Срочно</a>
       {hasPhone && <a class="header-phone" href={`tel:${site.phone.href}`} data-goal="contact_phone">{site.phone.display}</a>}
       <a class="header-cta" href={withBase('/#kontakty')}>Обсудить ситуацию<Icon name="arrow-right" size={14} /></a>
     </div>
@@ -22,6 +23,7 @@ const current = stripBase(currentPath);
 <dialog class="mobile-menu" id="mobile-menu" data-mobile-menu aria-labelledby="mobile-menu-title">
   <div class="mobile-menu__head"><p id="mobile-menu-title">Юрий Кочевинов<span>Адвокат · Тверь</span></p><button type="button" class="mobile-menu__close" data-menu-close aria-label="Закрыть меню">Закрыть<span aria-hidden="true">×</span></button></div>
   <nav class="mobile-menu__nav" aria-label="Мобильная навигация">{menuItems.map((item, index) => <a class="mobile-menu__link" href={withBase(item.href)}><span aria-hidden="true">0{index + 1}</span>{item.label}</a>)}</nav>
+  <a class="mobile-menu__link mobile-menu__link--urgent" href={withBase('/srochno/')}><span aria-hidden="true">!</span>Срочно: задержали, обыск</a>
   <div class="mobile-menu__footer"><a class="mobile-menu__phone" href={hasPhone ? `tel:${site.phone.href}` : site.vkChat} target={hasPhone ? undefined : '_blank'} rel={hasPhone ? undefined : 'noopener noreferrer'} data-goal={hasPhone ? 'contact_phone' : 'contact_vk'}>{hasPhone ? site.phone.display : 'Написать во ВКонтакте'}</a><span>{site.hours}</span><p class="mobile-menu__note">Не отправляйте документы и чувствительные сведения до согласования безопасного канала.</p></div>
 </dialog>
 <noscript><nav class="noscript-nav" aria-label="Навигация без JavaScript">{menuItems.map((item) => <a href={withBase(item.href)}>{item.label}</a>)}</nav><style>.menu-toggle{display:none!important}</style></noscript>

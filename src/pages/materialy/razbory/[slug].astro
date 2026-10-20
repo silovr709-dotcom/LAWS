@@ -5,8 +5,12 @@ import Icon from '../../../components/Icon.astro';
 import { formatDate, toIsoDate } from '../../../lib/format';
 import { site } from '../../../data/site';
 import { canonicalUrl, withBase } from '../../../lib/paths';
+import { breadcrumbs } from '../../../lib/schema';
 import Portrait from '../../../components/Portrait.astro';
 import { services } from '../../../data/services';
+import { documents } from '../../../data/documents';
+import { articleDocuments, articleSituations } from '../../../data/links';
+import { situations } from '../../../data/situations';
 
 export async function getStaticPaths() {
   const articles = await getCollection('articles', ({ data }) => !data.draft);
@@ -20,6 +24,12 @@ interface Props {
 const { item } = Astro.props;
 const data = item.data;
 const relatedServices = services.filter((service) => service.articleIds.includes(item.id)).slice(0, 2);
+const relatedDocs = (articleDocuments[item.id] ?? [])
+  .map((slug) => documents.find((document) => document.slug === slug))
+  .filter((document) => document !== undefined);
+const relatedSituations = (articleSituations[item.id] ?? [])
+  .map((slug) => situations.find((situation) => situation.slug === slug))
+  .filter((situation) => situation !== undefined);
 const { Content } = await render(item);
 
 const related = (
@@ -56,7 +66,7 @@ const schema = {
 };
 ---
 
-<BaseLayout title={title} description={description} type="article" schema={schema}>
+<BaseLayout title={title} description={description} type="article" schema={[schema, breadcrumbs([{ name: 'Главная', path: '/' }, { name: 'Материалы', path: '/materialy/' }, { name: 'Разборы', path: '/materialy/razbory/' }, { name: data.title, path: `/materialy/razbory/${item.id}/` }])]}>
   <article>
     <header class="article-hero">
       <div class="container">
@@ -148,6 +158,31 @@ const schema = {
         </aside>
       </div>
     </div>
+
+    {(relatedDocs.length > 0 || relatedSituations.length > 0) && (
+      <section class="section section--paper" aria-labelledby="article-tools">
+        <div class="container">
+          <h2 id="article-tools" style="margin-bottom: 24px;">Применить на практике</h2>
+          {relatedSituations.length > 0 && (
+            <p style="margin-bottom: 18px;">
+              {relatedSituations.map((situation) => (
+                <a class="link-arrow" href={withBase(`/situacii/${situation.slug}/`)} style="margin-right: 18px;">
+                  Навигатор: {situation.title} <Icon name="arrow-right" size={15} />
+                </a>
+              ))}
+            </p>
+          )}
+          <div class="link-grid">
+            {relatedDocs.map((document) => (
+              <a href={withBase(`/materialy/obrazcy/${document.slug}/`)} data-goal="doc_open">
+                {document.short}
+                <span>{document.group} · {document.deadline || document.addressee}</span>
+              </a>
+            ))}
+          </div>
+        </div>
+      </section>
+    )}
 
     {
       related.length > 0 && (

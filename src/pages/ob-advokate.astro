@@ -6,6 +6,7 @@ import Geography from '../components/Geography.astro';
 import Icon from '../components/Icon.astro';
 import { about, site } from '../data/site';
 import { canonicalUrl, withBase } from '../lib/paths';
+import { breadcrumbs } from '../lib/schema';
 
 const gallery = about.gallery;
 const schema = {
@@ -37,7 +38,7 @@ const imageSizes = '(max-width: 860px) calc(100vw - 40px), (max-width: 1180px) 4
 <BaseLayout
   title="Обо мне — адвокат Юрий Кочевинов"
   description="Юрий Кочевинов о себе: более 25 лет юридической практики, оперативные подразделения и налоговая полиция, прокуратура Мурманской области, прокурор Кировска и Первомайского округа. Адвокат с 2023 года, кабинет № АО51/257."
-  schema={schema}
+  schema={[schema, breadcrumbs([{ name: 'Главная', path: '/' }, { name: 'Об адвокате', path: '/ob-advokate/' }])]}
 >
   <section class="biography-hero">
     <div class="container biography-hero__inner">

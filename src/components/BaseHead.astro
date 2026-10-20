@@ -1,6 +1,8 @@
 ---
+import fs from 'node:fs';
+import path from 'node:path';
 import { site } from '../data/site';
-import { canonicalUrl, withBase } from '../lib/paths';
+import { canonicalUrl, stripBase, withBase } from '../lib/paths';
 import { siteNoindex } from '../lib/indexing';
 
 interface Props {
@@ -15,14 +17,24 @@ interface Props {
 const {
   title,
   description,
-  image = '/og/og-default.png',
+  image,
   type = 'website',
   noindex = false,
   schema,
 } = Astro.props;
 
+/**
+ * Персональная OG-картинка: /og/<путь-через-дефисы>.png.
+ * Если файла ещё нет — используется общая картинка сайта.
+ */
+const pageKey = stripBase(Astro.url.pathname).replace(/^\/+|\/+$/g, '').replace(/\//g, '-') || 'home';
+const generated = `/og/${pageKey}.png`;
+const resolvedImage =
+  image ?? (fs.existsSync(path.join(process.cwd(), 'public', generated)) ? generated : '/og/og-default.png');
+const imageAlt = title;
+
 const canonical = canonicalUrl(site.url, Astro.url.pathname);
-const ogImage = canonicalUrl(site.url, image);
+const ogImage = canonicalUrl(site.url, resolvedImage);
 const jsonLd = schema ? (Array.isArray(schema) ? schema : [schema]) : [];
 /** Временные размещения (GitHub Pages) закрываются от индексации целиком. */
 const isNoindex = noindex || siteNoindex;
@@ -47,17 +59,18 @@ const isNoindex = noindex || siteNoindex;
 <meta property="og:image" content={ogImage} />
 <meta property="og:image:width" content="1200" />
 <meta property="og:image:height" content="630" />
-<meta property="og:image:alt" content={`Адвокат ${site.fullName}, ${site.city}`} />
+<meta property="og:image:alt" content={imageAlt} />
 
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content={title} />
 <meta name="twitter:description" content={description} />
 <meta name="twitter:image" content={ogImage} />
-<meta name="twitter:image:alt" content={`Адвокат ${site.fullName}, ${site.city}`} />
+<meta name="twitter:image:alt" content={imageAlt} />
 
 <link rel="icon" type="image/svg+xml" href={withBase("/favicon.svg")} />
 <link rel="apple-touch-icon" href={withBase("/apple-touch-icon.png")} />
 <link rel="manifest" href={withBase("/site.webmanifest")} />
+<link rel="alternate" type="application/rss+xml" title="Разборы и материалы" href={canonicalUrl(site.url, "/rss.xml")} />
 
 <!-- Контент не скрывается до успешной инициализации наблюдателя. -->
 <script is:inline>

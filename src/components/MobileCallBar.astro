@@ -5,15 +5,19 @@ import { withBase } from '../lib/paths';
 ---
 
 <nav class="mobile-callbar" data-callbar aria-label="Быстрая связь с адвокатом">
+  <a class="btn btn--outline" href={withBase('/srochno/')}>
+    <Icon name="shield" size={15} />
+    Срочно
+  </a>
   {
     hasPhone ? (
-      <a class="btn btn--outline" href={`tel:${site.phone.href}`} data-goal="contact_phone">
+      <a class="btn btn--primary" href={`tel:${site.phone.href}`} data-goal="contact_phone">
         <Icon name="phone" size={15} />
         Позвонить
       </a>
     ) : (
       <a
-        class="btn btn--outline"
+        class="btn btn--primary"
         href={site.vkChat} data-goal="contact_vk"
         target="_blank"
         rel="noopener noreferrer"
@@ -23,10 +27,6 @@ import { withBase } from '../lib/paths';
       </a>
     )
   }
-  <a class="btn btn--primary" href={withBase("/#kontakty")}>
-    Контакты
-    <Icon name="arrow-right" size={14} />
-  </a>
 </nav>
 
 <script>

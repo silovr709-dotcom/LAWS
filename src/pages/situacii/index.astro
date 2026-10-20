@@ -1,0 +1,99 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Icon from '../../components/Icon.astro';
+import ContactPrompt from '../../components/ContactPrompt.astro';
+import { situations } from '../../data/situations';
+import { canonicalUrl, withBase } from '../../lib/paths';
+import { site } from '../../data/site';
+
+const title = 'Навигатор по ситуации — что делать и какие права есть';
+const description =
+  'Восемь типичных ситуаций: задержание, обыск, допрос, доследственная проверка, приговор, ДТП, приставы, семейный спор. Что сделать сначала, какие права есть и какие документы пригодятся.';
+
+const schema = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'CollectionPage',
+    name: 'Навигатор по ситуациям',
+    description,
+    url: canonicalUrl(site.url, '/situacii/'),
+    inLanguage: 'ru-RU',
+    isPartOf: { '@type': 'WebSite', name: `Адвокат ${site.name}`, url: canonicalUrl(site.url, '/') },
+    hasPart: situations.map((item) => ({
+      '@type': 'WebPage',
+      name: item.title,
+      url: canonicalUrl(site.url, `/situacii/${item.slug}/`),
+    })),
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Главная', item: canonicalUrl(site.url, '/') },
+      { '@type': 'ListItem', position: 2, name: 'Ситуации', item: canonicalUrl(site.url, '/situacii/') },
+    ],
+  },
+];
+---
+
+<BaseLayout title={`${title} — адвокат Юрий Кочевинов`} description={description} schema={schema}>
+  <section class="page-hero">
+    <div class="container">
+      <nav class="breadcrumbs" aria-label="Хлебные крошки">
+        <a href={withBase('/')}>Главная</a>
+        <span aria-hidden="true">/</span>
+        <span aria-current="page">Ситуации</span>
+      </nav>
+      <p class="eyebrow">Навигатор · {situations.length} ситуаций</p>
+      <h1 class="page-hero__title">Найдите свою ситуацию,<br /><em>а не общую статью</em></h1>
+      <p class="page-hero__lead">
+        У каждой ситуации — свой первый шаг, свои сроки и свои документы. Выберите то, что
+        происходит сейчас: на странице будет короткий порядок действий, права и ссылки на разборы
+        и образцы.
+      </p>
+    </div>
+  </section>
+
+  <section class="section section--paper" aria-labelledby="spisok-situaciy">
+    <div class="container">
+      <h2 id="spisok-situaciy" class="visually-hidden">Список ситуаций</h2>
+      <div class="situation-grid">
+        {situations.map((item) => (
+          <a class="situation-card" href={withBase(`/situacii/${item.slug}/`)} data-goal="situation_open">
+            <span class="situation-card__code">{item.code}</span>
+            <h3 class="situation-card__title">{item.title}</h3>
+            <p class="situation-card__lead">{item.lead}</p>
+            <span class="situation-card__more">
+              Что делать <Icon name="arrow-right" size={15} />
+            </span>
+          </a>
+        ))}
+      </div>
+      <p class="detail-note" style="margin-top: 24px;">
+        Если ситуация не подходит ни под одну из карточек, посмотрите <a href={withBase('/sroki/')}>калькуляторы
+        сроков</a> или <a href={withBase('/materialy/')}>все материалы</a>. Это ориентиры, а не
+        индивидуальная консультация.
+      </p>
+    </div>
+  </section>
+
+  <section class="section section--milk" aria-labelledby="srochno-link">
+    <div class="container">
+      <div class="compact-head">
+        <div>
+          <p class="eyebrow">Если времени мало</p>
+          <h2 id="srochno-link">Сначала — аварийный экран</h2>
+        </div>
+        <p>
+          На задержание и обыск есть отдельная короткая страница: три действия, формулировки и
+          срок 48 часов без длинных объяснений.
+        </p>
+      </div>
+      <a class="btn btn--primary" href={withBase('/srochno/')}>
+        Открыть «Задержали. Что делать» <Icon name="arrow-right" size={16} />
+      </a>
+    </div>
+  </section>
+
+  <ContactPrompt title="Опишите ситуацию: что произошло и какой срок ближайший" />
+</BaseLayout>

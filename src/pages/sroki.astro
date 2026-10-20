@@ -1,0 +1,396 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ContactPrompt from '../components/ContactPrompt.astro';
+import { canonicalUrl, withBase } from '../lib/paths';
+import { site } from '../data/site';
+
+const title = 'Калькуляторы процессуальных сроков';
+const description =
+  'Посчитать дату окончания срока: 48 часов после задержания, 10 суток на апелляцию, 3/10/30 суток доследственной проверки, 10 дней на жалобу приставу. Расчёты выполняются в браузере, данные никуда не отправляются.';
+
+const faq = [
+  {
+    q: 'Данные, которые я ввожу, куда-то отправляются?',
+    a: 'Нет. Расчёты выполняются в вашем браузере. Введённые даты и суммы не отправляются на сервер, не сохраняются в cookie и не попадают в аналитику.',
+  },
+  {
+    q: 'Почему дата может отличаться от ожидаемой?',
+    a: 'Срок может исчисляться не с того момента, который вы указали: например, апелляция для осуждённого под стражей считается со дня вручения копии приговора. Кроме того, если последний день приходится на выходной, срок переносится на следующий рабочий день. Праздничные дни калькулятор не учитывает.',
+  },
+  {
+    q: 'Это заменяет консультацию адвоката?',
+    a: 'Нет. Калькулятор показывает ориентир по норме закона. Пропуск срока может быть восстановлен только по уважительной причине, а порядок исчисления зависит от конкретного процессуального документа.',
+  },
+];
+
+const schema = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebApplication',
+    name: title,
+    description,
+    url: canonicalUrl(site.url, '/sroki/'),
+    applicationCategory: 'LegalService',
+    operatingSystem: 'Any',
+    inLanguage: 'ru-RU',
+    offers: { '@type': 'Offer', price: '0', priceCurrency: 'RUB' },
+    isAccessibleForFree: true,
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Главная', item: canonicalUrl(site.url, '/') },
+      { '@type': 'ListItem', position: 2, name: 'Сроки', item: canonicalUrl(site.url, '/sroki/') },
+    ],
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faq.map((item) => ({
+      '@type': 'Question',
+      name: item.q,
+      acceptedAnswer: { '@type': 'Answer', text: item.a },
+    })),
+  },
+];
+---
+
+<BaseLayout title={`${title} — адвокат Юрий Кочевинов`} description={description} schema={schema}>
+  <section class="page-hero">
+    <div class="container">
+      <nav class="breadcrumbs" aria-label="Хлебные крошки">
+        <a href={withBase('/')}>Главная</a>
+        <span aria-hidden="true">/</span>
+        <span aria-current="page">Сроки</span>
+      </nav>
+      <p class="eyebrow">Инструменты · без передачи данных</p>
+      <h1 class="page-hero__title">Посчитать срок,<br /><em>а не вспоминать потом</em></h1>
+      <p class="page-hero__lead">
+        Пять калькуляторов по нормам УПК РФ, СК РФ и Закону об исполнительном производстве.
+        Расчёты идут в браузере: даты и суммы никуда не отправляются и не сохраняются.
+      </p>
+    </div>
+  </section>
+
+  <section class="section section--paper" aria-labelledby="kalkulyatory">
+    <div class="container">
+      <div class="compact-head">
+        <div>
+          <p class="eyebrow">Расчёт</p>
+          <h2 id="kalkulyatory">Что посчитать</h2>
+        </div>
+        <p>Выберите нужный блок. Ничего не отправляется до нажатия кнопки, и кнопки тоже нет — результат появляется сразу.</p>
+      </div>
+
+      <div class="calc-grid">
+        <article class="calc" id="zaderzhanie">
+          <p class="eyebrow">УПК РФ · ст. 94</p>
+          <h3>48 часов после задержания</h3>
+          <p class="calc__hint">Укажите момент фактического задержания, а не время доставления в отдел.</p>
+          <div class="calc__field">
+            <label for="detention-start">Дата и время задержания</label>
+            <input id="detention-start" type="datetime-local" />
+          </div>
+          <div class="calc__result" id="detention-result" aria-live="polite"></div>
+        </article>
+
+        <article class="calc" id="apellyatsiya">
+          <p class="eyebrow">УПК РФ · ст. 389.4</p>
+          <h3>Апелляция на приговор</h3>
+          <p class="calc__hint">10 суток. Для осуждённого под стражей срок считается со дня вручения копии приговора.</p>
+          <div class="calc__field">
+            <label for="appeal-date">Дата провозглашения приговора</label>
+            <input id="appeal-date" type="date" />
+          </div>
+          <label class="calc__check">
+            <input id="appeal-custody" type="checkbox" />
+            <span>Осуждённый содержится под стражей</span>
+          </label>
+          <div class="calc__field" id="appeal-copy-field" hidden>
+            <label for="appeal-copy">Дата вручения копии приговора</label>
+            <input id="appeal-copy" type="date" />
+          </div>
+          <div class="calc__result" id="appeal-result" aria-live="polite"></div>
+        </article>
+
+        <article class="calc" id="proverka">
+          <p class="eyebrow">УПК РФ · ст. 144</p>
+          <h3>Доследственная проверка</h3>
+          <p class="calc__hint">3 суток по общему правилу, до 10 — по решению руководителя, до 30 — в исключительных случаях.</p>
+          <div class="calc__field">
+            <label for="checkup-date">Дата регистрации сообщения</label>
+            <input id="checkup-date" type="date" />
+          </div>
+          <div class="calc__field">
+            <label for="checkup-term">Срок проверки</label>
+            <select id="checkup-term">
+              <option value="3">3 суток — общий срок</option>
+              <option value="10">10 суток — продление руководителем</option>
+              <option value="30">30 суток — исключительный случай</option>
+            </select>
+          </div>
+          <div class="calc__result" id="checkup-result" aria-live="polite"></div>
+        </article>
+
+        <article class="calc" id="pristavy">
+          <p class="eyebrow">Закон № 229-ФЗ · ст. 122</p>
+          <h3>Жалоба на пристава</h3>
+          <p class="calc__hint">10 дней со дня, когда стало известно о нарушении права.</p>
+          <div class="calc__field">
+            <label for="bailiff-date">Когда узнали о нарушении</label>
+            <input id="bailiff-date" type="date" />
+          </div>
+          <div class="calc__result" id="bailiff-result" aria-live="polite"></div>
+        </article>
+
+        <article class="calc" id="uderzhaniya">
+          <p class="eyebrow">Закон № 229-ФЗ · ст. 99</p>
+          <h3>Удержание из зарплаты</h3>
+          <p class="calc__hint">Предел удержания зависит от основания: 50% по общему правилу, до 70% — в том числе по алиментам на детей.</p>
+          <div class="calc__field">
+            <label for="withhold-income">Доход в месяц, ₽</label>
+            <input id="withhold-income" type="number" inputmode="numeric" min="0" step="1000" placeholder="например, 60000" />
+          </div>
+          <div class="calc__field">
+            <label for="withhold-basis">Основание удержания</label>
+            <select id="withhold-basis">
+              <option value="50">Общее правило — до 50%</option>
+              <option value="70">Алименты на несовершеннолетних, вред здоровью, потеря кормильца — до 70%</option>
+            </select>
+          </div>
+          <div class="calc__result" id="withhold-result" aria-live="polite"></div>
+        </article>
+
+        <article class="calc" id="alimenty">
+          <p class="eyebrow">СК РФ · ст. 81</p>
+          <h3>Алименты в долях</h3>
+          <p class="calc__hint">Ориентир при отсутствии соглашения: 1/4, 1/3 или 1/2 дохода. Суд может изменить размер.</p>
+          <div class="calc__field">
+            <label for="alimony-income">Доход в месяц, ₽</label>
+            <input id="alimony-income" type="number" inputmode="numeric" min="0" step="1000" placeholder="например, 60000" />
+          </div>
+          <div class="calc__field">
+            <label for="alimony-children">Детей</label>
+            <select id="alimony-children">
+              <option value="1">1 ребёнок — 1/4</option>
+              <option value="2">2 ребёнка — 1/3</option>
+              <option value="3">3 и более — 1/2</option>
+            </select>
+          </div>
+          <div class="calc__result" id="alimony-result" aria-live="polite"></div>
+        </article>
+      </div>
+
+      <p class="detail-note" style="margin-top: 24px;">
+        Праздничные дни калькулятор не учитывает: он переносит только выходные. Если последний день
+        срока приходится на праздник, ориентируйтесь на первый рабочий день после него.
+      </p>
+    </div>
+  </section>
+
+  <section class="section section--milk" aria-labelledby="faq-sroki">
+    <div class="container">
+      <div class="compact-head">
+        <div>
+          <p class="eyebrow">Частые вопросы</p>
+          <h2 id="faq-sroki">О расчёте сроков</h2>
+        </div>
+      </div>
+      <div class="faq">
+        {faq.map((item) => (
+          <details class="accordion__item">
+            <summary class="accordion__summary">{item.q}</summary>
+            <div class="accordion__content"><p>{item.a}</p></div>
+          </details>
+        ))}
+      </div>
+      <p class="detail-note" style="margin-top: 20px;">
+        Что делать дальше: <a href={withBase('/situacii/')}>навигатор по ситуациям</a>,
+        {' '}<a href={withBase('/memos/')}>памятки</a>,
+        {' '}<a href={withBase('/materialy/obrazcy/zayavlenie-o-vosstanovlenii-sroka/')}>образец заявления о восстановлении срока</a>.
+      </p>
+    </div>
+  </section>
+
+  <ContactPrompt title="Если срок уже подходит, лучше проверить документы" />
+</BaseLayout>
+
+<script>
+  import {
+    detentionDeadline,
+    appealDeadline,
+    checkupDeadline,
+    bailiffAppealDeadline,
+    alimonyAmount,
+    alimonyShare,
+  } from '../lib/deadlines';
+  import { trackGoal } from '../lib/events';
+
+  const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T | null;
+
+  const formatDate = (date: Date) =>
+    date.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' });
+  const formatDateTime = (date: Date) =>
+    date.toLocaleString('ru-RU', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  const money = (value: number) => `${value.toLocaleString('ru-RU')} ₽`;
+
+  /** Значение <input type="date"> в локальную полночь, без сдвига часового пояса. */
+  const parseDate = (value: string): Date | null => {
+    if (!value) return null;
+    const [year, month, day] = value.split('-').map(Number);
+    if (!year || !month || !day) return null;
+    const date = new Date(year, month - 1, day);
+    return Number.isNaN(date.getTime()) ? null : date;
+  };
+
+  const parseDateTime = (value: string): Date | null => {
+    if (!value) return null;
+    const date = new Date(value);
+    return Number.isNaN(date.getTime()) ? null : date;
+  };
+
+  const render = (id: string, main: string, note: string) => {
+    const box = $(id);
+    if (!box) return;
+    box.innerHTML = '';
+    const strong = document.createElement('strong');
+    strong.textContent = main;
+    const span = document.createElement('span');
+    span.textContent = note;
+    box.append(strong, span);
+  };
+
+  const clear = (id: string) => {
+    const box = $(id);
+    if (box) box.innerHTML = '';
+  };
+
+  let goalSent = false;
+  const noteUse = () => {
+    if (goalSent) return;
+    goalSent = true;
+    trackGoal('calc_use');
+  };
+
+  const detentionStart = $<HTMLInputElement>('detention-start');
+  const detentionResult = 'detention-result';
+  detentionStart?.addEventListener('input', () => {
+    noteUse();
+    const start = parseDateTime(detentionStart.value);
+    if (!start) return clear(detentionResult);
+    const { release } = detentionDeadline(start);
+    render(detentionResult, formatDateTime(release), 'Крайний срок содержания — 48 часов с момента фактического задержания (ст. 94 УПК РФ).');
+  });
+
+  const appealDate = $<HTMLInputElement>('appeal-date');
+  const appealCustody = $<HTMLInputElement>('appeal-custody');
+  const appealCopy = $<HTMLInputElement>('appeal-copy');
+  const appealCopyField = $('appeal-copy-field');
+  const appealResult = 'appeal-result';
+
+  appealCustody?.addEventListener('change', () => {
+    if (appealCopyField) appealCopyField.hidden = !appealCustody.checked;
+    if (!appealCustody.checked && appealCopy) appealCopy.value = '';
+    appealDate?.dispatchEvent(new Event('input'));
+  });
+
+  const updateAppeal = () => {
+    if (!appealDate) return;
+    if (!appealDate.value) return clear(appealResult);
+    noteUse();
+    const pronounced = parseDate(appealDate.value);
+    if (!pronounced) return clear(appealResult);
+    const inCustody = appealCustody?.checked ?? false;
+    const copyServed = appealCopy?.value ? parseDate(appealCopy.value) : null;
+    if (inCustody && !copyServed) {
+      render(appealResult, 'Укажите дату вручения копии', 'Для осуждённого под стражей срок считается со дня вручения копии приговора (ст. 389.4 УПК РФ).');
+      return;
+    }
+    const { date, shifted, basis } = appealDeadline(pronounced, { inCustody, copyServed });
+    render(
+      appealResult,
+      formatDate(date),
+      `Срок истекает в этот день. Отсчёт — ${basis}${shifted ? '; последний день перенесён с выходного' : ''}.`,
+    );
+  };
+  appealDate?.addEventListener('input', updateAppeal);
+  appealCopy?.addEventListener('input', updateAppeal);
+
+  const checkupDate = $<HTMLInputElement>('checkup-date');
+  const checkupTerm = $<HTMLSelectElement>('checkup-term');
+  const checkupResult = 'checkup-result';
+  const updateCheckup = () => {
+    if (!checkupDate?.value) return clear(checkupResult);
+    noteUse();
+    const registered = parseDate(checkupDate.value);
+    if (!registered) return clear(checkupResult);
+    const term = Number(checkupTerm?.value ?? '3') as 3 | 10 | 30;
+    const { date, shifted } = checkupDeadline(registered, term);
+    render(
+      checkupResult,
+      formatDate(date),
+      `${term} суток с даты регистрации сообщения${shifted ? '; последний день перенесён с выходного' : ''} (ст. 144 УПК РФ).`,
+    );
+  };
+  checkupDate?.addEventListener('input', updateCheckup);
+  checkupTerm?.addEventListener('change', updateCheckup);
+
+  const bailiffDate = $<HTMLInputElement>('bailiff-date');
+  const bailiffResult = 'bailiff-result';
+  bailiffDate?.addEventListener('input', () => {
+    if (!bailiffDate.value) return clear(bailiffResult);
+    noteUse();
+    const learned = parseDate(bailiffDate.value);
+    if (!learned) return clear(bailiffResult);
+    const { date, shifted } = bailiffAppealDeadline(learned);
+    render(
+      bailiffResult,
+      formatDate(date),
+      `10 дней на жалобу старшему приставу или в суд${shifted ? '; последний день перенесён с выходного' : ''} (ст. 122 Закона № 229-ФЗ).`,
+    );
+  });
+
+  const withholdIncome = $<HTMLInputElement>('withhold-income');
+  const withholdBasis = $<HTMLSelectElement>('withhold-basis');
+  const withholdResult = 'withhold-result';
+  const updateWithhold = () => {
+    const income = Number(withholdIncome?.value ?? 0);
+    if (!Number.isFinite(income) || income <= 0) return clear(withholdResult);
+    noteUse();
+    const percent = Number(withholdBasis?.value ?? '50');
+    const amount = Math.round((income * percent) / 100);
+    render(
+      withholdResult,
+      money(amount),
+      `Не более ${percent}% дохода в месяц. Удержание считает пристав с учётом ограничений ст. 99 Закона № 229-ФЗ.`,
+    );
+  };
+  withholdIncome?.addEventListener('input', updateWithhold);
+  withholdBasis?.addEventListener('change', updateWithhold);
+
+  const alimonyIncome = $<HTMLInputElement>('alimony-income');
+  const alimonyChildren = $<HTMLSelectElement>('alimony-children');
+  const alimonyResult = 'alimony-result';
+  const updateAlimony = () => {
+    const income = Number(alimonyIncome?.value ?? 0);
+    if (!Number.isFinite(income) || income <= 0) return clear(alimonyResult);
+    noteUse();
+    const children = Number(alimonyChildren?.value ?? '1');
+    const amount = alimonyAmount(income, children);
+    const share = alimonyShare(children);
+    render(
+      alimonyResult,
+      money(amount),
+      `${share === 0.5 ? '1/2' : share === 1 / 3 ? '1/3' : '1/4'} дохода на ${children === 1 ? 'одного ребёнка' : children === 2 ? 'двух детей' : 'трёх и более детей'} (ст. 81 СК РФ).`,
+    );
+  };
+  alimonyIncome?.addEventListener('input', updateAlimony);
+  alimonyChildren?.addEventListener('change', updateAlimony);
+</script>

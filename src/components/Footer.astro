@@ -1,6 +1,6 @@
 ---
 import { hasEmail, hasPhone, navigation, site, footer, type NavItem } from '../data/site';
-import { withBase } from '../lib/paths';
+import { canonicalUrl, withBase } from '../lib/paths';
 import CookieNotice from './CookieNotice.astro';
 interface Props { menuItems?: NavItem[]; }
 const { menuItems = navigation } = Astro.props;
@@ -37,6 +37,18 @@ const { menuItems = navigation } = Astro.props;
       </div>
 
       <div class="footer__col">
+        <h2>Срочная помощь</h2>
+        <ul>
+          <li><a href={withBase("/srochno/")}>Задержали, обыск, допрос</a></li>
+          <li><a href={withBase("/situacii/")}>Навигатор по ситуациям</a></li>
+          <li><a href={withBase("/kak-my-rabotaem/")}>Как мы работаем</a></li>
+          <li><a href={withBase("/kak-proverit-advokata/")}>Проверка адвоката</a></li>
+          <li><a href={withBase("/bezopasnaya-peredacha-dokumentov/")}>Передача документов</a></li>
+          <li><a href={canonicalUrl(site.url, "/rss.xml")}>RSS</a></li>
+        </ul>
+      </div>
+
+      <div class="footer__col">
         <h2>Контакты</h2>
         <ul>
           <li>
@@ -56,6 +68,9 @@ const { menuItems = navigation } = Astro.props;
           <li><a href={withBase("/pravovaya-informaciya/")}>Правовая информация</a></li>
           <li><a href={withBase("/materialy/obrazcy/")}>Образцы документов</a></li>
           <li><a href={withBase("/materialy/razbory/")}>Разборы</a></li>
+          <li><a href={withBase("/memos/")}>Памятки</a></li>
+          <li><a href={withBase("/sroki/")}>Калькулятор сроков</a></li>
+          <li><a href={withBase("/poisk/")}>Поиск</a></li>
         </ul>
       </div>
     </div>

@@ -1,0 +1,197 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Icon from '../components/Icon.astro';
+import ContactPrompt from '../components/ContactPrompt.astro';
+import { canonicalUrl, withBase } from '../lib/paths';
+import { site } from '../data/site';
+
+const title = 'Задержали или пришли с обыском — что делать в первые часы';
+const description =
+  'Короткая страница на случай задержания, обыска или вызова на допрос: что сказать, что не подписывать, сколько действуют 48 часов и какие три шага сделать сейчас.';
+
+const faq = [
+  {
+    q: 'Сколько времени человек может находиться в отделении полиции?',
+    a: 'При уголовно-процессуальном задержании — не более 48 часов с момента фактического задержания (ст. 94 УПК РФ). Дальше либо избирается мера пресечения, либо человек подлежит освобождению. При административном задержании срок исчисляется часами и зависит от состава правонарушения.',
+  },
+  {
+    q: 'Обязан ли я подписывать протокол?',
+    a: 'Подписывать документ, с содержанием которого вы не согласны или не ознакомились, вы не обязаны. Отказ от подписи фиксируется в протоколе. Если подписываете — сначала прочитайте полностью и внесите замечания.',
+  },
+  {
+    q: 'Можно ли позвонить близким?',
+    a: 'Задержанный вправе сделать один телефонный звонок, чтобы сообщить о задержании (ст. 96 УПК РФ). Сотрудник обязан предоставить возможность такого звонка.',
+  },
+  {
+    q: 'Когда нужен адвокат?',
+    a: 'С момента фактического задержания (ст. 49 УПК РФ). Чем раньше защитник включится в ситуацию, тем меньше необратимых процессуальных действий произойдёт без него.',
+  },
+];
+
+const schema = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    name: title,
+    description,
+    url: canonicalUrl(site.url, '/srochno/'),
+    inLanguage: 'ru-RU',
+    isPartOf: { '@type': 'WebSite', name: `Адвокат ${site.name}`, url: canonicalUrl(site.url, '/') },
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Главная', item: canonicalUrl(site.url, '/') },
+      { '@type': 'ListItem', position: 2, name: 'Срочно', item: canonicalUrl(site.url, '/srochno/') },
+    ],
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faq.map((item) => ({
+      '@type': 'Question',
+      name: item.q,
+      acceptedAnswer: { '@type': 'Answer', text: item.a },
+    })),
+  },
+];
+
+const quickLinks = [
+  { href: '/situacii/', label: 'Навигатор по ситуации', note: 'Задержание, обыск, допрос, приговор, приставы' },
+  { href: '/sroki/', label: 'Калькулятор сроков', note: '48 часов, апелляция, проверка, приставы' },
+  { href: '/memos/pervye-48-chasov/', label: 'Памятка на 48 часов', note: 'Открыть и распечатать или сохранить PDF' },
+  { href: '/bezopasnaya-peredacha-dokumentov/', label: 'Как передать документы', note: 'Без публикации личных данных' },
+];
+---
+
+<BaseLayout title={`${title} — адвокат Юрий Кочевинов`} description={description} schema={schema}>
+  <header class="sos-hero">
+    <div class="container sos-hero__inner">
+      <div>
+        <p class="sos-hero__badge">Если помощь нужна сейчас</p>
+        <h1>Задержали.<br /><em>Что делать в первые часы</em></h1>
+        <p class="sos-hero__lead">
+          Не нужно читать всё подряд. Ниже — три действия, которые важны прямо сейчас, и два
+          документа, которые лучше не подписывать не прочитав.
+        </p>
+        <div class="sos-actions">
+          <a class="btn btn--primary" href={site.vkChat} target="_blank" rel="noopener noreferrer" data-goal="contact_vk">
+            Написать адвокату <Icon name="arrow-up-right" size={16} />
+          </a>
+          <a class="btn btn--outline-light" href={withBase('/memos/pervye-48-chasov/')} data-goal="memo_view">
+            Памятка на 48 часов
+          </a>
+        </div>
+        <p class="sos-hero__note">
+          Переписка не является каналом экстренной связи и не гарантирует немедленного ответа.
+          Если человек задержан — заявите о необходимости защитника в установленном порядке.
+          {' '}
+          <a href={withBase('/bezopasnaya-peredacha-dokumentov/#pervoe-soobshchenie')} style="color: var(--gold-soft);">
+            Собрать первое сообщение без личных данных
+          </a>
+        </p>
+      </div>
+
+      <div>
+        <div class="sos-clock">
+          <span>Срок задержания</span>
+          <strong>48 часов</strong>
+          <span>ст. 94 УПК РФ · с момента фактического задержания</span>
+        </div>
+        <div class="sos-panel" style="margin-top: 16px;">
+          <p class="eyebrow" style="color: var(--gold-soft);">Три действия</p>
+          <h2>Что сделать сейчас</h2>
+          <ol>
+            <li><strong>Зафиксируйте время и место.</strong> Кто задержал, куда везут, когда именно произошло задержание.</li>
+            <li><strong>Позвоните адвокату.</strong> До объяснений и допроса, а не после.</li>
+            <li><strong>Читайте перед подписью.</strong> Протокол — полностью, замечания — до подписания.</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <section class="section section--paper" aria-labelledby="chto-skazat">
+    <div class="container">
+      <div class="compact-head">
+        <div>
+          <p class="eyebrow">Короткий сценарий</p>
+          <h2 id="chto-skazat">Что сказать и что не подписывать</h2>
+        </div>
+        <p>
+          Эти формулировки не заменяют защитника. Их смысл — не навредить себе в первые минуты,
+          пока адвокат не включился в ситуацию.
+        </p>
+      </div>
+
+      <div class="calc-grid">
+        <article class="calc">
+          <p class="eyebrow">Можно сказать</p>
+          <h3>Спокойно и по делу</h3>
+          <ul class="rule-list">
+            <li>«Я задержан? На каком основании и в каком статусе?»</li>
+            <li>«Мне нужен защитник. Прошу обеспечить его участие».</li>
+            <li>«Я хочу воспользоваться правом на один телефонный звонок».</li>
+            <li>«Я не отказываюсь давать показания, но воспользуюсь ст. 51 Конституции РФ».</li>
+            <li>«Покажите протокол, я прочитаю его полностью».</li>
+          </ul>
+        </article>
+        <article class="calc">
+          <p class="eyebrow">Не подписывать</p>
+          <h3>Пока не прочитали</h3>
+          <ul class="rule-list rule-list--no">
+            <li>Пустые бланки, «типовые» объяснения и протоколы с незаполненными графами.</li>
+            <li>Документы, где ваши слова записаны иначе, чем вы их произнесли.</li>
+            <li>Согласие на осмотр, выдачу или «добровольную» передачу техники без описания.</li>
+            <li>Отказ от защитника «по собственному желанию» под давлением.</li>
+            <li>Явку с повинной, если обстоятельства не обсуждались с адвокатом.</li>
+          </ul>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--milk" aria-labelledby="pamyatki">
+    <div class="container">
+      <div class="compact-head">
+        <div>
+          <p class="eyebrow">Дальше</p>
+          <h2 id="pamyatki">Что открыть следующим</h2>
+        </div>
+      </div>
+      <div class="link-grid">
+        {quickLinks.map((item) => (
+          <a href={withBase(item.href)}>
+            {item.label}
+            <span>{item.note}</span>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--paper" aria-labelledby="faq-srochno">
+    <div class="container">
+      <div class="compact-head">
+        <div>
+          <p class="eyebrow">Частые вопросы</p>
+          <h2 id="faq-srochno">Коротко о главном</h2>
+        </div>
+      </div>
+      <div class="faq">
+        {faq.map((item) => (
+          <details class="accordion__item">
+            <summary class="accordion__summary">{item.q}</summary>
+            <div class="accordion__content"><p>{item.a}</p></div>
+          </details>
+        ))}
+        <p class="faq__disclaimer">
+          Ответы носят информационный характер и не заменяют консультацию по конкретному делу.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <ContactPrompt title="Опишите ситуацию: город, статус человека и ближайший срок" />
+</BaseLayout>

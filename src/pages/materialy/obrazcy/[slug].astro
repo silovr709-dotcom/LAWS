@@ -4,6 +4,9 @@ import Icon from '../../../components/Icon.astro';
 import { documents, type LegalDocument } from '../../../data/documents';
 import { site } from '../../../data/site';
 import { canonicalUrl, withBase } from '../../../lib/paths';
+import { breadcrumbs } from '../../../lib/schema';
+import { getCollection } from 'astro:content';
+import { articleDocuments } from '../../../data/links';
 
 export async function getStaticPaths() {
   return documents.map((document) => ({
@@ -21,6 +24,10 @@ const title = `${document.title} — образец документа · адв
 const description = document.summary;
 
 const peer = documents.filter((item) => item.group === document.group && item.slug !== document.slug).slice(0, 3);
+const allArticles = await getCollection('articles', ({ data }) => !data.draft);
+const relatedArticles = allArticles
+  .filter((article) => (articleDocuments[article.id] ?? []).includes(document.slug))
+  .slice(0, 3);
 
 const schema = {
   '@context': 'https://schema.org',
@@ -35,7 +42,7 @@ const schema = {
 };
 ---
 
-<BaseLayout title={title} description={description} type="article" schema={schema}>
+<BaseLayout title={title} description={description} type="article" schema={[schema, breadcrumbs([{ name: 'Главная', path: '/' }, { name: 'Материалы', path: '/materialy/' }, { name: 'Образцы документов', path: '/materialy/obrazcy/' }, { name: document.short, path: `/materialy/obrazcy/${document.slug}/` }])]}>
   <section class="page-hero">
     <div class="container">
       <nav class="breadcrumbs" aria-label="Хлебные крошки">
@@ -140,6 +147,22 @@ const schema = {
             <a class="btn btn--primary" href={withBase('/#kontakty')}>Обсудить ситуацию</a>
           </p>
         </div>
+
+        {relatedArticles.length > 0 && (
+          <div class="aside-card doc-aside__related">
+            <h2>Как это применяется</h2>
+            <ul class="doc-aside__links">
+              {relatedArticles.map((article) => (
+                <li>
+                  <a href={withBase(`/materialy/razbory/${article.id}/`)}>
+                    {article.data.title}
+                    <Icon name="arrow-right" size={13} />
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
 
         {
           peer.length > 0 && (

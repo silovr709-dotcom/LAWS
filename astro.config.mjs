@@ -45,6 +45,8 @@ export default defineConfig({
       // Служебные и noindex-страницы в карту сайта не попадают.
       filter: (page) =>
         !page.includes('/api/') &&
+        // Поиск закрыт от индексации: страница нужна людям, а не выдаче.
+        !page.includes('/poisk/') &&
         !page.includes('/soglasie-na-obrabotku-personalnyh-dannyh/') &&
         // Старые адреса разделов: страницы-редиректы на /materialy/ закрыты от индексации.
         !page.includes('/publikacii/') &&

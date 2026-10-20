@@ -1,0 +1,41 @@
+---
+import { situations } from '../data/situations';
+import { withBase } from '../lib/paths';
+import Icon from './Icon.astro';
+
+const featured = ['zaderzhali', 'obysk', 'dopros', 'pristavy']
+  .map((slug) => situations.find((item) => item.slug === slug))
+  .filter((item) => item !== undefined);
+---
+<section class="section section--milk" aria-labelledby="situations-preview">
+  <div class="container">
+    <div class="compact-head">
+      <div>
+        <p class="eyebrow">Навигатор по ситуации</p>
+        <h2 id="situations-preview">Что происходит сейчас?</h2>
+      </div>
+      <p>
+        У каждой ситуации — свой первый шаг и свои сроки. Выберите ближайшую: на странице будут
+        порядок действий, права и документы.
+      </p>
+    </div>
+    <div class="situation-grid">
+      {featured.map((item) => (
+        <a class="situation-card" href={withBase(`/situacii/${item.slug}/`)} data-goal="situation_open">
+          <span class="situation-card__code">{item.code}</span>
+          <h3 class="situation-card__title">{item.title}</h3>
+          <p class="situation-card__lead">{item.lead}</p>
+          <span class="situation-card__more">Что делать <Icon name="arrow-right" size={15} /></span>
+        </a>
+      ))}
+    </div>
+    <p style="margin-top: 22px; display: flex; flex-wrap: wrap; gap: 18px; align-items: center;">
+      <a class="link-arrow" href={withBase('/situacii/')}>
+        Все {situations.length} ситуаций <Icon name="arrow-right" size={15} />
+      </a>
+      <a class="link-arrow" href={withBase('/srochno/')}>
+        Если времени мало — аварийный экран <Icon name="arrow-right" size={15} />
+      </a>
+    </p>
+  </div>
+</section>

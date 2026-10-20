@@ -1,0 +1,87 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Icon from '../../components/Icon.astro';
+import ContactPrompt from '../../components/ContactPrompt.astro';
+import { memos } from '../../data/memos';
+import { canonicalUrl, withBase } from '../../lib/paths';
+import { site } from '../../data/site';
+
+const title = 'Памятки: первые 48 часов, обыск, допрос';
+const description =
+  'Три короткие памятки, которые можно распечатать или сохранить в телефоне: что делать в первые 48 часов после задержания, во время обыска и на допросе. PDF без регистрации.';
+
+const schema = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'CollectionPage',
+    name: title,
+    description,
+    url: canonicalUrl(site.url, '/memos/'),
+    inLanguage: 'ru-RU',
+    isPartOf: { '@type': 'WebSite', name: `Адвокат ${site.name}`, url: canonicalUrl(site.url, '/') },
+    hasPart: memos.map((memo) => ({
+      '@type': 'DigitalDocument',
+      name: memo.title,
+      url: canonicalUrl(site.url, `/memos/${memo.slug}.pdf`),
+      encodingFormat: 'application/pdf',
+      inLanguage: 'ru-RU',
+    })),
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Главная', item: canonicalUrl(site.url, '/') },
+      { '@type': 'ListItem', position: 2, name: 'Памятки', item: canonicalUrl(site.url, '/memos/') },
+    ],
+  },
+];
+---
+
+<BaseLayout title={`${title} — адвокат Юрий Кочевинов`} description={description} schema={schema}>
+  <section class="page-hero">
+    <div class="container">
+      <nav class="breadcrumbs" aria-label="Хлебные крошки">
+        <a href={withBase('/')}>Главная</a>
+        <span aria-hidden="true">/</span>
+        <span aria-current="page">Памятки</span>
+      </nav>
+      <p class="eyebrow">Памятки · {memos.length} файла</p>
+      <h1 class="page-hero__title">Держать под рукой,<br /><em>а не искать в панике</em></h1>
+      <p class="page-hero__lead">
+        Короткие памятки на одну страницу: что спросить, что сказать и чего не подписывать.
+        Открываются в браузере, скачиваются в PDF и печатаются без лишних элементов.
+      </p>
+    </div>
+  </section>
+
+  <section class="section section--paper" aria-labelledby="spisok-pamyatok">
+    <div class="container">
+      <h2 id="spisok-pamyatok" class="visually-hidden">Список памяток</h2>
+      <div class="memo-grid">
+        {memos.map((memo) => (
+          <article class="memo-card">
+            <p class="eyebrow">{memo.subtitle}</p>
+            <h3>{memo.title}</h3>
+            <p>{memo.intro}</p>
+            <div class="memo-card__actions">
+              <a class="btn btn--outline" href={withBase(`/memos/${memo.slug}/`)} data-goal="memo_view">
+                Открыть <Icon name="arrow-right" size={15} />
+              </a>
+              <a href={withBase(`/memos/${memo.slug}.pdf`)} download data-goal="memo_download">
+                Скачать PDF
+              </a>
+            </div>
+          </article>
+        ))}
+      </div>
+      <p class="detail-note" style="margin-top: 24px;">
+        Памятка — ориентир, а не консультация. Если ситуация уже произошла, посмотрите
+        {' '}<a href={withBase('/srochno/')}>аварийный экран</a> и
+        {' '}<a href={withBase('/situacii/')}>навигатор по ситуациям</a>.
+      </p>
+    </div>
+  </section>
+
+  <ContactPrompt title="Если нужна помощь по конкретной ситуации" />
+</BaseLayout>

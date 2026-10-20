@@ -1,0 +1,211 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Icon from '../../components/Icon.astro';
+import ContactPrompt from '../../components/ContactPrompt.astro';
+import { situations, type Situation } from '../../data/situations';
+import { documents } from '../../data/documents';
+import { services } from '../../data/services';
+import { canonicalUrl, withBase } from '../../lib/paths';
+import { site } from '../../data/site';
+
+export function getStaticPaths() {
+  return situations.map((situation) => ({ params: { slug: situation.slug }, props: { situation } }));
+}
+
+interface Props {
+  situation: Situation;
+}
+
+const { situation } = Astro.props;
+const url = canonicalUrl(site.url, `/situacii/${situation.slug}/`);
+const allArticles = await getCollection('articles', ({ data }) => !data.draft);
+const articles = situation.articles
+  .map((id) => allArticles.find((article) => article.id === id))
+  .filter((article) => article !== undefined);
+const docs = situation.docs
+  .map((slug) => documents.find((document) => document.slug === slug))
+  .filter((document) => document !== undefined);
+const service = situation.service ? services.find((item) => item.slug === situation.service) : undefined;
+const sibling = situations.filter((item) => item.slug !== situation.slug).slice(0, 3);
+
+const title = `${situation.title} — что делать, права и документы`;
+const description = situation.lead;
+
+const schema = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    name: title,
+    description,
+    url,
+    inLanguage: 'ru-RU',
+    isPartOf: { '@type': 'WebSite', name: `Адвокат ${site.name}`, url: canonicalUrl(site.url, '/') },
+    about: situation.title,
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Главная', item: canonicalUrl(site.url, '/') },
+      { '@type': 'ListItem', position: 2, name: 'Ситуации', item: canonicalUrl(site.url, '/situacii/') },
+      { '@type': 'ListItem', position: 3, name: situation.title, item: url },
+    ],
+  },
+  ...(articles.length
+    ? [
+        {
+          '@context': 'https://schema.org',
+          '@type': 'ItemList',
+          name: `Разборы по теме: ${situation.title}`,
+          itemListElement: articles.map((article, index) => ({
+            '@type': 'ListItem',
+            position: index + 1,
+            url: canonicalUrl(site.url, `/materialy/razbory/${article.id}/`),
+            name: article.data.title,
+          })),
+        },
+      ]
+    : []),
+];
+---
+
+<BaseLayout title={`${title} — адвокат Юрий Кочевинов`} description={description} schema={schema}>
+  <header class="detail-hero">
+    <div class="container">
+      <nav class="breadcrumbs" aria-label="Хлебные крошки">
+        <a href={withBase('/')}>Главная</a>
+        <span aria-hidden="true">/</span>
+        <a href={withBase('/situacii/')}>Ситуации</a>
+      </nav>
+      <p class="eyebrow">Ситуация {situation.code}</p>
+      <h1>{situation.title}</h1>
+      <p class="detail-hero__lead">{situation.lead}</p>
+      <p class="detail-hero__lead"><strong>{situation.urgency}</strong></p>
+    </div>
+  </header>
+
+  <div class="section section--paper">
+    <div class="container service-detail">
+      <div>
+        <section class="service-detail__section" id="shagi">
+          <p class="eyebrow">Порядок действий</p>
+          <h2>Что сделать сначала</h2>
+          <ol class="action-steps">
+            {situation.steps.map((step) => <li>{step}</li>)}
+          </ol>
+        </section>
+
+        <section class="service-detail__section" id="prava">
+          <p class="eyebrow">Правовая опора</p>
+          <h2>На что вы вправе рассчитывать</h2>
+          <ul class="rule-list">
+            {situation.rights.map((right) => <li>{right}</li>)}
+          </ul>
+          <p class="detail-note">
+            Объём прав зависит от процессуального статуса и стадии. Перед действиями по конкретному
+            делу нужна консультация по документам.
+          </p>
+        </section>
+
+        <section class="service-detail__section" id="oshibki">
+          <p class="eyebrow">Типичные ошибки</p>
+          <h2>Чего лучше не делать</h2>
+          <ul class="rule-list rule-list--no">
+            {situation.avoid.map((item) => <li>{item}</li>)}
+          </ul>
+        </section>
+
+        {docs.length > 0 && (
+          <section class="service-detail__section" id="dokumenty">
+            <p class="eyebrow">Документы</p>
+            <h2>Образцы по теме</h2>
+            <div class="link-grid">
+              {docs.map((document) => (
+                <a href={withBase(`/materialy/obrazcy/${document.slug}/`)} data-goal="doc_open">
+                  {document.short}
+                  <span>{document.group} · {document.deadline || document.addressee}</span>
+                </a>
+              ))}
+            </div>
+          </section>
+        )}
+      </div>
+
+      <aside class="service-detail__aside">
+        <nav aria-label="На этой странице">
+          <p class="eyebrow">На этой странице</p>
+          <a href="#shagi">Что сделать сначала</a>
+          <a href="#prava">Права</a>
+          <a href="#oshibki">Типичные ошибки</a>
+          {docs.length > 0 && <a href="#dokumenty">Образцы по теме</a>}
+        </nav>
+        <div class="service-detail__aside-note">
+          <h2>Безопасный первый контакт</h2>
+          <p>
+            В первом сообщении достаточно города, статуса и ближайшего срока. Подробности и
+            документы — только после согласования канала.
+          </p>
+          <a class="link-arrow" href={withBase('/#kontakty')}>Обсудить ситуацию<Icon name="arrow-right" size={14} /></a>
+        </div>
+        {service && (
+          <div class="service-detail__aside-note">
+            <p class="eyebrow">Направление работы</p>
+            <h2>{service.title}</h2>
+            <a href={withBase(`/napravleniya/${service.slug}/`)}>Подробнее о помощи<Icon name="arrow-right" size={14} /></a>
+          </div>
+        )}
+        <div class="service-detail__aside-note">
+          <p class="eyebrow">Сроки</p>
+          <h2>Посчитать дату</h2>
+          <p>48 часов, апелляция, проверка, приставы — без передачи персональных данных.</p>
+          <a href={withBase('/sroki/')}>Калькуляторы сроков<Icon name="arrow-right" size={14} /></a>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  {articles.length > 0 && (
+    <section class="section section--milk">
+      <div class="container">
+        <div class="compact-head">
+          <div>
+            <p class="eyebrow">По теме</p>
+            <h2>Разборы, которые стоит прочитать</h2>
+          </div>
+        </div>
+        <div class="publication-preview__grid">
+          {articles.map((article) => (
+            <a class="publication-card" href={withBase(`/materialy/razbory/${article.id}/`)}>
+              <span>{article.data.category} · {article.data.readingTime}</span>
+              <h3>{article.data.title}</h3>
+              <span class="publication-card__read">Читать<Icon name="arrow-up-right" size={16} /></span>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <section class="section section--paper" aria-labelledby="drugie-situacii">
+    <div class="container">
+      <div class="compact-head">
+        <div>
+          <p class="eyebrow">Рядом</p>
+          <h2 id="drugie-situacii">Другие ситуации</h2>
+        </div>
+        <a class="link-arrow" href={withBase('/situacii/')}>Все ситуации<Icon name="arrow-right" size={15} /></a>
+      </div>
+      <div class="link-grid">
+        {sibling.map((item) => (
+          <a href={withBase(`/situacii/${item.slug}/`)}>
+            {item.title}
+            <span>{item.lead}</span>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <ContactPrompt title="Опишите ситуацию: город, статус и ближайший срок" />
+</BaseLayout>

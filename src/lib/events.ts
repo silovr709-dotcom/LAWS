@@ -1,10 +1,40 @@
 /** Local, non-persistent integration point. No requests, identifiers or form values are collected. */
-export type SiteGoal = 'contact_vk' | 'contact_phone' | 'contact_email' | 'contact_success' | 'service_open';
+export type SiteGoal =
+  | 'contact_vk'
+  | 'contact_phone'
+  | 'contact_email'
+  | 'contact_success'
+  | 'service_open'
+  | 'situation_open'
+  | 'doc_open'
+  | 'doc_download'
+  | 'memo_view'
+  | 'memo_download'
+  | 'calc_use'
+  | 'search_use'
+  | 'registry_check';
+
+const allowed: SiteGoal[] = [
+  'contact_vk',
+  'contact_phone',
+  'contact_email',
+  'contact_success',
+  'service_open',
+  'situation_open',
+  'doc_open',
+  'doc_download',
+  'memo_view',
+  'memo_download',
+  'calc_use',
+  'search_use',
+  'registry_check',
+];
+
 export function trackGoal(name: SiteGoal): void {
   window.dispatchEvent(new CustomEvent('law:goal', { detail: { name, path: window.location.pathname } }));
 }
+
 export function initGoals(): void {
-  const allowed: SiteGoal[] = ['contact_vk', 'contact_phone', 'contact_email', 'service_open'];
   document.addEventListener('click', (event) => {
     const target = event.target;
     if (!(target instanceof Element)) return;

@@ -14,7 +14,9 @@
     "portraits": "node scripts/prepare-portraits.mjs",
     "test:browser": "node scripts/check-browser.mjs",
     "test:form-browser": "node scripts/check-form-browser.mjs",
-    "documents": "tsx scripts/build-documents.ts"
+    "documents": "tsx scripts/build-documents.ts",
+    "og": "tsx scripts/build-og.ts",
+    "memos": "tsx scripts/build-memos.ts"
   },
   "repository": {
     "type": "git",
