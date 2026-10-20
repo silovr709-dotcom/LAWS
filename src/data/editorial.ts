@@ -27,7 +27,7 @@ export const articlePhotos: Record<string, EditorialPhoto> = {
   },
   'mera-presecheniya': {
     name: 'mera-presecheniya',
-    alt: 'Пустые скамьи и деревянная балюстрада в зале суда',
+    alt: 'Записная книжка в переплёте, наручные часы и конверт с сургучной печатью на столе',
   },
   'apellyatsiya-i-kassatsiya': {
     name: 'apellyatsiya-i-kassatsiya',
@@ -35,7 +35,7 @@ export const articlePhotos: Record<string, EditorialPhoto> = {
   },
   pristavy: {
     name: 'pristavy',
-    alt: 'Закрытый конверт с печатью, связка ключей и записная книжка на светлом столе',
+    alt: 'Навесной замок с биркой на дверце шкафа и стопка папок рядом на столе',
   },
   alimenty: {
     name: 'alimenty',
@@ -43,7 +43,7 @@ export const articlePhotos: Record<string, EditorialPhoto> = {
   },
   'poryadok-obshcheniya-s-rebenkom': {
     name: 'poryadok-obshcheniya-s-rebenkom',
-    alt: 'Пустые качели в вечернем парке',
+    alt: 'Детский рисунок цветными карандашами, деревянная машинка и две чашки у окна',
   },
   'vozmeshchenie-vreda-posle-dtp': {
     name: 'vozmeshchenie-vreda-posle-dtp',
@@ -55,11 +55,11 @@ export const articlePhotos: Record<string, EditorialPhoto> = {
   },
   'oznakomlenie-s-materialami-dela': {
     name: 'oznakomlenie-s-materialami-dela',
-    alt: 'Стопки томов дела под лампой в читальном зале',
+    alt: 'Открытая папка дела с листами и разделителями, лупа и карандаш на столе',
   },
   'disciplinarnoe-vzyskanie': {
     name: 'disciplinarnoe-vzyskanie',
-    alt: 'Кожаная папка, авторучка и сложенная форменная куртка на столе',
+    alt: 'Толстый сборник документов, сложенная светлая рубашка на стуле и очки на столе',
   },
 };
 
@@ -68,11 +68,11 @@ export const servicePhotos: Record<string, EditorialPhoto> = {
   'dosledstvennaya-proverka': articlePhotos['dosledstvennaya-proverka'],
   'ekonomicheskie-prestupleniya': {
     name: 'ekonomicheskie-prestupleniya',
-    alt: 'Открытая конторская книга с графами, счётная машинка и авторучка на столе',
+    alt: 'Стопка бланков отчётности, кожаная папка, авторучка и очки на столе',
   },
   'dolzhnostnye-prestupleniya': {
     name: 'dolzhnostnye-prestupleniya',
-    alt: 'Кожаный портфель на стуле и папка с бумагами на столе под лампой',
+    alt: 'Кожаный портфель на стуле и папка с документами, перевязанная лентой, на столе',
   },
   'zashchita-vrachey': {
     name: 'zashchita-vrachey',
@@ -88,7 +88,7 @@ export const servicePhotos: Record<string, EditorialPhoto> = {
 export const pagePhotos = {
   razbory: {
     name: 'materialy',
-    alt: 'Раскрытые книги, листы бумаги и лупа на письменном столе у окна',
+    alt: 'Стопка переплетённых томов, очки и авторучка на длинном столе читального зала',
   },
 } satisfies Record<string, EditorialPhoto>;
 
