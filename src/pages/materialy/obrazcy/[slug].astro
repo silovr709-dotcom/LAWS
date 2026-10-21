@@ -2,6 +2,7 @@
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import Icon from '../../../components/Icon.astro';
 import { documents, type LegalDocument } from '../../../data/documents';
+import { formatDocumentText } from '../../../lib/document-text';
 import { site } from '../../../data/site';
 import { canonicalUrl, withBase } from '../../../lib/paths';
 import { breadcrumbs } from '../../../lib/schema';
@@ -21,6 +22,8 @@ interface Props {
 }
 
 const { document } = Astro.props;
+const plainText = formatDocumentText(document);
+const draftHref = `/proverka-zayavleniya/?sample=${document.slug}#draft-title`;
 const title = `${document.title} — образец документа · адвокат Юрий Кочевинов`;
 const description = document.summary;
 
@@ -69,8 +72,11 @@ const schema = {
           Скачать PDF
           <Icon name="arrow-right" size={15} />
         </a>
+        <button class="btn btn--outline-light" type="button" data-copy-doc>Скопировать текст</button>
+        <a class="btn btn--outline-light" href={withBase(draftHref)}>Заполнить в проверке</a>
         <button class="btn btn--outline-light" type="button" data-print>Распечатать</button>
       </div>
+      <p class="doc-copy-status" data-copy-status aria-live="polite"></p>
       </div>
       <HeroBrief
         title="Паспорт документа"
@@ -164,8 +170,8 @@ const schema = {
           <h2>Инструменты для подачи</h2>
           <ul class="doc-aside__links">
             <li>
-              <a href={withBase('/proverka-zayavleniya/')}>
-                Проверить свой черновик
+              <a href={withBase(draftHref)}>
+                Заполнить и проверить в черновике
                 <Icon name="arrow-right" size={13} />
               </a>
             </li>
@@ -227,9 +233,29 @@ const schema = {
         }
       </aside>
     </div>
+    <textarea id="doc-plain-source" hidden readonly>{plainText}</textarea>
   </section>
   <script>
+    import { trackGoal } from '../../../lib/events';
+
     document.querySelector('[data-print]')?.addEventListener('click', () => window.print());
+
+    const copyBtn = document.querySelector<HTMLButtonElement>('[data-copy-doc]');
+    const source = document.getElementById('doc-plain-source') as HTMLTextAreaElement | null;
+    const status = document.querySelector<HTMLElement>('[data-copy-status]');
+
+    copyBtn?.addEventListener('click', async () => {
+      if (!source) return;
+      try {
+        await navigator.clipboard.writeText(source.value);
+        if (status) {
+          status.textContent = 'Текст образца скопирован в буфер обмена — вставьте его в редактор и замените поля в скобках.';
+        }
+        trackGoal('doc_copy');
+      } catch {
+        if (status) status.textContent = 'Не удалось скопировать автоматически — откройте шаблон в проверке черновика.';
+      }
+    });
   </script>
 
   <style>

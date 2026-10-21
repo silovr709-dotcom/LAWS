@@ -277,7 +277,20 @@ const schema = [
     return Number.isNaN(date.getTime()) ? null : date;
   };
 
-  const render = (id: string, main: string, note: string) => {
+  const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+
+  const isPastDay = (date: Date) => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return date.getTime() < today.getTime();
+  };
+
+  const render = (
+    id: string,
+    main: string,
+    note: string,
+    action?: { label: string; href: string },
+  ) => {
     const box = $(id);
     if (!box) return;
     box.innerHTML = '';
@@ -286,6 +299,25 @@ const schema = [
     const span = document.createElement('span');
     span.textContent = note;
     box.append(strong, span);
+    if (action) {
+      const link = document.createElement('a');
+      link.className = 'calc-result__link';
+      link.href = action.href.startsWith('http') ? action.href : `${base}${action.href}`;
+      link.append(action.label);
+      const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      svg.setAttribute('viewBox', '0 0 24 24');
+      svg.setAttribute('width', '14');
+      svg.setAttribute('height', '14');
+      svg.setAttribute('fill', 'none');
+      svg.setAttribute('stroke', 'currentColor');
+      svg.setAttribute('stroke-width', '1.8');
+      svg.setAttribute('aria-hidden', 'true');
+      const p = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      p.setAttribute('d', 'M5 12h14M13 6l6 6-6 6');
+      svg.append(p);
+      link.append(svg);
+      box.append(link);
+    }
   };
 
   const clear = (id: string) => {
@@ -307,7 +339,15 @@ const schema = [
     const start = parseDateTime(detentionStart.value);
     if (!start) return clear(detentionResult);
     const { release } = detentionDeadline(start);
-    render(detentionResult, formatDateTime(release), 'Крайний срок содержания — 48 часов с момента фактического задержания (ст. 94 УПК РФ).');
+    render(
+      detentionResult,
+      formatDateTime(release),
+      'Крайний срок содержания — 48 часов с момента фактического задержания (ст. 94 УПК РФ).',
+      {
+        label: 'Открыть живую шкалу всех 5 сроков с этой датой',
+        href: `/48-chasov/?t=${Math.floor(start.getTime() / 60000)}`,
+      },
+    );
   });
 
   const appealDate = $<HTMLInputElement>('appeal-date');
@@ -335,10 +375,20 @@ const schema = [
       return;
     }
     const { date, shifted, basis } = appealDeadline(pronounced, { inCustody, copyServed });
+    const expired = isPastDay(date);
     render(
       appealResult,
       formatDate(date),
-      `Срок истекает в этот день. Отсчёт — ${basis}${shifted ? '; последний день перенесён с выходного' : ''}.`,
+      `${expired ? 'Срок уже прошёл (можно просить суд о восстановлении при уважительной причине). ' : 'Срок истекает в этот день. '}Отсчёт — ${basis}${shifted ? '; последний день перенесён с выходного' : ''}.`,
+      expired
+        ? {
+            label: 'Образец заявления о восстановлении срока',
+            href: '/materialy/obrazcy/zayavlenie-o-vosstanovlenii-sroka/',
+          }
+        : {
+            label: 'Образец апелляционной жалобы на приговор',
+            href: '/materialy/obrazcy/apellyatsionnaya-zhaloba-na-prigovor/',
+          },
     );
   };
   appealDate?.addEventListener('input', updateAppeal);
@@ -351,13 +401,17 @@ const schema = [
     if (!checkupDate?.value) return clear(checkupResult);
     noteUse();
     const registered = parseDate(checkupDate.value);
-    if (!registered) return clear(checkupResult);
+    if (!registered) return clear(checkupDate.value ? checkupResult : checkupResult);
     const term = Number(checkupTerm?.value ?? '3') as 3 | 10 | 30;
     const { date, shifted } = checkupDeadline(registered, term);
     render(
       checkupResult,
       formatDate(date),
       `${term} суток с даты регистрации сообщения${shifted ? '; последний день перенесён с выходного' : ''} (ст. 144 УПК РФ).`,
+      {
+        label: 'Образец жалобы в порядке ст. 125 УПК РФ',
+        href: '/materialy/obrazcy/zhaloba-125-upk/',
+      },
     );
   };
   checkupDate?.addEventListener('input', updateCheckup);
@@ -371,10 +425,20 @@ const schema = [
     const learned = parseDate(bailiffDate.value);
     if (!learned) return clear(bailiffResult);
     const { date, shifted } = bailiffAppealDeadline(learned);
+    const expired = isPastDay(date);
     render(
       bailiffResult,
       formatDate(date),
-      `10 дней на жалобу старшему приставу или в суд${shifted ? '; последний день перенесён с выходного' : ''} (ст. 122 Закона № 229-ФЗ).`,
+      `${expired ? '10-дневный срок прошёл. ' : ''}10 дней на жалобу старшему приставу или в суд${shifted ? '; последний день перенесён с выходного' : ''} (ст. 122 Закона № 229-ФЗ).`,
+      expired
+        ? {
+            label: 'Образец заявления о восстановлении срока',
+            href: '/materialy/obrazcy/zayavlenie-o-vosstanovlenii-sroka/',
+          }
+        : {
+            label: 'Образец жалобы на постановление пристава',
+            href: '/materialy/obrazcy/zhaloba-na-postanovlenie-pristava/',
+          },
     );
   });
 
@@ -391,6 +455,10 @@ const schema = [
       withholdResult,
       money(amount),
       `Не более ${percent}% дохода в месяц. Удержание считает пристав с учётом ограничений ст. 99 Закона № 229-ФЗ.`,
+      {
+        label: 'Образец жалобы на постановление пристава',
+        href: '/materialy/obrazcy/zhaloba-na-postanovlenie-pristava/',
+      },
     );
   };
   withholdIncome?.addEventListener('input', updateWithhold);
@@ -410,6 +478,10 @@ const schema = [
       alimonyResult,
       money(amount),
       `${share === 0.5 ? '1/2' : share === 1 / 3 ? '1/3' : '1/4'} дохода на ${children === 1 ? 'одного ребёнка' : children === 2 ? 'двух детей' : 'трёх и более детей'} (ст. 81 СК РФ).`,
+      {
+        label: 'Образец искового заявления об алиментах',
+        href: '/materialy/obrazcy/isk-o-vzyskanii-alimentov/',
+      },
     );
   };
   alimonyIncome?.addEventListener('input', updateAlimony);

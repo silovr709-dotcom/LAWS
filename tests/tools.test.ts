@@ -13,6 +13,7 @@ import {
   shiftToWorkingDay,
 } from '../src/lib/deadlines';
 import { inspectDraft } from '../src/lib/draft';
+import { formatDocumentText } from '../src/lib/document-text';
 import { situations } from '../src/data/situations';
 import { memos } from '../src/data/memos';
 import { documents } from '../src/data/documents';
@@ -215,3 +216,28 @@ test('personal OG cards exist for key pages and stay 1200 × 630', async () => {
     assert.equal(meta.height, 630, `${name}: wrong height`);
   }
 });
+
+test('all 22 legal sample templates serialize into clean plain text and detect unfilled placeholders', async () => {
+  assert.equal(documents.length, 22);
+  for (const doc of documents) {
+    const plain = formatDocumentText(doc);
+    assert.ok(plain.length > 200, `${doc.slug}: plain text looks too short`);
+    assert.ok(plain.includes(doc.heading), `${doc.slug}: missing heading`);
+    assert.ok(!plain.includes('<html'), `${doc.slug}: contains HTML markup`);
+    const sampleReport = inspectDraft(plain);
+    assert.equal(sampleReport.ready, false, `${doc.slug}: raw template with blanks must not report ready`);
+    assert.equal(sampleReport.checks[0]?.id, 'placeholders', `${doc.slug}: must highlight unfilled blanks first`);
+  }
+
+  const withBlanks = `${completeDraft}\n[укажите наименование суда]`;
+  const blankReport = inspectDraft(withBlanks);
+  assert.equal(blankReport.ready, false);
+  assert.equal(blankReport.checks.find((item) => item.id === 'placeholders')?.status, 'missing');
+
+  const srokiSource = await fs.readFile('src/pages/sroki.astro', 'utf8');
+  const knownSlugs = new Set(documents.map((doc) => doc.slug));
+  for (const match of srokiSource.matchAll(/\/materialy\/obrazcy\/([a-z0-9-]+)\//g)) {
+    assert.ok(knownSlugs.has(match[1]), `unknown sample slug in sroki.astro: ${match[1]}`);
+  }
+});
+

@@ -5,6 +5,16 @@ import HeroLedger from '../components/HeroLedger.astro';
 import Icon from '../components/Icon.astro';
 import { canonicalUrl, withBase } from '../lib/paths';
 import { site } from '../data/site';
+import { documents, documentGroupsWithCount } from '../data/documents';
+import { formatDocumentText } from '../lib/document-text';
+
+const sampleMap = Object.fromEntries(
+  documents.map((doc) => [doc.slug, formatDocumentText(doc)]),
+);
+const samplesByGroup = documentGroupsWithCount.map((entry) => ({
+  group: entry.group,
+  items: documents.filter((doc) => doc.group === entry.group),
+}));
 
 const title = 'Проверка черновика заявления или жалобы';
 const description =
@@ -83,9 +93,9 @@ const schema = [
       </div>
       <HeroLedger
         items={[
-          { value: '10', label: 'признаков в проверке' },
+          { value: '11', label: 'проверок в разборе' },
           { value: '0', label: 'отправок на сервер' },
-          { value: '22', label: 'образца рядом' },
+          { value: '22', label: 'шаблона внутри' },
         ]}
         note="Проверка идёт в браузере: текст не покидает устройство."
       />
@@ -107,6 +117,19 @@ const schema = [
 
       <div class="draft" data-draft>
         <div class="draft__input">
+          <div class="draft__preset">
+            <label for="draft-sample">Начать с готового образца (необязательно)</label>
+            <select id="draft-sample" data-draft-sample>
+              <option value="">Выберите любой из 22 образцов…</option>
+              {samplesByGroup.map((entry) => (
+                <optgroup label={entry.group}>
+                  {entry.items.map((doc) => (
+                    <option value={doc.slug}>{doc.title}</option>
+                  ))}
+                </optgroup>
+              ))}
+            </select>
+          </div>
           <label for="draft-text">Текст документа</label>
           <textarea id="draft-text" rows="16" spellcheck="false" placeholder="Вставьте сюда текст заявления, жалобы или ходатайства целиком — вместе с адресатом, подписью и приложениями."></textarea>
           <div class="draft__meta">
@@ -116,6 +139,12 @@ const schema = [
               <button class="draft__link" type="button" data-draft-clear>Очистить</button>
             </span>
           </div>
+          <div class="draft__actions-bar">
+            <button class="btn btn--outline" type="button" data-draft-copy>Скопировать черновик</button>
+            <button class="btn btn--outline" type="button" data-draft-download>Скачать .txt</button>
+            <button class="btn btn--outline" type="button" data-draft-print>Распечатать лист</button>
+          </div>
+          <p class="draft__status-note" data-draft-action-status aria-live="polite"></p>
           <p class="draft__privacy">
             <Icon name="shield" size={15} />
             Текст остаётся в браузере. Он не отправляется на сервер и не сохраняется на сайте.
@@ -233,6 +262,8 @@ const schema = [
   </section>
 
   <ContactPrompt title="Если сомневаетесь в формулировке, покажите черновик" />
+  <div class="draft-print-sheet" data-draft-print-sheet aria-hidden="true"></div>
+  <script type="application/json" id="draft-samples-data" set:html={JSON.stringify(sampleMap)} />
 </BaseLayout>
 
 <script>
@@ -242,6 +273,12 @@ const schema = [
   const root = document.querySelector<HTMLElement>('[data-draft]');
   if (root) {
     const textarea = document.querySelector<HTMLTextAreaElement>('#draft-text');
+    const sampleSelect = root.querySelector<HTMLSelectElement>('[data-draft-sample]');
+    const printSheet = document.querySelector<HTMLElement>('[data-draft-print-sheet]');
+    const actionStatus = root.querySelector<HTMLElement>('[data-draft-action-status]');
+    const copyButton = root.querySelector<HTMLButtonElement>('[data-draft-copy]');
+    const downloadButton = root.querySelector<HTMLButtonElement>('[data-draft-download]');
+    const printButton = root.querySelector<HTMLButtonElement>('[data-draft-print]');
     const counter = document.querySelector<HTMLElement>('[data-draft-count]');
     const empty = document.querySelector<HTMLElement>('[data-draft-empty]');
     const result = document.querySelector<HTMLElement>('[data-draft-result]');
@@ -252,6 +289,13 @@ const schema = [
     const note = document.querySelector<HTMLElement>('[data-draft-note]');
     const exampleButton = document.querySelector<HTMLButtonElement>('[data-draft-example]');
     const clearButton = document.querySelector<HTMLButtonElement>('[data-draft-clear]');
+
+    const samplesRaw = document.getElementById('draft-samples-data')?.textContent;
+    const samples: Record<string, string> = samplesRaw ? JSON.parse(samplesRaw) : {};
+
+    const setStatus = (msg: string) => {
+      if (actionStatus) actionStatus.textContent = msg;
+    };
 
     const EXAMPLE = `В Прокуратуру города Твери
 от Петрова Ивана Сергеевича,
@@ -276,11 +320,13 @@ const schema = [
 
     const statusLabel = (check: DraftCheck) => {
       if (check.id === 'tone') return check.status === 'ok' ? 'не найдено' : 'найдены';
+      if (check.id === 'placeholders') return 'заполните';
       return check.status === 'ok' ? 'есть' : check.status === 'attention' ? 'проверьте' : 'не найдено';
     };
 
     const render = (text: string) => {
       const report = inspectDraft(text);
+      if (printSheet) printSheet.textContent = text;
       if (counter) {
         counter.textContent = `${report.words} ${report.words % 10 === 1 && report.words % 100 !== 11 ? 'слово' : report.words % 10 >= 2 && report.words % 10 <= 4 && (report.words % 100 < 12 || report.words % 100 > 14) ? 'слова' : 'слов'}`;
       }
@@ -373,11 +419,74 @@ const schema = [
     clearButton?.addEventListener('click', () => {
       if (!textarea) return;
       textarea.value = '';
+      if (sampleSelect) sampleSelect.value = '';
+      setStatus('');
       textarea.focus();
       render('');
       if (counter) counter.textContent = '0 слов';
     });
 
-    render(textarea?.value ?? '');
+    const loadSample = (slug: string, focusEditor = false) => {
+      if (!textarea || !slug || !samples[slug]) return;
+      textarea.value = samples[slug];
+      if (sampleSelect) sampleSelect.value = slug;
+      render(samples[slug]);
+      setStatus('Шаблон загружен — замените пометки в квадратных скобках [...] на данные по вашему делу.');
+      trackGoal('draft_sample');
+      if (focusEditor) textarea.focus();
+    };
+
+    sampleSelect?.addEventListener('change', () => {
+      if (sampleSelect.value) loadSample(sampleSelect.value, true);
+    });
+
+    copyButton?.addEventListener('click', async () => {
+      if (!textarea?.value.trim()) {
+        setStatus('Сначала вставьте или наберите текст документа.');
+        return;
+      }
+      try {
+        await navigator.clipboard.writeText(textarea.value);
+        setStatus('Черновик скопирован в буфер обмена.');
+      } catch {
+        textarea.focus();
+        textarea.select();
+        setStatus('Текст выделен — скопируйте его сочетанием Ctrl+C или ⌘C.');
+      }
+    });
+
+    downloadButton?.addEventListener('click', () => {
+      if (!textarea?.value.trim()) {
+        setStatus('Сначала вставьте или наберите текст документа.');
+        return;
+      }
+      const slug = sampleSelect?.value || 'chernovik';
+      const blob = new Blob([textarea.value], { type: 'text/plain;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `${slug}.txt`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
+      setStatus(`Файл ${slug}.txt сохранён на устройство.`);
+    });
+
+    printButton?.addEventListener('click', () => {
+      if (!textarea?.value.trim()) {
+        setStatus('Сначала вставьте или наберите текст документа.');
+        return;
+      }
+      if (printSheet) printSheet.textContent = textarea.value;
+      window.print();
+    });
+
+    const initialSample = new URL(window.location.href).searchParams.get('sample');
+    if (initialSample && samples[initialSample]) {
+      loadSample(initialSample, false);
+    } else {
+      render(textarea?.value ?? '');
+    }
   }
 </script>

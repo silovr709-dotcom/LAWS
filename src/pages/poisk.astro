@@ -74,9 +74,9 @@ const suggestions = ['задержание', '48 часов', 'черновик'
         />
       </form>
 
-      <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px;">
+      <div class="search-suggestions">
         {suggestions.map((suggestion) => (
-          <button class="btn btn--outline" type="button" data-suggestion={suggestion} style="min-height: 38px; padding: 6px 14px; font-size: 0.8125rem;">
+          <button class="btn btn--outline" type="button" data-suggestion={suggestion}>
             {suggestion}
           </button>
         ))}
@@ -86,6 +86,28 @@ const suggestions = ['задержание', '48 часов', 'черновик'
         Введите слово или фразу — например, «обыск» или «алименты».
       </p>
       <ul class="search-results" id="search-results"></ul>
+      <div class="search-directory" id="search-directory">
+        <div>
+          <h2>Онлайн-инструменты</h2>
+          <ul>
+            <li><a href={withBase('/instrumenty/')}>Все инструменты — сводная витрина</a></li>
+            <li><a href={withBase('/48-chasov/')}>Счётчик 48 часов при задержании</a></li>
+            <li><a href={withBase('/proverka-zayavleniya/')}>Проверка черновика заявления</a></li>
+            <li><a href={withBase('/sroki/')}>Калькуляторы сроков, удержаний и алиментов</a></li>
+            <li><a href={withBase('/bezopasnaya-peredacha-dokumentov/#pervoe-soobshchenie')}>Конструктор первого сообщения</a></li>
+          </ul>
+        </div>
+        <div>
+          <h2>Разделы и библиотека</h2>
+          <ul>
+            <li><a href={withBase('/situacii/')}>Навигатор по 8 срочным ситуациям</a></li>
+            <li><a href={withBase('/materialy/obrazcy/')}>Образцы процессуальных документов (22 + PDF)</a></li>
+            <li><a href={withBase('/materialy/razbory/')}>Подробные разборы по шагам (13)</a></li>
+            <li><a href={withBase('/memos/')}>Памятки для печати PDF (3)</a></li>
+            <li><a href={withBase('/pomoshch-blizkomu/')}>Если задержали близкого человека</a></li>
+          </ul>
+        </div>
+      </div>
       <div class="search-empty" id="search-empty" hidden>
         <p>Ничего не нашлось. Попробуйте одно слово или посмотрите разделы:</p>
         <p>
@@ -117,6 +139,7 @@ const suggestions = ['задержание', '48 часов', 'черновик'
   const status = document.getElementById('search-status');
   const list = document.getElementById('search-results');
   const empty = document.getElementById('search-empty');
+  const directory = document.getElementById('search-directory');
 
   if (input && status && list) {
     const base = import.meta.env.BASE_URL.replace(/\/$/, '');
@@ -222,7 +245,7 @@ const suggestions = ['задержание', '48 часов', 'черновик'
         meta.className = 'search-result__meta';
         meta.textContent = item.type;
 
-        const heading = document.createElement('h3');
+        const heading = document.createElement('h2');
         const link = document.createElement('a');
         link.href = item.url;
         highlight(link, item.title, tokens);
@@ -246,8 +269,13 @@ const suggestions = ['задержание', '48 часов', 'черновик'
         list.replaceChildren();
         status.textContent = 'Введите слово или фразу — например, «обыск» или «алименты».';
         if (empty) empty.hidden = true;
+        if (directory) directory.hidden = false;
+        const url = new URL(window.location.href);
+        url.searchParams.delete('q');
+        window.history.replaceState({}, '', url);
         return;
       }
+      if (directory) directory.hidden = true;
       if (!tracked) {
         tracked = true;
         trackGoal('search_use');

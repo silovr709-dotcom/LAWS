@@ -103,6 +103,40 @@ try {
       });
       check(goals.length === 1 && goals[0].name === 'service_open' && Object.keys(goals[0]).sort().join(',') === 'name,path', 'Goal hooks contain unexpected data');
       results.push({ functional: 'menu, anchor focus, scroll restoration, direct contact, local goals', goals });
+
+      await page.goto(address('/proverka-zayavleniya/?sample=zhaloba-125-upk'), { waitUntil: 'networkidle' });
+      await page.addScriptTag({ content: axe });
+      check(await page.evaluate(() => document.querySelector('#draft-text').value.length > 200), 'Sample did not populate #draft-text');
+      check(await page.evaluate(() => !document.querySelector('[data-draft-result]').hidden), 'Draft check result did not open on sample load');
+      const draftViolations = await page.evaluate(async () => (await window.axe.run(document)).violations.map(v => v.id));
+      check(draftViolations.length === 0, `Loaded draft sample axe: ${draftViolations.join(', ')}`);
+      await page.screenshot({ path: path.join(out, 'draft-hero-390.png'), fullPage: false });
+      await page.locator('#draft-sample').scrollIntoViewIfNeeded();
+      await page.screenshot({ path: path.join(out, 'draft-sample-390.png'), fullPage: false });
+
+      await page.goto(address('/sroki/'), { waitUntil: 'networkidle' });
+      await page.addScriptTag({ content: axe });
+      await page.fill('#detention-start', '2026-10-21T10:30');
+      check(await page.evaluate(() => document.querySelector('#detention-result a')?.getAttribute('href')?.includes('/48-chasov/?t=')), 'Detention calculator did not render 48h deep link');
+      await page.fill('#appeal-date', '2026-09-01');
+      await page.locator('h1').click();
+      check(await page.evaluate(() => document.querySelector('#appeal-result a')?.getAttribute('href')?.endsWith('/materialy/obrazcy/zayavlenie-o-vosstanovlenii-sroka/')), 'Expired appeal date did not offer restoration template');
+      const srokiViolations = await page.evaluate(async () => (await window.axe.run(document)).violations.map(v => `${v.id}(${v.nodes.map(n => n.html).join('|')})`));
+      check(srokiViolations.length === 0, `Dynamic sroki results axe: ${srokiViolations.join(', ')}`);
+      await page.screenshot({ path: path.join(out, 'sroki-390.png'), fullPage: false });
+
+      await page.goto(address('/poisk/'), { waitUntil: 'networkidle' });
+      await page.addScriptTag({ content: axe });
+      check(await page.evaluate(() => !document.getElementById('search-directory').hidden), 'Search directory hidden on empty query');
+      await page.fill('#search-input', 'обыск');
+      await page.waitForFunction(() => document.querySelectorAll('#search-results li').length > 0);
+      check(await page.evaluate(() => document.getElementById('search-directory').hidden), 'Search directory still visible after query');
+      const searchViolations = await page.evaluate(async () => (await window.axe.run(document)).violations.map(v => `${v.id}(${v.nodes.map(n => n.html).join('|')})`));
+      check(searchViolations.length === 0, `Dynamic search results axe: ${searchViolations.join(', ')}`);
+      await page.screenshot({ path: path.join(out, 'poisk-390.png'), fullPage: false });
+      await page.keyboard.press('Escape');
+      check(await page.evaluate(() => !document.getElementById('search-directory').hidden), 'Escape did not restore search directory');
+      results.push({ functional: 'sample-to-draft deep link, dynamic sroki links, search directory & live axe' });
     }
     await context.close();
   }

@@ -5,7 +5,6 @@ import ContactPrompt from '../../../components/ContactPrompt.astro';
 import { documents, documentGroupsWithCount } from '../../../data/documents';
 import { plural } from '../../../lib/format';
 import { site } from '../../../data/site';
-import '../../../styles/policy.css';
 import { canonicalUrl, withBase } from '../../../lib/paths';
 import { breadcrumbs } from '../../../lib/schema';
 
@@ -115,6 +114,10 @@ const schema = {
                       </a>
                       <a class="doc-card__text" href={withBase(`/materialy/obrazcy/${document.slug}/`)}>
                         Текст
+                        <Icon name="arrow-right" size={14} />
+                      </a>
+                      <a class="doc-card__text" href={withBase(`/proverka-zayavleniya/?sample=${document.slug}#draft-title`)}>
+                        В черновик
                         <Icon name="arrow-right" size={14} />
                       </a>
                     </div>

@@ -8,11 +8,13 @@ export type SiteGoal =
   | 'situation_open'
   | 'doc_open'
   | 'doc_download'
+  | 'doc_copy'
   | 'memo_view'
   | 'memo_download'
   | 'calc_use'
   | 'detention_timer'
   | 'draft_check'
+  | 'draft_sample'
   | 'search_use'
   | 'registry_check';
 
@@ -25,11 +27,13 @@ const allowed: SiteGoal[] = [
   'situation_open',
   'doc_open',
   'doc_download',
+  'doc_copy',
   'memo_view',
   'memo_download',
   'calc_use',
   'detention_timer',
   'draft_check',
+  'draft_sample',
   'search_use',
   'registry_check',
 ];

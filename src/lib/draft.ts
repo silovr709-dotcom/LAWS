@@ -71,6 +71,10 @@ export function inspectDraft(raw: string): DraftReport {
     /(нагл|беспредел|обман|враньё|вранье|ложь|лжёт|лжет|коррупц|некомпетент|хамств|бардак|издевательств|преступник[а-я]*\s+власт)/i,
   );
 
+  const bracketBlanks = text.match(/\[[^\]\n]{1,120}\]/g) ?? [];
+  const lineBlanks = text.match(/_{5,}/g) ?? [];
+  const placeholderCount = bracketBlanks.length + lineBlanks.length;
+
   const checks: DraftCheck[] = [
     {
       id: 'addressee',
@@ -159,6 +163,15 @@ export function inspectDraft(raw: string): DraftReport {
     },
   ];
 
+  if (placeholderCount > 0) {
+    checks.unshift({
+      id: 'placeholders',
+      label: 'Незаполненные поля шаблона',
+      status: 'missing',
+      hint: `В тексте остались незаполненные прочерки или поля (${placeholderCount}) — впишите суд, адрес, данные сторон, даты и реквизиты вместо линий «______».`,
+    });
+  }
+
   if (appeal) {
     checks.push({
       id: 'appeal-copy',
@@ -169,8 +182,8 @@ export function inspectDraft(raw: string): DraftReport {
     });
   }
 
-  // Оценка считается по девяти обязательным признакам; дополнительные подсказки
-  // (тон, срок обжалования) на балл не влияют.
+  // Оценка считается по обязательным признакам (и незаполненным полям шаблона, если они есть);
+  // дополнительные подсказки (тон, срок обжалования) на балл не влияют.
   const core = new Set([
     'addressee',
     'applicant',
@@ -181,6 +194,7 @@ export function inspectDraft(raw: string): DraftReport {
     'demand',
     'attachments',
     'signature',
+    'placeholders',
   ]);
   const counted = checks.filter((item) => core.has(item.id));
   const found = counted.filter((item) => item.status === 'ok').length;
@@ -189,7 +203,7 @@ export function inspectDraft(raw: string): DraftReport {
   return {
     words,
     score,
-    ready: score >= 80,
+    ready: score >= 80 && placeholderCount === 0,
     checks,
     missing: checks.filter((item) => item.status !== 'ok'),
   };

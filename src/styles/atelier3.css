@@ -761,7 +761,8 @@ blockquote {
   }
 
   .breadcrumbs > a:first-child::after {
-    content: ' /';
+    content: '/';
+    margin-left: 0.6em;
     opacity: 0.5;
   }
 }
@@ -1732,4 +1733,205 @@ blockquote {
   opacity: 1;
   color: #fff;
 }
+
+/* --- 17. Сквозной контур образцов, черновика, калькуляторов и поиска ------ */
+
+.doc-copy-status {
+  margin: 10px 0 0;
+  min-height: 1.35em;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: #f6f0e7;
+}
+
+.doc-copy-status:empty {
+  display: none;
+}
+
+.draft__preset {
+  display: grid;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+
+.draft__preset label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--ink);
+}
+
+.draft__preset select {
+  width: 100%;
+  max-width: 100%;
+  min-height: 44px;
+  padding: 10px 12px;
+  font: inherit;
+  font-size: 0.9375rem;
+  color: var(--ink);
+  background: var(--milk);
+  border: 1px solid var(--line-strong);
+  border-radius: 2px;
+}
+
+.draft__preset select:focus-visible {
+  outline: 2px solid var(--wine);
+  outline-offset: 2px;
+}
+
+.draft__actions-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.draft__actions-bar .btn {
+  min-height: 44px;
+  padding: 10px 14px;
+  font-size: 0.84rem;
+}
+
+.draft__status-note {
+  margin: 10px 0 0;
+  font-size: 0.84rem;
+  line-height: 1.5;
+  color: var(--wine);
+}
+
+.draft__status-note:empty {
+  display: none;
+}
+
+.draft-print-sheet {
+  display: none;
+}
+
+@media print {
+  body:has([data-draft-print-sheet]:not(:empty)) .site-header,
+  body:has([data-draft-print-sheet]:not(:empty)) main,
+  body:has([data-draft-print-sheet]:not(:empty)) .site-footer {
+    display: none !important;
+  }
+
+  .draft-print-sheet:not(:empty) {
+    display: block;
+    padding: 0;
+    margin: 0;
+    white-space: pre-wrap;
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 12pt;
+    line-height: 1.55;
+    color: #000;
+    background: #fff;
+  }
+}
+
+.calc-result__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 44px;
+  margin-top: 6px;
+  font-size: 0.84rem;
+  font-weight: 500;
+  color: var(--wine-darkest);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.calc-result__link svg {
+  flex-shrink: 0;
+}
+
+@media (max-width: 1024px) {
+  .breadcrumbs a,
+  .breadcrumbs [aria-current='page'] {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+  }
+}
+
+.calc-result__link:hover,
+.calc-result__link:focus-visible {
+  color: var(--wine-deep);
+}
+
+.search-suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.search-suggestions .btn {
+  min-height: 44px;
+  padding: 8px 14px;
+  font-size: 0.84rem;
+}
+
+.search-directory {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(16px, 2.4vw, 28px);
+  margin-top: clamp(20px, 3vw, 32px);
+}
+
+.search-directory[hidden] {
+  display: none !important;
+}
+
+.search-directory > div {
+  padding: clamp(18px, 2.4vw, 26px);
+  background: var(--milk);
+  border: 1px solid var(--line);
+  border-top: 2px solid var(--wine);
+}
+
+.search-directory h2 {
+  margin: 0 0 12px;
+  font-family: var(--font-display);
+  font-size: clamp(1.2rem, 1.8vw, 1.45rem);
+  font-weight: 500;
+  color: var(--ink);
+}
+
+.search-directory ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+}
+
+.search-directory li {
+  border-bottom: 1px solid var(--line);
+}
+
+.search-directory li:last-child {
+  border-bottom: 0;
+}
+
+.search-directory a {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 6px 0;
+  font-size: 0.9375rem;
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.search-directory a:hover,
+.search-directory a:focus-visible {
+  color: var(--wine);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+@media (max-width: 760px) {
+  .search-directory {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
 
