@@ -1,16 +1,15 @@
 ---
-import { hasEmail, hasPhone, navigation, site, footer, type NavItem } from '../data/site';
+import { hasEmail, hasPhone, site, footer, type NavItem } from '../data/site';
 import { canonicalUrl, withBase } from '../lib/paths';
 import CookieNotice from './CookieNotice.astro';
 interface Props { menuItems?: NavItem[]; }
-const { menuItems = navigation } = Astro.props;
 ---
 
 <footer class="site-footer">
   <div class="container">
     <div class="footer__top">
       <div class="footer__brand">
-        <a class="brand" href={withBase("/")} title="На главную">
+        <a class="brand" href={withBase('/')} title="На главную">
           <span class="brand__mark" aria-hidden="true">ЮК</span>
           <span class="brand__text">
             <span class="brand__name">{site.name}</span>
@@ -24,33 +23,42 @@ const { menuItems = navigation } = Astro.props;
       </div>
 
       <div class="footer__col">
-        <h2>Разделы</h2>
+        <h2>Практика и доверие</h2>
         <ul>
-          {
-            menuItems.map((item) => (
-              <li>
-                <a href={withBase(item.href)}>{item.label}</a>
-              </li>
-            ))
-          }
+          <li><a href={withBase('/#napravleniya')}>Направления работы</a></li>
+          <li><a href={withBase('/praktika/')}>Судебная практика и отзывы</a></li>
+          <li><a href={withBase('/ob-advokate/')}>Об адвокате</a></li>
+          <li><a href={withBase('/kak-my-rabotaem/')}>Порядок работы и стоимость</a></li>
+          <li><a href={withBase('/kak-proverit-advokata/')}>Проверка статуса адвоката</a></li>
+          <li><a href={withBase('/bezopasnaya-peredacha-dokumentov/')}>Безопасная передача документов</a></li>
         </ul>
       </div>
 
       <div class="footer__col">
-        <h2>Срочная помощь</h2>
+        <h2>Срочно и ситуации</h2>
         <ul>
-          <li><a href={withBase("/srochno/")}>Задержали, обыск, допрос</a></li>
-          <li><a href={withBase("/48-chasov/")}>Счётчик 48 часов</a></li>
-          <li><a href={withBase("/situacii/")}>Навигатор по ситуациям</a></li>
-          <li><a href={withBase("/kak-my-rabotaem/")}>Как мы работаем</a></li>
-          <li><a href={withBase("/kak-proverit-advokata/")}>Проверка адвоката</a></li>
-          <li><a href={withBase("/bezopasnaya-peredacha-dokumentov/")}>Передача документов</a></li>
-          <li><a href={canonicalUrl(site.url, "/rss.xml")}>RSS</a></li>
+          <li><a href={withBase('/srochno/')}>Задержали, обыск, допрос</a></li>
+          <li><a href={withBase('/48-chasov/')}>Счётчик 48 часов</a></li>
+          <li><a href={withBase('/pomoshch-blizkomu/')}>Если помощь нужна близкому</a></li>
+          <li><a href={withBase('/situacii/')}>Навигатор по ситуациям</a></li>
+          <li><a href={withBase('/memos/')}>Памятки для печати PDF</a></li>
         </ul>
       </div>
 
       <div class="footer__col">
-        <h2>Контакты</h2>
+        <h2>Материалы и инструменты</h2>
+        <ul>
+          <li><a href={withBase('/materialy/')}>Все материалы</a></li>
+          <li><a href={withBase('/materialy/razbory/')}>Разборы ситуаций</a></li>
+          <li><a href={withBase('/materialy/obrazcy/')}>Образцы документов</a></li>
+          <li><a href={withBase('/instrumenty/')}>Все инструменты</a></li>
+          <li><a href={withBase('/proverka-zayavleniya/')}>Проверка черновика</a></li>
+          <li><a href={withBase('/sroki/')}>Калькуляторы сроков</a></li>
+        </ul>
+      </div>
+
+      <div class="footer__col">
+        <h2>Контакты и сведения</h2>
         <ul>
           <li>
             <a href={site.vk} target="_blank" rel="noopener noreferrer">ВКонтакте</a>
@@ -58,21 +66,11 @@ const { menuItems = navigation } = Astro.props;
           {hasPhone && <li><a href={`tel:${site.phone.href}`}>{site.phone.display}</a></li>}
           {hasEmail && <li><a href={`mailto:${site.email}`}>{site.email}</a></li>}
           <li>{site.city} · работа по всей России</li>
-        </ul>
-      </div>
-
-      <div class="footer__col">
-        <h2>Документы</h2>
-        <ul>
-          <li><a href={withBase("/politika-personalnyh-dannyh/")}>Политика обработки данных</a></li>
-          <li><a href={withBase("/soglasie-na-obrabotku-personalnyh-dannyh/")}>Согласие на обработку</a></li>
-          <li><a href={withBase("/pravovaya-informaciya/")}>Правовая информация</a></li>
-          <li><a href={withBase("/materialy/obrazcy/")}>Образцы документов</a></li>
-          <li><a href={withBase("/proverka-zayavleniya/")}>Проверка черновика</a></li>
-          <li><a href={withBase("/materialy/razbory/")}>Разборы</a></li>
-          <li><a href={withBase("/memos/")}>Памятки</a></li>
-          <li><a href={withBase("/sroki/")}>Калькулятор сроков</a></li>
-          <li><a href={withBase("/poisk/")}>Поиск</a></li>
+          <li><a href={withBase('/poisk/')}>Поиск по сайту</a></li>
+          <li><a href={canonicalUrl(site.url, '/rss.xml')}>RSS-лента</a></li>
+          <li><a href={withBase('/politika-personalnyh-dannyh/')}>Политика обработки данных</a></li>
+          <li><a href={withBase('/soglasie-na-obrabotku-personalnyh-dannyh/')}>Согласие на обработку</a></li>
+          <li><a href={withBase('/pravovaya-informaciya/')}>Правовая информация</a></li>
         </ul>
       </div>
     </div>

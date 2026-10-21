@@ -1,5 +1,6 @@
 ---
 import { contactSection, hasEmail, hasOffice, hasPhone, site } from '../data/site';
+import { withBase } from '../lib/paths';
 import ContactForm from './ContactForm.astro';
 import Icon from './Icon.astro';
 ---
@@ -17,6 +18,10 @@ import Icon from './Icon.astro';
       </div>
       <address class="contact__address"><span class="contact__address-line"><Icon name="pin" size={16} /><span>{site.city} · работа по всей России<br />{site.hours}</span></span>{hasOffice && site.office && <span class="contact__address-line--plain">{site.office.postalCode}, {site.office.city}, {site.office.street}{site.mapUrl && <a class="contact__map-link" href={site.mapUrl} target="_blank" rel="noopener noreferrer">На карте<Icon name="arrow-up-right" size={14} /></a>}</span>}</address>
       <div class="contact__next"><p class="contact__next-title">Что будет после обращения</p><ol>{contactSection.nextSteps.map((step, index) => <li><span aria-hidden="true">0{index + 1}</span>{step}</li>)}</ol></div>
+      <nav class="contact__guides" aria-label="Полезно перед обращением">
+        <a href={withBase('/bezopasnaya-peredacha-dokumentov/#pervoe-soobshchenie')}>Собрать текст первого сообщения<Icon name="arrow-right" size={14} /></a>
+        <a href={withBase('/pomoshch-blizkomu/')}>Если пишете за близкого человека<Icon name="arrow-right" size={14} /></a>
+      </nav>
       <p class="contact__warning">{contactSection.responseNote}</p>
     </div>
   </div>

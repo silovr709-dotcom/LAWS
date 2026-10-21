@@ -43,7 +43,8 @@ const schema = [
     '@type': 'BreadcrumbList',
     itemListElement: [
       { '@type': 'ListItem', position: 1, name: 'Главная', item: canonicalUrl(site.url, '/') },
-      { '@type': 'ListItem', position: 2, name: 'Сроки', item: canonicalUrl(site.url, '/sroki/') },
+      { '@type': 'ListItem', position: 2, name: 'Инструменты', item: canonicalUrl(site.url, '/instrumenty/') },
+      { '@type': 'ListItem', position: 3, name: 'Сроки', item: canonicalUrl(site.url, '/sroki/') },
     ],
   },
   {
@@ -64,6 +65,8 @@ const schema = [
       <div class="page-hero__content">
       <nav class="breadcrumbs" aria-label="Хлебные крошки">
         <a href={withBase('/')}>Главная</a>
+        <span aria-hidden="true">/</span>
+        <a href={withBase('/instrumenty/')}>Инструменты</a>
         <span aria-hidden="true">/</span>
         <span aria-current="page">Сроки</span>
       </nav>
@@ -223,8 +226,9 @@ const schema = [
         ))}
       </div>
       <p class="detail-note" style="margin-top: 20px;">
-        Что делать дальше: <a href={withBase('/situacii/')}>навигатор по ситуациям</a>,
-        {' '}<a href={withBase('/memos/')}>памятки</a>,
+        Что делать дальше: <a href={withBase('/proverka-zayavleniya/')}>проверить черновик заявления</a>,
+        {' '}<a href={withBase('/situacii/')}>навигатор по ситуациям</a>,
+        {' '}<a href={withBase('/memos/')}>памятки PDF</a>,
         {' '}<a href={withBase('/materialy/obrazcy/zayavlenie-o-vosstanovlenii-sroka/')}>образец заявления о восстановлении срока</a>.
       </p>
     </div>

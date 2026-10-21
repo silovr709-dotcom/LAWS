@@ -3,10 +3,27 @@ import { hasPhone, site } from '../data/site';
 import Icon from './Icon.astro';
 import { withBase } from '../lib/paths';
 ---
+
 <section class="urgent urgent--compact" id="srochno" aria-labelledby="urgent-title">
-  <div class="container urgent-compact__inner">
-    <div><p class="eyebrow">Если помощь нужна сейчас</p><h2 id="urgent-title">Первые часы имеют значение</h2></div>
-    <div><p>Задержание, обыск, вызов на допрос. Уточните статус и ближайшие сроки. Не передавайте подробности дела через открытые каналы.</p><p class="urgent-compact__note">Переписка не является каналом экстренной связи.</p></div>
-    <a class="link-arrow" href={hasPhone ? `tel:${site.phone.href}` : withBase('/srochno/')} data-goal={hasPhone ? 'contact_phone' : undefined}>{hasPhone ? 'Позвонить' : 'Что делать сейчас'}<Icon name="arrow-right" size={16} /></a>
+  <div class="container">
+    <div class="urgent-compact__inner">
+      <div>
+        <p class="eyebrow">Если помощь нужна сейчас</p>
+        <h2 id="urgent-title">Первые часы имеют значение</h2>
+      </div>
+      <div>
+        <p>Задержание, обыск, вызов на допрос. Уточните статус и ближайшие сроки. Не передавайте подробности дела через открытые каналы.</p>
+        <p class="urgent-compact__note">Переписка не является каналом экстренной связи.</p>
+      </div>
+      <a class="link-arrow" href={hasPhone ? `tel:${site.phone.href}` : withBase('/srochno/')} data-goal={hasPhone ? 'contact_phone' : undefined}>
+        {hasPhone ? 'Позвонить' : 'Что делать сейчас'}<Icon name="arrow-right" size={16} />
+      </a>
+    </div>
+
+    <nav class="urgent-compact__quick" aria-label="Срочные инструменты и памятки">
+      <a href={withBase('/48-chasov/')}>Счётчик 48 часов<Icon name="arrow-right" size={14} /></a>
+      <a href={withBase('/pomoshch-blizkomu/')}>Если задержали близкого<Icon name="arrow-right" size={14} /></a>
+      <a href={withBase('/memos/')}>Памятки для печати PDF<Icon name="arrow-right" size={14} /></a>
+    </nav>
   </div>
 </section>

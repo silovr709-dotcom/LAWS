@@ -103,9 +103,14 @@ const schema = [
           срок 48 часов без длинных объяснений.
         </p>
       </div>
-      <a class="btn btn--primary" href={withBase('/srochno/')}>
-        Открыть «Задержали. Что делать» <Icon name="arrow-right" size={16} />
-      </a>
+      <div class="btn-row">
+        <a class="btn btn--primary" href={withBase('/srochno/')}>
+          Открыть «Задержали. Что делать» <Icon name="arrow-right" size={16} />
+        </a>
+        <a class="btn btn--outline" href={withBase('/48-chasov/')}>Счётчик 48 часов</a>
+        <a class="btn btn--outline" href={withBase('/pomoshch-blizkomu/')}>Если задержали близкого</a>
+        <a class="btn btn--outline" href={withBase('/instrumenty/')}>Все инструменты</a>
+      </div>
     </div>
   </section>
 

@@ -3,7 +3,9 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import { canonicalUrl, withBase } from '../lib/paths';
 import HeroLedger from '../components/HeroLedger.astro';
 import { site } from '../data/site';
+import { getSearchEntries } from '../lib/search-items';
 
+const indexedCount = (await getSearchEntries()).length;
 const title = 'Поиск по сайту';
 const description =
   'Поиск по разборам, образцам документов, направлениям работы, ситуациям и памяткам. Работает без передачи запроса на сервер.';
@@ -33,7 +35,7 @@ const schema = [
   },
 ];
 
-const suggestions = ['задержание', 'обыск', 'алименты', 'приставы', 'ДТП', 'апелляция'];
+const suggestions = ['задержание', '48 часов', 'черновик', 'обыск', 'алименты', 'приставы', 'апелляция'];
 ---
 
 <BaseLayout title={`${title} — адвокат Юрий Кочевинов`} description={description} schema={schema} noindex>
@@ -53,7 +55,7 @@ const suggestions = ['задержание', 'обыск', 'алименты', '
       </p>
     
       </div>
-      <HeroLedger items={[{ value: '61', label: 'запись в индексе' }, { value: '6', label: 'разделов' }, { value: '0', label: 'запросов на сервер' }]} note="Поиск идёт в браузере: запрос никуда не отправляется." />
+      <HeroLedger items={[{ value: String(indexedCount), label: 'записи в индексе' }, { value: '7', label: 'разделов' }, { value: '0', label: 'запросов на сервер' }]} note="Поиск идёт в браузере: запрос никуда не отправляется." />
     </div>
   </section>
 
@@ -87,9 +89,12 @@ const suggestions = ['задержание', 'обыск', 'алименты', '
       <div class="search-empty" id="search-empty" hidden>
         <p>Ничего не нашлось. Попробуйте одно слово или посмотрите разделы:</p>
         <p>
+          <a href={withBase('/instrumenty/')}>Инструменты</a> ·
           <a href={withBase('/materialy/')}>Материалы</a> ·
           <a href={withBase('/situacii/')}>Ситуации</a> ·
           <a href={withBase('/srochno/')}>Срочно</a> ·
+          <a href={withBase('/48-chasov/')}>48 часов</a> ·
+          <a href={withBase('/proverka-zayavleniya/')}>Проверка черновика</a> ·
           <a href={withBase('/sroki/')}>Сроки</a>
         </p>
       </div>

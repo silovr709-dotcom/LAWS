@@ -90,7 +90,7 @@ const schema = [
     '@type': 'BreadcrumbList',
     itemListElement: [
       { '@type': 'ListItem', position: 1, name: 'Главная', item: canonicalUrl(site.url, '/') },
-      { '@type': 'ListItem', position: 2, name: 'Срочно', item: canonicalUrl(site.url, '/srochno/') },
+      { '@type': 'ListItem', position: 2, name: 'Инструменты', item: canonicalUrl(site.url, '/instrumenty/') },
       { '@type': 'ListItem', position: 3, name: 'Счётчик 48 часов', item: canonicalUrl(site.url, '/48-chasov/') },
     ],
   },
@@ -114,6 +114,8 @@ const schema = [
       <div class="page-hero__content">
         <nav class="breadcrumbs" aria-label="Хлебные крошки">
           <a href={withBase('/')}>Главная</a>
+          <span aria-hidden="true">/</span>
+          <a href={withBase('/instrumenty/')}>Инструменты</a>
           <span aria-hidden="true">/</span>
           <span aria-current="page">Счётчик 48 часов</span>
         </nav>
@@ -264,6 +266,9 @@ const schema = [
       <p class="detention__advice-links">
         <a class="link-arrow" href={withBase('/srochno/')}>
           Что делать сейчас, по шагам<Icon name="arrow-right" size={15} />
+        </a>
+        <a class="link-arrow" href={withBase('/pomoshch-blizkomu/')}>
+          Если задержали близкого<Icon name="arrow-right" size={15} />
         </a>
         <a class="link-arrow" href={withBase('/situacii/zaderzhali/')}>
           Ситуация: задержали человека<Icon name="arrow-right" size={15} />

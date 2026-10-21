@@ -57,8 +57,11 @@ const popularDocs = ['zayavlenie-o-prestuplenii', 'zhaloba-125-upk', 'isk-o-vzys
 
       {popularDocs.length > 0 && (
         <div class="notfound__docs">
-          <h3>Образцы документов</h3>
+          <h3>Инструменты и образцы</h3>
           <ul class="sources-list">
+            <li><a href={withBase('/48-chasov/')}>Счётчик 48 часов после задержания</a></li>
+            <li><a href={withBase('/proverka-zayavleniya/')}>Проверка черновика заявления или жалобы</a></li>
+            <li><a href={withBase('/sroki/')}>Калькуляторы процессуальных сроков</a></li>
             {popularDocs.map((document) => (
               <li>
                 <a href={withBase(`/materialy/obrazcy/${document.slug}/`)}>{document.short}</a>

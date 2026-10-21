@@ -58,11 +58,12 @@ const schema = [
 ];
 
 const quickLinks = [
+  { href: '/48-chasov/', label: 'Счётчик 48 часов', note: 'Живой отсчёт пяти контрольных сроков после задержания' },
+  { href: '/pomoshch-blizkomu/', label: 'Если задержали близкого', note: 'Что уточнить родственникам и как написать адвокату' },
   { href: '/situacii/', label: 'Навигатор по ситуации', note: 'Задержание, обыск, допрос, приговор, приставы' },
-  { href: '/48-chasov/', label: 'Счётчик 48 часов', note: 'Живой отсчёт всех сроков после задержания' },
-  { href: '/sroki/', label: 'Калькулятор сроков', note: '48 часов, апелляция, проверка, приставы' },
-  { href: '/memos/pervye-48-chasov/', label: 'Памятка на 48 часов', note: 'Открыть и распечатать или сохранить PDF' },
-  { href: '/bezopasnaya-peredacha-dokumentov/', label: 'Как передать документы', note: 'Без публикации личных данных' },
+  { href: '/memos/pervye-48-chasov/', label: 'Памятка на 48 часов PDF', note: 'Открыть на экране, распечатать или сохранить в телефон' },
+  { href: '/proverka-zayavleniya/', label: 'Проверка черновика жалобы', note: 'Проверить реквизиты заявления или жалобы до подачи' },
+  { href: '/bezopasnaya-peredacha-dokumentov/', label: 'Как передать документы', note: 'Конструктор первого сообщения без личных данных' },
 ];
 ---
 
@@ -95,11 +96,11 @@ const quickLinks = [
       </div>
 
       <div>
-        <div class="sos-clock">
+        <a class="sos-clock sos-clock--link" href={withBase('/48-chasov/')}>
           <span>Срок задержания</span>
           <strong>48 часов</strong>
-          <span>ст. 94 УПК РФ · с момента фактического задержания</span>
-        </div>
+          <span>ст. 94 УПК РФ · открыть живой счётчик <Icon name="arrow-right" size={14} /></span>
+        </a>
         <div class="sos-panel" style="margin-top: 16px;">
           <p class="eyebrow" style="color: var(--gold-soft);">Три действия</p>
           <h2>Что сделать сейчас</h2>

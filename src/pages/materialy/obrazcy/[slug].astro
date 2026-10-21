@@ -160,6 +160,38 @@ const schema = {
           </p>
         </div>
 
+        <div class="aside-card doc-aside__related">
+          <h2>Инструменты для подачи</h2>
+          <ul class="doc-aside__links">
+            <li>
+              <a href={withBase('/proverka-zayavleniya/')}>
+                Проверить свой черновик
+                <Icon name="arrow-right" size={13} />
+              </a>
+            </li>
+            <li>
+              <a href={withBase('/sroki/')}>
+                Рассчитать срок подачи
+                <Icon name="arrow-right" size={13} />
+              </a>
+            </li>
+            {document.group === 'Уголовный процесс' && (
+              <li>
+                <a href={withBase('/48-chasov/')}>
+                  Счётчик 48 часов
+                  <Icon name="arrow-right" size={13} />
+                </a>
+              </li>
+            )}
+            <li>
+              <a href={withBase('/bezopasnaya-peredacha-dokumentov/')}>
+                Безопасная передача копий
+                <Icon name="arrow-right" size={13} />
+              </a>
+            </li>
+          </ul>
+        </div>
+
         {relatedArticles.length > 0 && (
           <div class="aside-card doc-aside__related">
             <h2>Как это применяется</h2>

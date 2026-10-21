@@ -53,6 +53,7 @@ try {
         }
         const headerParts = await page.locator('.site-header__inner').evaluate(el => Array.from(el.children).map(child => child.getBoundingClientRect().toJSON()).filter(rect => rect.width > 0));
         for (let i = 1; i < headerParts.length; i++) check(headerParts[i - 1].right <= headerParts[i].left + 1, `${width}: overlapping header items`);
+        check(headerParts[0].left >= 12 && headerParts.at(-1).right <= width - 12, `${width}: header overflows viewport bounds (${headerParts[0].left}..${headerParts.at(-1).right})`);
       }
       let violations = [];
       if ([320, 1440].includes(width)) {

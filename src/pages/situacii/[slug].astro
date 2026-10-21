@@ -9,6 +9,8 @@ import { articlePhotos, situationPhotos } from '../../data/editorial';
 import { situations, type Situation } from '../../data/situations';
 import { documents } from '../../data/documents';
 import { services } from '../../data/services';
+import { memos } from '../../data/memos';
+import { situationMemos, situationTools } from '../../data/links';
 import { canonicalUrl, withBase } from '../../lib/paths';
 import { site } from '../../data/site';
 
@@ -30,6 +32,10 @@ const docs = situation.docs
   .map((slug) => documents.find((document) => document.slug === slug))
   .filter((document) => document !== undefined);
 const service = situation.service ? services.find((item) => item.slug === situation.service) : undefined;
+const relatedMemos = (situationMemos[situation.slug] ?? [])
+  .map((slug) => memos.find((memo) => memo.slug === slug))
+  .filter((memo) => memo !== undefined);
+const tools = situationTools[situation.slug] ?? [];
 const photo = articlePhotos[situationPhotos[situation.slug]];
 const sibling = situations.filter((item) => item.slug !== situation.slug).slice(0, 3);
 
@@ -157,6 +163,33 @@ const schema = [
             </div>
           </section>
         )}
+
+        {(tools.length > 0 || relatedMemos.length > 0 || service) && (
+          <section class="service-detail__section" id="instrumenty-situacii">
+            <p class="eyebrow">Инструменты и памятки</p>
+            <h2>Что поможет прямо сейчас</h2>
+            <div class="link-grid">
+              {relatedMemos.map((memo) => (
+                <a href={withBase(`/memos/${memo.slug}/`)}>
+                  Памятка: {memo.title}
+                  <span>На одну страницу · печать и PDF</span>
+                </a>
+              ))}
+              {tools.map((tool) => (
+                <a href={withBase(tool.href)}>
+                  {tool.title}
+                  <span>{tool.note}</span>
+                </a>
+              ))}
+              {service && (
+                <a href={withBase(`/napravleniya/${service.slug}/`)}>
+                  Направление: {service.title}
+                  <span>Чем может помочь адвокат на этой стадии</span>
+                </a>
+              )}
+            </div>
+          </section>
+        )}
       </div>
 
       <aside class="service-detail__aside">
@@ -166,6 +199,7 @@ const schema = [
           <a href="#prava">Права</a>
           <a href="#oshibki">Типичные ошибки</a>
           {docs.length > 0 && <a href="#dokumenty">Образцы по теме</a>}
+          {(tools.length > 0 || relatedMemos.length > 0 || service) && <a href="#instrumenty-situacii">Инструменты и памятки</a>}
         </nav>
         <div class="service-detail__aside-note">
           <h2>Безопасный первый контакт</h2>

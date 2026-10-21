@@ -128,14 +128,18 @@ const schema = {
 
       <div class="materials-cross" data-reveal>
         <div>
-          <p class="eyebrow">Ещё в разделе</p>
-          <h2>Разборы ситуаций</h2>
+          <p class="eyebrow">Рядом с образцами</p>
+          <h2>Сроки, разборы и памятки</h2>
           <p>
-            Обыск, допрос, задержание, апелляция, алименты, приставы — материалы о том, что
-            происходит на практике и какие шаги имеют смысл. Без обещаний результата.
+            Посчитайте крайний день подачи в калькуляторе процессуальных сроков, посмотрите
+            практические разборы по ситуации или скачайте одностраничные памятки в PDF.
           </p>
         </div>
-        <a class="btn btn--outline" href={withBase('/materialy/razbory/')}>Открыть разборы</a>
+        <div class="btn-row">
+          <a class="btn btn--outline" href={withBase('/sroki/')}>Калькуляторы сроков</a>
+          <a class="btn btn--outline" href={withBase('/materialy/razbory/')}>Разборы</a>
+          <a class="btn btn--outline" href={withBase('/memos/')}>Памятки PDF</a>
+        </div>
       </div>
 
       <div class="practice-policy" data-reveal>

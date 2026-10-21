@@ -2,35 +2,134 @@
 import { hasPhone, navigation, site, type NavItem } from '../data/site';
 import Icon from './Icon.astro';
 import { stripBase, withBase } from '../lib/paths';
-interface Props { overHero?: boolean; currentPath?: string; menuItems?: NavItem[]; }
+
+interface Props {
+  overHero?: boolean;
+  currentPath?: string;
+  menuItems?: NavItem[];
+}
+
 const { overHero = false, currentPath = Astro.url.pathname, menuItems = navigation } = Astro.props;
 const current = stripBase(currentPath);
+
+const sectionPrefixes: Record<string, string[]> = {
+  '/situacii/': ['/situacii/', '/srochno/', '/pomoshch-blizkomu/'],
+  '/materialy/': ['/materialy/'],
+  '/instrumenty/': ['/instrumenty/', '/48-chasov/', '/proverka-zayavleniya/', '/sroki/', '/memos/'],
+  '/praktika/': ['/praktika/'],
+  '/ob-advokate/': ['/ob-advokate/', '/kak-my-rabotaem/', '/kak-proverit-advokata/', '/bezopasnaya-peredacha-dokumentov/'],
+};
+
+const isSectionActive = (href: string) =>
+  (sectionPrefixes[href] ?? []).some((prefix) => current === prefix || current.startsWith(prefix));
+
+const mobilePrimary: NavItem[] = [...menuItems, { label: 'Контакты', href: '/#kontakty' }];
+
+const mobileQuick: NavItem[] = [
+  { label: 'Счётчик 48 часов', href: '/48-chasov/' },
+  { label: 'Проверка черновика', href: '/proverka-zayavleniya/' },
+  { label: 'Калькуляторы сроков', href: '/sroki/' },
+  { label: 'Памятки PDF', href: '/memos/' },
+  { label: 'Помощь близкому', href: '/pomoshch-blizkomu/' },
+  { label: 'Порядок и стоимость', href: '/kak-my-rabotaem/' },
+  { label: 'Проверка адвоката', href: '/kak-proverit-advokata/' },
+  { label: 'Поиск по сайту', href: '/poisk/' },
+];
 ---
+
 <header class:list={['site-header', !overHero && 'is-solid']} data-header>
   <div class="site-header__inner">
     <a class="brand" href={withBase('/')} title="На главную">
-      <span class="brand__mark" aria-hidden="true">ЮК</span><span class="brand__text"><span class="brand__name">{site.name}</span><span class="brand__role">Адвокат · Тверь</span></span>
+      <span class="brand__mark" aria-hidden="true">ЮК</span>
+      <span class="brand__text">
+        <span class="brand__name">{site.name}</span>
+        <span class="brand__role">Адвокат · Тверь</span>
+      </span>
     </a>
-    <nav class="site-nav" aria-label="Основная навигация">{menuItems.map((item) => <a class="site-nav__link" href={withBase(item.href)} aria-current={current === item.href ? 'page' : undefined}>{item.label}</a>)}</nav>
+
+    <nav class="site-nav" aria-label="Основная навигация">
+      {menuItems.map((item) => (
+        <a
+          class="site-nav__link"
+          href={withBase(item.href)}
+          aria-current={current === item.href ? 'page' : undefined}
+          data-active={current !== item.href && isSectionActive(item.href) ? 'true' : undefined}
+        >
+          {item.label}
+        </a>
+      ))}
+    </nav>
+
     <div class="header-actions">
       <a class="header-search" href={withBase('/poisk/')} aria-label="Поиск по сайту" title="Поиск (/)">
-        <svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true" focusable="false"><circle cx="8.6" cy="8.6" r="5.4" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="M12.7 12.7 17 17" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+        <svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true" focusable="false">
+          <circle cx="8.6" cy="8.6" r="5.4" fill="none" stroke="currentColor" stroke-width="1.3" />
+          <path d="M12.7 12.7 17 17" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" />
+        </svg>
       </a>
       <a class="header-urgent" href={withBase('/srochno/')}>Срочно</a>
       {hasPhone && <a class="header-phone" href={`tel:${site.phone.href}`} data-goal="contact_phone">{site.phone.display}</a>}
       <a class="header-cta" href={withBase('/#kontakty')}>Обсудить ситуацию<Icon name="arrow-right" size={14} /></a>
     </div>
-    <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="mobile-menu" aria-haspopup="dialog" data-menu-toggle><span>Меню</span><span class="menu-toggle__icon" aria-hidden="true"><span></span><span></span></span></button>
+
+    <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="mobile-menu" aria-haspopup="dialog" data-menu-toggle>
+      <span>Меню</span>
+      <span class="menu-toggle__icon" aria-hidden="true"><span></span><span></span></span>
+    </button>
   </div>
 </header>
+
 <dialog class="mobile-menu" id="mobile-menu" data-mobile-menu aria-labelledby="mobile-menu-title">
-  <div class="mobile-menu__head"><p id="mobile-menu-title">Юрий Кочевинов<span>Адвокат · Тверь</span></p><button type="button" class="mobile-menu__close" data-menu-close aria-label="Закрыть меню">Закрыть<span aria-hidden="true">×</span></button></div>
-  <nav class="mobile-menu__nav" aria-label="Мобильная навигация">{menuItems.map((item, index) => <a class="mobile-menu__link" href={withBase(item.href)}><span aria-hidden="true">0{index + 1}</span>{item.label}</a>)}</nav>
-  <a class="mobile-menu__link" href={withBase('/poisk/')}><span aria-hidden="true">⌕</span>Поиск по сайту</a>
-  <a class="mobile-menu__link mobile-menu__link--urgent" href={withBase('/srochno/')}><span aria-hidden="true">!</span>Срочно: задержали, обыск</a>
-  <div class="mobile-menu__footer"><a class="mobile-menu__phone" href={hasPhone ? `tel:${site.phone.href}` : site.vkChat} target={hasPhone ? undefined : '_blank'} rel={hasPhone ? undefined : 'noopener noreferrer'} data-goal={hasPhone ? 'contact_phone' : 'contact_vk'}>{hasPhone ? site.phone.display : 'Написать во ВКонтакте'}</a><span>{site.hours}</span><p class="mobile-menu__note">Не отправляйте документы и чувствительные сведения до согласования безопасного канала.</p></div>
+  <div class="mobile-menu__head">
+    <p id="mobile-menu-title">Юрий Кочевинов<span>Адвокат · Тверь</span></p>
+    <button type="button" class="mobile-menu__close" data-menu-close aria-label="Закрыть меню">Закрыть<span aria-hidden="true">×</span></button>
+  </div>
+
+  <a class="mobile-menu__link mobile-menu__link--urgent" href={withBase('/srochno/')}>
+    <span aria-hidden="true">!</span>Срочно: задержали, обыск
+  </a>
+
+  <nav class="mobile-menu__nav" aria-label="Мобильная навигация">
+    {mobilePrimary.map((item, index) => (
+      <a class="mobile-menu__link" href={withBase(item.href)} aria-current={current === item.href ? 'page' : undefined}>
+        <span aria-hidden="true">0{index + 1}</span>{item.label}
+      </a>
+    ))}
+  </nav>
+
+  <nav class="mobile-menu__quick" aria-label="Инструменты и быстрые разделы">
+    <p class="mobile-menu__quick-label">Инструменты и памятки</p>
+    <div class="mobile-menu__quick-grid">
+      {mobileQuick.map((item) => (
+        <a href={withBase(item.href)} aria-current={current === item.href ? 'page' : undefined}>{item.label}</a>
+      ))}
+    </div>
+  </nav>
+
+  <div class="mobile-menu__footer">
+    <a
+      class="mobile-menu__phone"
+      href={hasPhone ? `tel:${site.phone.href}` : site.vkChat}
+      target={hasPhone ? undefined : '_blank'}
+      rel={hasPhone ? undefined : 'noopener noreferrer'}
+      data-goal={hasPhone ? 'contact_phone' : 'contact_vk'}
+    >
+      {hasPhone ? site.phone.display : 'Написать во ВКонтакте'}
+    </a>
+    <span>{site.hours}</span>
+    <p class="mobile-menu__note">Не отправляйте документы и чувствительные сведения до согласования безопасного канала.</p>
+  </div>
 </dialog>
-<noscript><nav class="noscript-nav" aria-label="Навигация без JavaScript">{menuItems.map((item) => <a href={withBase(item.href)}>{item.label}</a>)}</nav><style>.menu-toggle{display:none!important}</style></noscript>
+
+<noscript>
+  <nav class="noscript-nav" aria-label="Навигация без JavaScript">
+    {mobilePrimary.map((item) => <a href={withBase(item.href)}>{item.label}</a>)}
+    <a href={withBase('/srochno/')}>Срочно</a>
+    <a href={withBase('/poisk/')}>Поиск</a>
+  </nav>
+  <style>.menu-toggle{display:none!important}</style>
+</noscript>
+
 <script>
   const searchHref = document.querySelector<HTMLAnchorElement>('.header-search')?.href;
   if (searchHref) {
@@ -51,35 +150,61 @@ const current = stripBase(currentPath);
   const closeButton = menu?.querySelector<HTMLButtonElement>('[data-menu-close]');
   if (header) {
     const onScroll = () => header.classList.toggle('is-scrolled', window.scrollY > 24);
-    onScroll(); window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
   }
   if (menu && toggle) {
     toggle.addEventListener('click', () => {
-      if (menu.open) { menu.close(); return; }
-      menu.showModal(); menu.classList.add('is-open'); toggle.setAttribute('aria-expanded', 'true');
-      document.body.classList.add('is-locked'); closeButton?.focus();
+      if (menu.open) {
+        menu.close();
+        return;
+      }
+      menu.showModal();
+      menu.classList.add('is-open');
+      toggle.setAttribute('aria-expanded', 'true');
+      document.body.classList.add('is-locked');
+      closeButton?.focus();
     });
     closeButton?.addEventListener('click', () => menu.close());
     menu.addEventListener('keydown', (event) => {
       if (event.key !== 'Tab') return;
-      const stops = Array.from(menu.querySelectorAll<HTMLElement>('a[href], button:not([disabled]), [tabindex="0"]')).filter((element) => element.getClientRects().length > 0);
-      const first = stops[0], last = stops.at(-1);
-      if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last?.focus(); }
-      else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first?.focus(); }
+      const stops = Array.from(menu.querySelectorAll<HTMLElement>('a[href], button:not([disabled]), [tabindex="0"]')).filter(
+        (element) => element.getClientRects().length > 0,
+      );
+      const first = stops[0];
+      const last = stops.at(-1);
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last?.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first?.focus();
+      }
     });
     menu.addEventListener('close', () => {
-      menu.classList.remove('is-open'); toggle.setAttribute('aria-expanded', 'false'); document.body.classList.remove('is-locked');
+      menu.classList.remove('is-open');
+      toggle.setAttribute('aria-expanded', 'false');
+      document.body.classList.remove('is-locked');
       const returnTo = toggle.getClientRects().length ? toggle : header?.querySelector<HTMLAnchorElement>('.brand');
       returnTo?.focus({ preventScroll: true });
     });
-    menu.querySelectorAll<HTMLAnchorElement>('a').forEach((link) => link.addEventListener('click', () => {
-      menu.close();
-      const destination = new URL(link.href);
-      if (destination.origin === location.origin && destination.pathname === location.pathname && destination.hash) {
-        const target = document.getElementById(decodeURIComponent(destination.hash.slice(1)));
-        if (target) requestAnimationFrame(() => { target.setAttribute('tabindex', '-1'); target.focus({ preventScroll: true }); });
-      }
-    }));
-    window.addEventListener('resize', () => { if (window.innerWidth > 1024 && menu.open) menu.close(); });
+    menu.querySelectorAll<HTMLAnchorElement>('a').forEach((link) =>
+      link.addEventListener('click', () => {
+        menu.close();
+        const destination = new URL(link.href);
+        if (destination.origin === location.origin && destination.pathname === location.pathname && destination.hash) {
+          const target = document.getElementById(decodeURIComponent(destination.hash.slice(1)));
+          if (target) {
+            requestAnimationFrame(() => {
+              target.setAttribute('tabindex', '-1');
+              target.focus({ preventScroll: true });
+            });
+          }
+        }
+      }),
+    );
+    window.addEventListener('resize', () => {
+      if (window.innerWidth > 1024 && menu.open) menu.close();
+    });
   }
 </script>

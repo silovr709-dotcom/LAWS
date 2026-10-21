@@ -83,12 +83,93 @@ export const hasOffice = site.office !== null;
 
 export type NavItem = { label: string; href: string; external?: boolean };
 
+export type ToolItem = {
+  code: string;
+  tag: string;
+  title: string;
+  shortTitle: string;
+  description: string;
+  href: string;
+};
+
 export const navigation: NavItem[] = [
   { label: 'Направления', href: '/#napravleniya' },
-  { label: 'Обо мне', href: '/ob-advokate/' },
-  { label: 'Результаты', href: '/praktika/' },
+  { label: 'Ситуации', href: '/situacii/' },
   { label: 'Материалы', href: '/materialy/' },
-  { label: 'Контакты', href: '/#kontakty' },
+  { label: 'Инструменты', href: '/instrumenty/' },
+  { label: 'Результаты', href: '/praktika/' },
+  { label: 'Обо мне', href: '/ob-advokate/' },
+];
+
+/** Интерактивные инструменты сайта: работают локально в браузере, без отправки данных. */
+export const siteTools: ToolItem[] = [
+  {
+    code: '01',
+    tag: 'Задержание · ст. 92, 94, 96, 108 УПК РФ',
+    title: 'Счётчик 48 часов',
+    shortTitle: 'Счётчик 48 часов',
+    description:
+      'Живой отсчёт пяти контрольных точек после фактического задержания, карточка для печати и ссылка для близких.',
+    href: '/48-chasov/',
+  },
+  {
+    code: '02',
+    tag: 'Документы · 10 реквизитов',
+    title: 'Проверка черновика',
+    shortTitle: 'Проверка черновика',
+    description:
+      'Проверка заявления, жалобы или ходатайства до подачи: адресат, нормы права, просительная часть, приложения и подпись.',
+    href: '/proverka-zayavleniya/',
+  },
+  {
+    code: '03',
+    tag: 'Процесс · 6 калькуляторов',
+    title: 'Калькуляторы сроков',
+    shortTitle: 'Калькуляторы сроков',
+    description:
+      'Расчёт 48 часов, 10 суток на апелляцию, сроков проверки по ст. 144 УПК РФ, жалобы приставу, удержаний и алиментов.',
+    href: '/sroki/',
+  },
+  {
+    code: '04',
+    tag: 'Первый контакт · конфиденциальность',
+    title: 'Первое сообщение и документы',
+    shortTitle: 'Передача документов',
+    description:
+      'Конструктор короткого обращения без лишних персональных данных и правила безопасной передачи копий адвокату.',
+    href: '/bezopasnaya-peredacha-dokumentov/',
+  },
+];
+
+/** Страницы доверия и организации работы — дополняют «Обо мне», «Порядок работы» и «Контакты». */
+export const trustPages: ToolItem[] = [
+  {
+    code: '01',
+    tag: 'Порядок работы и гонорар',
+    title: 'Как устроена работа и стоимость',
+    shortTitle: 'Порядок работы',
+    description:
+      'Шесть последовательных этапов поручения, из чего складывается стоимость и чего в работе не будет.',
+    href: '/kak-my-rabotaem/',
+  },
+  {
+    code: '02',
+    tag: 'Реестр адвокатов · № 51/862',
+    title: 'Как проверить статус адвоката',
+    shortTitle: 'Проверка адвоката',
+    description:
+      'Пять проверок до заключения соглашения: государственный реестр, удостоверение, ордер и квитанция.',
+    href: '/kak-proverit-advokata/',
+  },
+  {
+    code: '03',
+    tag: 'Защита сведений доверителя',
+    title: 'Как безопасно передать документы',
+    shortTitle: 'Передача документов',
+    description:
+      'Что допустимо писать в первом сообщении, какие бумаги не стоит пересылать в открытом чате и как подготовить копии.',
+    href: '/bezopasnaya-peredacha-dokumentov/',
+  },
 ];
 
 export const hero = {

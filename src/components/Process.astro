@@ -9,9 +9,23 @@ const steps = [
 ---
 <section class="section section--paper consultation" id="poryadok" aria-labelledby="poryadok-title">
   <div class="container">
-    <div class="compact-head" data-reveal><div><p class="eyebrow">Порядок работы</p><h2 id="poryadok-title">Понятно с первого разговора</h2></div><p>Сначала — знакомство с ситуацией.<br />Затем — решение о дальнейшей работе.</p></div>
+    <div class="compact-head" data-reveal>
+      <div><p class="eyebrow">Порядок работы</p><h2 id="poryadok-title">Понятно с первого разговора</h2></div>
+      <p>Сначала — знакомство с ситуацией.<br />Затем — решение о дальнейшей работе.</p>
+    </div>
     <ol class="consultation__steps">{steps.map((step, i) => <li data-reveal><span aria-hidden="true">0{i + 1}</span><h3>{step.title}</h3><p>{step.text}</p></li>)}</ol>
-    <div class="consultation__terms" data-reveal><div><h3>Формат консультации</h3><p>Лично или дистанционно — по договорённости. Канал связи и перечень материалов согласуются заранее; выезд в другой регион обсуждается отдельно.</p></div><div><h3>Как определяется стоимость</h3><p>Она зависит от стадии, срочности и объёма помощи. Условия и порядок оплаты нужно согласовать до начала консультации или работы по делу.</p></div></div>
+    <div class="consultation__terms" data-reveal>
+      <div>
+        <h3>Формат консультации</h3>
+        <p>Лично или дистанционно — по договорённости. Канал связи и перечень материалов согласуются заранее; выезд в другой регион обсуждается отдельно.</p>
+        <p class="consultation__term-link"><a class="link-arrow" href={withBase('/bezopasnaya-peredacha-dokumentov/')}>Как безопасно передать документы<Icon name="arrow-right" size={15} /></a></p>
+      </div>
+      <div>
+        <h3>Как определяется стоимость</h3>
+        <p>Она зависит от стадии, срочности и объёма помощи. Условия и порядок оплаты нужно согласовать до начала консультации или работы по делу.</p>
+        <p class="consultation__term-link"><a class="link-arrow" href={withBase('/kak-my-rabotaem/')}>Подробно об этапах и стоимости<Icon name="arrow-right" size={15} /></a></p>
+      </div>
+    </div>
     <p class="consultation__note">Обращение не создаёт отношений «адвокат — доверитель» и не обязывает заключать соглашение. <a href={withBase('/#kontakty')}>Обсудить первый контакт<Icon name="arrow-right" size={14} /></a></p>
   </div>
 </section>

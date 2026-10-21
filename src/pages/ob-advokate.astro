@@ -166,16 +166,20 @@ const imageSizes = '(max-width: 860px) calc(100vw - 40px), (max-width: 1180px) 4
           }
         </div>
         <p class="about-links">
+          <a class="link-arrow" href={withBase('/kak-my-rabotaem/')}>
+            Порядок работы и стоимость
+            <Icon name="arrow-right" size={14} />
+          </a>
+          <a class="link-arrow" href={withBase('/kak-proverit-advokata/')}>
+            Как проверить статус адвоката
+            <Icon name="arrow-right" size={14} />
+          </a>
+          <a class="link-arrow" href={withBase('/bezopasnaya-peredacha-dokumentov/')}>
+            Безопасная передача документов
+            <Icon name="arrow-right" size={14} />
+          </a>
           <a class="link-arrow" href={withBase('/praktika/')}>
-            Результаты и дела
-            <Icon name="arrow-right" size={14} />
-          </a>
-          <a class="link-arrow" href={withBase('/materialy/razbory/')}>
-            Разборы ситуаций
-            <Icon name="arrow-right" size={14} />
-          </a>
-          <a class="link-arrow" href={withBase('/materialy/obrazcy/')}>
-            Образцы документов
+            Результаты и отзывы
             <Icon name="arrow-right" size={14} />
           </a>
         </p>
@@ -188,6 +192,9 @@ const imageSizes = '(max-width: 860px) calc(100vw - 40px), (max-width: 1180px) 4
           ))}
         </dl>
         <a href={site.chamberUrl} target="_blank" rel="noopener noreferrer">Сайт адвокатской палаты</a>
+        <p style="margin-top: 8px;">
+          <a href={withBase('/kak-proverit-advokata/')}>Инструкция по проверке статуса в реестре</a>
+        </p>
         <h2>Награды и знаки отличия</h2>
         <ul>
           {about.awards.map((award) => <li>{award}</li>)}

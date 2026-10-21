@@ -4,6 +4,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import Icon from '../../components/Icon.astro';
 import ContactPrompt from '../../components/ContactPrompt.astro';
 import { documents, documentGroupsWithCount } from '../../data/documents';
+import { memos } from '../../data/memos';
 import { formatDate, plural } from '../../lib/format';
 import { site } from '../../data/site';
 import { canonicalUrl, withBase } from '../../lib/paths';
@@ -27,9 +28,9 @@ const popular = popularSlugs
   .map((slug) => documents.find((document) => document.slug === slug))
   .filter((document) => document !== undefined);
 
-const title = 'Материалы — разборы и образцы документов · адвокат Юрий Кочевинов';
+const title = 'Материалы — разборы, образцы документов и памятки · адвокат Юрий Кочевинов';
 const description =
-  'Один раздел: практические разборы ситуаций и образцы заявлений, жалоб, ходатайств и исков. Правовая основа, адресат, сроки, текст на сайте и PDF.';
+  'Единый раздел материалов: 13 практических разборов, 22 образца процессуальных документов в PDF, 3 одностраничные памятки и онлайн-инструменты для расчёта сроков и проверки черновика.';
 
 const schema = {
   '@context': 'https://schema.org',
@@ -51,6 +52,12 @@ const schema = {
       url: canonicalUrl(site.url, '/materialy/obrazcy/'),
       numberOfItems: documents.length,
     },
+    {
+      '@type': 'CollectionPage',
+      name: 'Памятки для печати',
+      url: canonicalUrl(site.url, '/memos/'),
+      numberOfItems: memos.length,
+    },
   ],
 };
 ---
@@ -59,25 +66,32 @@ const schema = {
   <section class="page-hero">
     <div class="container page-hero__grid page-hero__grid--with-ledger">
       <div class="page-hero__content">
-      <nav class="breadcrumbs" aria-label="Хлебные крошки">
-        <a href={withBase('/')}>Главная</a>
-        <span aria-hidden="true">/</span>
-        <span aria-current="page">Материалы</span>
-      </nav>
-      <p class="eyebrow eyebrow--meta">
-        <span>Материалы</span>
-        <span>{articles.length} {plural(articles.length, 'разбор', 'разбора', 'разборов')}</span>
-        <span>{documents.length} {plural(documents.length, 'образец', 'образца', 'образцов')}</span>
-      </p>
-      <h1 class="page-hero__title">Сначала разобраться,<br /><em>потом действовать</em></h1>
-      <p class="page-hero__lead">
-        Здесь два вида материалов, и они дополняют друг друга: разборы объясняют, что происходит в
-        конкретной ситуации, а образцы документов помогают оформить свою позицию. И то и другое —
-        ориентиры, а не замена консультации.
-      </p>
-    
+        <nav class="breadcrumbs" aria-label="Хлебные крошки">
+          <a href={withBase('/')}>Главная</a>
+          <span aria-hidden="true">/</span>
+          <span aria-current="page">Материалы</span>
+        </nav>
+        <p class="eyebrow eyebrow--meta">
+          <span>Материалы</span>
+          <span>{articles.length} {plural(articles.length, 'разбор', 'разбора', 'разборов')}</span>
+          <span>{documents.length} {plural(documents.length, 'образец', 'образца', 'образцов')}</span>
+          <span>{memos.length} памятки PDF</span>
+        </p>
+        <h1 class="page-hero__title">Сначала разобраться,<br /><em>потом действовать</em></h1>
+        <p class="page-hero__lead">
+          Здесь собраны все справочные форматы сайта: разборы объясняют, что происходит на каждой
+          стадии, образцы помогают подготовить заявление или жалобу, памятки можно распечатать на
+          один лист, а инструменты — проверить черновик и сроки.
+        </p>
       </div>
-      <HeroLedger items={[{ value: String(articles.length), label: 'разборов' }, { value: String(documents.length), label: 'образцов документов' }, { value: '0', label: 'регистраций и оплат' }]} note="Нормы проверены на дату публикации; обновление — по мере изменений." />
+      <HeroLedger
+        items={[
+          { value: String(articles.length), label: 'разборов' },
+          { value: String(documents.length), label: 'образцов документов' },
+          { value: String(memos.length), label: 'памятки PDF' },
+        ]}
+        note="Нормы проверены на дату публикации; обновление — по мере изменений."
+      />
     </div>
   </section>
 
@@ -85,13 +99,12 @@ const schema = {
     <div class="container">
       <div class="compact-head">
         <div>
-          <p class="eyebrow">Два раздела</p>
-          <h2 id="materialy-parts">Что можно найти</h2>
+          <p class="eyebrow">Структура раздела</p>
+          <h2 id="materialy-parts">Три формата и инструменты</h2>
         </div>
-        <p class="compact-head__note">
-          Материалы обновляются. Нормы и сроки проверены на дату публикации, но применимость
-          зависит от обстоятельств дела.
-        </p>
+        <a class="link-arrow" href={withBase('/instrumenty/')}>
+          Все инструменты<Icon name="arrow-right" size={15} />
+        </a>
       </div>
 
       <div class="materials-hub">
@@ -107,6 +120,7 @@ const schema = {
             <Icon name="arrow-right" size={15} />
           </span>
         </a>
+
         <a class="hub-card" href={withBase('/materialy/obrazcy/')} data-reveal>
           <span class="hub-card__count">{documents.length}</span>
           <h3>Образцы документов</h3>
@@ -119,6 +133,41 @@ const schema = {
             <Icon name="arrow-right" size={15} />
           </span>
         </a>
+
+        <a class="hub-card" href={withBase('/memos/')} data-reveal>
+          <span class="hub-card__count">{memos.length}</span>
+          <h3>Памятки на 1 лист</h3>
+          <p>
+            Первые 48 часов при задержании, обыск в помещении и вызов на допрос. Свёрстаны под
+            печать и сохранение в телефоне в формате PDF.
+          </p>
+          <span class="hub-card__link">
+            Открыть памятки
+            <Icon name="arrow-right" size={15} />
+          </span>
+        </a>
+      </div>
+
+      <div class="materials-tools-strip" data-reveal>
+        <p class="eyebrow">Проверить и посчитать в браузеpе</p>
+        <div class="related-docs__grid">
+          <a class="related-docs__item" href={withBase('/proverka-zayavleniya/')}>
+            <span>10 формальных реквизитов</span>
+            <strong>Проверка черновика заявления или жалобы</strong>
+          </a>
+          <a class="related-docs__item" href={withBase('/sroki/')}>
+            <span>6 калькуляторов</span>
+            <strong>Калькуляторы процессуальных сроков</strong>
+          </a>
+          <a class="related-docs__item" href={withBase('/48-chasov/')}>
+            <span>Задержание · ст. 94 УПК РФ</span>
+            <strong>Живой счётчик 48 часов</strong>
+          </a>
+          <a class="related-docs__item" href={withBase('/situacii/')}>
+            <span>8 пошаговых сценариев</span>
+            <strong>Навигатор по жизненным ситуациям</strong>
+          </a>
+        </div>
       </div>
     </div>
   </section>
@@ -217,7 +266,7 @@ const schema = {
     </div>
   </section>
 
-  <section class="section section--paper">
+  <section class="section section--milk">
     <div class="container">
       <div class="practice-policy" data-reveal>
         <h2>Как пользоваться материалами</h2>
@@ -232,15 +281,15 @@ const schema = {
           <div>
             <h3>Образец — это форма</h3>
             <p>
-              Перепишите обстоятельства своими словами, проверьте адресата, приложения и сроки.
-              Суд оценивает содержание, а не внешний вид шаблона.
+              Перепишите обстоятельства своими словами, проверьте адресата, приложения и сроки через
+              {' '}<a href={withBase('/proverka-zayavleniya/')}>проверку черновика</a>.
             </p>
           </div>
           <div>
             <h3>Срочное — не через сайт</h3>
             <p>
-              Если проводятся следственные действия или истекает срок, напишите напрямую и
-              обозначьте срочность: переписка не заменяет вызов адвоката.
+              Если проводятся следственные действия или истекает срок, откройте
+              {' '}<a href={withBase('/srochno/')}>памятку первых часов</a> и свяжитесь напрямую.
             </p>
           </div>
         </div>
@@ -253,8 +302,18 @@ const schema = {
   <style>
     .materials-hub {
       display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: clamp(18px, 2.6vw, 28px);
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: clamp(18px, 2.4vw, 26px);
+    }
+
+    .materials-tools-strip {
+      margin-top: clamp(24px, 3.2vw, 34px);
+      padding-top: clamp(22px, 3vw, 28px);
+      border-top: 1px solid var(--line);
+    }
+
+    .materials-tools-strip > .eyebrow {
+      margin-bottom: 14px;
     }
 
     .hub-card {
@@ -379,8 +438,13 @@ const schema = {
       font-weight: 600;
     }
 
+    @media (max-width: 960px) {
+      .materials-hub {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
     @media (max-width: 860px) {
-      .materials-hub,
       .doc-grid {
         grid-template-columns: minmax(0, 1fr);
       }

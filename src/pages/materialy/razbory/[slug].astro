@@ -10,7 +10,8 @@ import { breadcrumbs } from '../../../lib/schema';
 import Portrait from '../../../components/Portrait.astro';
 import { services } from '../../../data/services';
 import { documents } from '../../../data/documents';
-import { articleDocuments, articleSituations } from '../../../data/links';
+import { memos } from '../../../data/memos';
+import { articleDocuments, articleMemos, articleSituations, articleTools } from '../../../data/links';
 import { articlePhotos } from '../../../data/editorial';
 import EditorialImage from '../../../components/EditorialImage.astro';
 import { situations } from '../../../data/situations';
@@ -34,6 +35,10 @@ const relatedDocs = (articleDocuments[item.id] ?? [])
 const relatedSituations = (articleSituations[item.id] ?? [])
   .map((slug) => situations.find((situation) => situation.slug === slug))
   .filter((situation) => situation !== undefined);
+const relatedMemos = (articleMemos[item.id] ?? [])
+  .map((slug) => memos.find((memo) => memo.slug === slug))
+  .filter((memo) => memo !== undefined);
+const relatedTools = articleTools[item.id] ?? [];
 const { Content } = await render(item);
 
 // Содержание статьи: заголовки второго уровня, идентификаторы — как их строит Astro.
@@ -202,7 +207,7 @@ const schema = {
       </div>
     </div>
 
-    {(relatedDocs.length > 0 || relatedSituations.length > 0) && (
+    {(relatedDocs.length > 0 || relatedSituations.length > 0 || relatedTools.length > 0 || relatedMemos.length > 0) && (
       <section class="section section--paper" aria-labelledby="article-tools">
         <div class="container">
           <h2 id="article-tools" style="margin-bottom: 24px;">Применить на практике</h2>
@@ -219,7 +224,19 @@ const schema = {
             {relatedDocs.map((document) => (
               <a href={withBase(`/materialy/obrazcy/${document.slug}/`)} data-goal="doc_open">
                 {document.short}
-                <span>{document.group} · {document.deadline || document.addressee}</span>
+                <span>Образец PDF · {document.deadline || document.addressee}</span>
+              </a>
+            ))}
+            {relatedMemos.map((memo) => (
+              <a href={withBase(`/memos/${memo.slug}/`)}>
+                Памятка: {memo.title}
+                <span>На одну страницу · печать и PDF</span>
+              </a>
+            ))}
+            {relatedTools.map((tool) => (
+              <a href={withBase(tool.href)}>
+                {tool.title}
+                <span>Инструмент · {tool.note}</span>
               </a>
             ))}
           </div>

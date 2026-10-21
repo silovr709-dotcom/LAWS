@@ -33,7 +33,8 @@ const schema = [
     '@type': 'BreadcrumbList',
     itemListElement: [
       { '@type': 'ListItem', position: 1, name: 'Главная', item: canonicalUrl(site.url, '/') },
-      { '@type': 'ListItem', position: 2, name: 'Памятки', item: canonicalUrl(site.url, '/memos/') },
+      { '@type': 'ListItem', position: 2, name: 'Материалы', item: canonicalUrl(site.url, '/materialy/') },
+      { '@type': 'ListItem', position: 3, name: 'Памятки', item: canonicalUrl(site.url, '/memos/') },
     ],
   },
 ];
@@ -45,6 +46,8 @@ const schema = [
       <div class="page-hero__content">
       <nav class="breadcrumbs" aria-label="Хлебные крошки">
         <a href={withBase('/')}>Главная</a>
+        <span aria-hidden="true">/</span>
+        <a href={withBase('/materialy/')}>Материалы</a>
         <span aria-hidden="true">/</span>
         <span aria-current="page">Памятки</span>
       </nav>
@@ -81,8 +84,10 @@ const schema = [
         ))}
       </div>
       <p class="detail-note" style="margin-top: 24px;">
-        Памятка — ориентир, а не консультация. Если ситуация уже произошла, посмотрите
-        {' '}<a href={withBase('/srochno/')}>аварийный экран</a> и
+        Памятка — ориентир, а не консультация. Если ситуация уже произошла, откройте
+        {' '}<a href={withBase('/srochno/')}>аварийный экран</a>,
+        {' '}<a href={withBase('/48-chasov/')}>живой счётчик 48 часов</a>,
+        {' '}<a href={withBase('/pomoshch-blizkomu/')}>памятку для близких</a> или
         {' '}<a href={withBase('/situacii/')}>навигатор по ситуациям</a>.
       </p>
     </div>

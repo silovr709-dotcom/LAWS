@@ -1,12 +1,59 @@
 ---
 import { getCollection } from 'astro:content';
+import { documents } from '../data/documents';
+import { memos } from '../data/memos';
 import { withBase } from '../lib/paths';
 import Icon from './Icon.astro';
 import EditorialImage from './EditorialImage.astro';
 import { articlePhotos } from '../data/editorial';
-const articles = (await getCollection('articles', ({ data }) => !data.draft)).sort((a, b) => b.data.publishedAt.getTime() - a.data.publishedAt.getTime()).slice(0, 2);
+const allArticles = (await getCollection('articles', ({ data }) => !data.draft)).sort((a, b) => b.data.publishedAt.getTime() - a.data.publishedAt.getTime());
+const articles = allArticles.slice(0, 2);
 ---
-{articles.length > 0 && <section class="section section--milk publication-preview" aria-labelledby="publication-preview-title"><div class="container"><div class="compact-head" data-reveal><div><p class="eyebrow">Разобраться до первого шага</p><h2 id="publication-preview-title">Полезно знать</h2></div><a class="link-arrow" href={withBase('/materialy/')}>Все материалы<Icon name="arrow-right" size={15} /></a></div><div class="publication-preview__grid">{articles.map((item) => <a class="publication-card" href={withBase(`/materialy/razbory/${item.id}/`)} data-reveal>
-  {articlePhotos[item.id] && <span class="publication-card__media"><EditorialImage name={articlePhotos[item.id].name} alt={articlePhotos[item.id].alt} sizes="(max-width: 720px) 92vw, 560px" /></span>}
-  <span class="publication-card__body"><span>{item.data.category} · {item.data.readingTime}</span><h3>{item.data.title}</h3><span class="publication-card__read">Читать<Icon name="arrow-up-right" size={16} /></span></span>
-</a>)}</div></div></section>}
+{articles.length > 0 && (
+  <section class="section section--milk publication-preview" aria-labelledby="publication-preview-title">
+    <div class="container">
+      <div class="compact-head" data-reveal>
+        <div>
+          <p class="eyebrow">Разобраться до первого шага</p>
+          <h2 id="publication-preview-title">Полезно знать</h2>
+        </div>
+        <a class="link-arrow" href={withBase('/materialy/')}>Все материалы<Icon name="arrow-right" size={15} /></a>
+      </div>
+
+      <div class="publication-preview__grid">
+        {articles.map((item) => (
+          <a class="publication-card" href={withBase(`/materialy/razbory/${item.id}/`)} data-reveal>
+            {articlePhotos[item.id] && (
+              <span class="publication-card__media">
+                <EditorialImage name={articlePhotos[item.id].name} alt={articlePhotos[item.id].alt} sizes="(max-width: 720px) 92vw, 560px" />
+              </span>
+            )}
+            <span class="publication-card__body">
+              <span>{item.data.category} · {item.data.readingTime}</span>
+              <h3>{item.data.title}</h3>
+              <span class="publication-card__read">Читать<Icon name="arrow-up-right" size={16} /></span>
+            </span>
+          </a>
+        ))}
+      </div>
+
+      <div class="materials-shelf" data-reveal>
+        <a class="materials-shelf__item" href={withBase('/materialy/razbory/')}>
+          <span>{allArticles.length} разборов</span>
+          <strong>Практические руководства по ситуациям</strong>
+          <Icon name="arrow-right" size={15} />
+        </a>
+        <a class="materials-shelf__item" href={withBase('/materialy/obrazcy/')}>
+          <span>{documents.length} образца · PDF</span>
+          <strong>Шаблоны жалоб, ходатайств и заявлений</strong>
+          <Icon name="arrow-right" size={15} />
+        </a>
+        <a class="materials-shelf__item" href={withBase('/memos/')}>
+          <span>{memos.length} памятки · PDF</span>
+          <strong>Короткие листы на одну страницу для печати</strong>
+          <Icon name="arrow-right" size={15} />
+        </a>
+      </div>
+    </div>
+  </section>
+)}
