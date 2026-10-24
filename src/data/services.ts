@@ -24,7 +24,7 @@ const details: Record<string, Details> = {
       { title: 'Выстроить защиту', text: 'Согласовать участие в процессуальных действиях, подготовку документов и дальнейшие шаги с учётом конкретного поручения.' },
     ],
     prepare: ['В чём состоят претензии и кто их предъявил.', 'Какую должность или роль занимает человек, которому нужна помощь.', 'Какие требования и сроки уже указаны в полученных документах. Не передавайте финансовые материалы через открытую форму.'],
-    articleIds: ['dosledstvennaya-proverka', 'obysk-v-pomeshchenii', 'vyzov-na-dopros'],
+    articleIds: ['dosledstvennaya-proverka', 'obysk-v-pomeshchenii', 'vyzov-na-dopros', 'arest-imushchestva-po-ugolovnomu-delu'],
   },
   'dolzhnostnye-prestupleniya': {
     scenarios: ['Проверяют решение, принятое в рамках служебных полномочий.', 'Предъявлены подозрения в злоупотреблении, превышении полномочий или подкупе.', 'Нужно разобраться в служебных документах и формулировках обвинения.'],
@@ -46,7 +46,7 @@ const details: Record<string, Details> = {
       { title: 'Обеспечить правовое сопровождение', text: 'Согласовать участие в проверке, следственных действиях и судебном рассмотрении в пределах принятого поручения.' },
     ],
     prepare: ['Кому нужна помощь: врачу, другому специалисту или представителю организации.', 'На какой стадии находится проверка и назначены ли ближайшие действия.', 'Какие документы и экспертные заключения имеются. Не направляйте данные пациентов через открытые каналы.'],
-    articleIds: ['dosledstvennaya-proverka', 'vyzov-na-dopros', 'oznakomlenie-s-materialami-dela'],
+    articleIds: ['dosledstvennaya-proverka', 'vyzov-na-dopros', 'oznakomlenie-s-materialami-dela', 'ugolovnye-dela-vrachey'],
   },
   'predstavitelstvo-poterpevshih': {
     scenarios: ['Нужно обратиться с заявлением о преступлении.', 'По заявлению не принимают решение или требуется его обжаловать.', 'Важно участвовать в расследовании и поставить вопрос о возмещении вреда.'],
@@ -68,7 +68,7 @@ const details: Record<string, Details> = {
       { title: 'Подготовить позицию', text: 'Обсудить подготовку жалобы и участие в рассмотрении. Сам факт подачи жалобы не гарантирует изменения судебного акта.' },
     ],
     prepare: ['Дату и вид последнего судебного решения.', 'Когда получена копия акта и какие жалобы уже подавались.', 'Тексты решений и имеющиеся материалы — для передачи только по согласованному каналу.'],
-    articleIds: ['apellyatsiya-i-kassatsiya', 'oznakomlenie-s-materialami-dela', 'mera-presecheniya'],
+    articleIds: ['apellyatsiya-i-kassatsiya', 'oznakomlenie-s-materialami-dela', 'mera-presecheniya', 'osobyy-poryadok-sudebnogo-razbiratelstva', 'prekrashchenie-dela-i-reabilitatsiya'],
   },
 };
 export const services: Service[] = directions.map((direction) => {

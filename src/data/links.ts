@@ -20,12 +20,16 @@ export const articleDocuments: Record<string, string[]> = {
   'dosledstvennaya-proverka': ['hodataystvo-ob-oznakomlenii-s-materialami-proverki', 'zayavlenie-o-prestuplenii'],
   'zhaloba-125-upk': ['zhaloba-125-upk', 'zhaloba-na-deystviya-politsii'],
   'oznakomlenie-s-materialami-dela': ['hodataystvo-ob-oznakomlenii-s-protokolom', 'hodataystvo-ob-istrebovanii-dokazatelstv'],
-  'apellyatsiya-i-kassatsiya': ['apellyatsionnaya-zhaloba-na-prigovor', 'zayavlenie-o-peresmotre-po-novym-obstoyatelstvam'],
+  'apellyatsiya-i-kassatsiya': ['apellyatsionnaya-zhaloba-na-prigovor', 'kassatsionnaya-zhaloba-na-prigovor', 'zayavlenie-o-peresmotre-po-novym-obstoyatelstvam'],
   'alimenty': ['isk-o-vzyskanii-alimentov', 'zayavlenie-ob-obespechenii-iska'],
   'poryadok-obshcheniya-s-rebenkom': ['isk-ob-opredelenii-poryadka-obshcheniya-s-rebenkom', 'isk-o-rastorzhenii-braka'],
   'vozmeshchenie-vreda-posle-dtp': ['isk-o-vozmeshchenii-vreda-dtp', 'isk-o-vozmeshchenii-vreda-zdorovyu'],
   'pristavy': ['zhaloba-na-postanovlenie-pristava', 'zayavlenie-o-vosstanovlenii-sroka'],
   'disciplinarnoe-vzyskanie': ['vozrazheniya-po-isku', 'zayavlenie-o-vosstanovlenii-sroka'],
+  'osobyy-poryadok-sudebnogo-razbiratelstva': ['hodataystvo-o-prekrashchenii-ugolovnogo-dela', 'apellyatsionnaya-zhaloba-na-prigovor'],
+  'arest-imushchestva-po-ugolovnomu-delu': ['hodataystvo-o-snyatii-aresta-s-imushchestva', 'zhaloba-125-upk'],
+  'prekrashchenie-dela-i-reabilitatsiya': ['hodataystvo-o-prekrashchenii-ugolovnogo-dela', 'isk-o-vozmeshchenii-vreda-zdorovyu'],
+  'ugolovnye-dela-vrachey': ['hodataystvo-o-naznachenii-ekspertizy', 'hodataystvo-ob-istrebovanii-dokazatelstv'],
 };
 
 /** Направление → образцы, которые чаще всего нужны в этой работе. */
@@ -35,11 +39,11 @@ export const serviceDocuments: Record<string, string[]> = {
     'zhaloba-na-deystviya-politsii',
     'zhaloba-125-upk',
   ],
-  'ekonomicheskie-prestupleniya': ['zhaloba-125-upk', 'hodataystvo-ob-istrebovanii-dokazatelstv'],
+  'ekonomicheskie-prestupleniya': ['zhaloba-125-upk', 'hodataystvo-ob-istrebovanii-dokazatelstv', 'hodataystvo-o-snyatii-aresta-s-imushchestva'],
   'dolzhnostnye-prestupleniya': ['hodataystvo-o-dopuske-zashchitnika', 'zhaloba-125-upk'],
   'zashchita-vrachey': ['hodataystvo-o-naznachenii-ekspertizy', 'hodataystvo-ob-istrebovanii-dokazatelstv'],
   'predstavitelstvo-poterpevshih': ['zayavlenie-o-prestuplenii', 'isk-o-vozmeshchenii-vreda-zdorovyu'],
-  'apellyatsiya-i-kassatsiya': ['apellyatsionnaya-zhaloba-na-prigovor', 'zayavlenie-o-peresmotre-po-novym-obstoyatelstvam'],
+  'apellyatsiya-i-kassatsiya': ['apellyatsionnaya-zhaloba-na-prigovor', 'kassatsionnaya-zhaloba-na-prigovor', 'zayavlenie-o-peresmotre-po-novym-obstoyatelstvam'],
 };
 
 /** Ситуация навигатора → slug ситуации, связанной с разбором. */
@@ -54,6 +58,10 @@ export const articleSituations: Record<string, string[]> = {
   'alimenty': ['semya'],
   'poryadok-obshcheniya-s-rebenkom': ['semya'],
   'mera-presecheniya': ['zaderzhali'],
+  'osobyy-poryadok-sudebnogo-razbiratelstva': ['prigovor'],
+  'arest-imushchestva-po-ugolovnomu-delu': ['proverka'],
+  'prekrashchenie-dela-i-reabilitatsiya': ['prigovor'],
+  'ugolovnye-dela-vrachey': ['proverka', 'dopros'],
 };
 
 /** Разбор → памятки на одну страницу (slug в src/data/memos.ts). */
@@ -124,6 +132,22 @@ export const articleTools: Record<string, LinkedTool[]> = {
   'disciplinarnoe-vzyskanie': [
     { title: 'Проверка черновика возражений', note: 'Проверить структуру документа перед подачей', href: '/proverka-zayavleniya/' },
     { title: 'Калькуляторы сроков', note: 'Перенос процессуального срока с выходного дня', href: '/sroki/' },
+  ],
+  'osobyy-poryadok-sudebnogo-razbiratelstva': [
+    { title: 'Проверка черновика ходатайства', note: 'Проверить ходатайство о прекращении дела до подачи следователю или в суд', href: '/proverka-zayavleniya/' },
+    { title: 'Калькулятор 10 суток на апелляцию', note: 'Контроль срока обжалования приговора, если особый порядок не состоялся', href: '/sroki/#apellyatsiya' },
+  ],
+  'arest-imushchestva-po-ugolovnomu-delu': [
+    { title: 'Проверка черновика ходатайства', note: 'Проверить ходатайство о снятии ареста перед подачей следователю или в суд', href: '/proverka-zayavleniya/' },
+    { title: 'Безопасная передача документов', note: 'Как передать адвокату копии постановления и документов на имущество', href: '/bezopasnaya-peredacha-dokumentov/' },
+  ],
+  'prekrashchenie-dela-i-reabilitatsiya': [
+    { title: 'Проверка черновика ходатайства', note: 'Проверить ходатайство о прекращении дела и формулировку основания', href: '/proverka-zayavleniya/' },
+    { title: 'Первое сообщение адвокату', note: 'Собрать обращение по прекращённому делу без лишних данных', href: '/bezopasnaya-peredacha-dokumentov/#pervoe-soobshchenie' },
+  ],
+  'ugolovnye-dela-vrachey': [
+    { title: 'Проверка черновика ходатайства', note: 'Проверить ходатайство об экспертизе или истребовании доказательств', href: '/proverka-zayavleniya/' },
+    { title: 'Первое сообщение адвокату', note: 'Описать стадию проверки или дела без пересылки медицинских документов', href: '/bezopasnaya-peredacha-dokumentov/#pervoe-soobshchenie' },
   ],
 };
 

@@ -61,6 +61,22 @@ export const articlePhotos: Record<string, EditorialPhoto> = {
     name: 'disciplinarnoe-vzyskanie',
     alt: 'Толстый сборник документов, сложенная светлая рубашка на стуле и очки на столе',
   },
+  'osobyy-poryadok-sudebnogo-razbiratelstva': {
+    name: 'apellyatsiya-i-kassatsiya',
+    alt: 'Стопки переплетённых томов с закладками на столе под лампой',
+  },
+  'arest-imushchestva-po-ugolovnomu-delu': {
+    name: 'pristavy',
+    alt: 'Навесной замок с биркой на дверце шкафа и стопка папок рядом на столе',
+  },
+  'prekrashchenie-dela-i-reabilitatsiya': {
+    name: 'zhaloba-125-upk',
+    alt: 'Конверт, штамп и бланки на письменном столе',
+  },
+  'ugolovnye-dela-vrachey': {
+    name: 'zashchita-vrachey',
+    alt: 'Стетоскоп, стопка медицинских карт и авторучка на светлом столе',
+  },
 };
 
 /** Направления работы: те же кадры, что у профильных разборов. */

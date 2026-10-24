@@ -217,8 +217,8 @@ test('personal OG cards exist for key pages and stay 1200 × 630', async () => {
   }
 });
 
-test('all 22 legal sample templates serialize into clean plain text and detect unfilled placeholders', async () => {
-  assert.equal(documents.length, 22);
+test('all 26 legal sample templates serialize into clean plain text and detect unfilled placeholders', async () => {
+  assert.equal(documents.length, 26);
   for (const doc of documents) {
     const plain = formatDocumentText(doc);
     assert.ok(plain.length > 200, `${doc.slug}: plain text looks too short`);
