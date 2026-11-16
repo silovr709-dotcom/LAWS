@@ -40,7 +40,9 @@ const mobileQuick: NavItem[] = [
 <header class:list={['site-header', !overHero && 'is-solid']} data-header>
   <div class="site-header__inner">
     <a class="brand" href={withBase('/')} title="На главную">
-      <span class="brand__mark" aria-hidden="true">ЮК</span>
+      <span class="brand__mark brand__logo" aria-hidden="true">
+        <img src={site.logo} alt="" width="38" height="38" />
+      </span>
       <span class="brand__text">
         <span class="brand__name">{site.name}</span>
         <span class="brand__role">Адвокат · Тверь</span>

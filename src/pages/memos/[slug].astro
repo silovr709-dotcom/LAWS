@@ -59,6 +59,13 @@ const schema = [
       </div>
 
       <article class="memo-sheet">
+        <div class="memo-sheet__brand">
+          <img src={withBase('/logo.png')} alt="" width="110" height="81" />
+          <span class="memo-sheet__brand-text">
+            Адвокат Юрий Кочевинов<br />
+            Реестровый номер {site.registryNumber}
+          </span>
+        </div>
         <p class="memo-sheet__subtitle">{memo.subtitle}</p>
         <h1>{memo.title}</h1>
         <p class="memo-sheet__intro">{memo.intro}</p>
@@ -70,6 +77,14 @@ const schema = [
             </ul>
           </section>
         ))}
+        <div class="memo-warning">
+          <strong>Важно</strong>
+          <p>{memo.warning}</p>
+        </div>
+        <div class="memo-qr">
+          <img src={withBase('/memos/qr-vk.png')} width="64" height="64" alt="QR-код: vk.com/advocat_yuriy51" loading="lazy" decoding="async" />
+          <span>Связь через VK: <a href={site.vk} target="_blank" rel="noopener noreferrer">vk.com/advocat_yuriy51</a></span>
+        </div>
         <p class="memo-sheet__footer">{memo.footer}</p>
       </article>
 

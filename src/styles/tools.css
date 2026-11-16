@@ -344,6 +344,19 @@
 .memo-sheet li { color: var(--graphite); }
 .memo-sheet__footer { margin-top: 32px; padding-top: 14px; border-top: 1px solid var(--line); font-size: 0.75rem; color: var(--muted); }
 
+.memo-sheet__brand { display: flex; align-items: center; justify-content: space-between; gap: 16px; border-bottom: 1px solid var(--wine); padding-bottom: 10px; margin-bottom: 18px; }
+.memo-sheet__brand img { height: 40px; width: auto; max-width: 150px; object-fit: contain; }
+.memo-sheet__brand-text { text-align: right; font-size: 0.6875rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--wine); line-height: 1.5; }
+
+.memo-warning { margin-top: 28px; border: 1.5px solid var(--wine); background: #fdf6f6; padding: 16px 18px; }
+.memo-warning strong { display: block; font-family: var(--font-display); font-size: 0.75rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--wine); margin-bottom: 6px; }
+.memo-warning p { margin: 0; color: #4a1018; font-size: 0.9375rem; }
+
+.memo-qr { display: flex; align-items: center; gap: 14px; margin-top: 22px; padding-top: 16px; border-top: 1px solid var(--line); }
+.memo-qr img { width: 64px; height: 64px; flex: none; }
+.memo-qr span { font-size: 0.875rem; color: var(--muted); }
+.memo-qr a { color: var(--wine); }
+
 /* Поиск --------------------------------------------------------------------- */
 
 .search-box { display: grid; gap: 10px; max-width: 720px; }
@@ -418,6 +431,11 @@
 
   body { background: #fff; color: #000; }
   .memo-sheet { border: 0; padding: 0; max-width: none; }
+  .memo-sheet__brand { border-bottom: 1.5px solid #000; margin-bottom: 20px; }
+  .memo-sheet__brand-text { color: #000; }
+  .memo-warning { border: 1.5px solid #000; background: #fff; color: #000; }
+  .memo-warning p { color: #000; }
+  .memo-qr { border-top: 1px solid #000; }
   .memo-sheet h1 { color: #000; }
   .memo-sheet h2 { color: #000; }
   a { color: #000; text-decoration: none; }

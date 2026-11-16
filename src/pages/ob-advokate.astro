@@ -37,7 +37,7 @@ const imageSizes = '(max-width: 860px) calc(100vw - 40px), (max-width: 1180px) 4
 
 <BaseLayout
   title="Обо мне — адвокат Юрий Кочевинов"
-  description="Юрий Кочевинов о себе: более 25 лет юридической практики, предшествующий опыт работы в государственных органах в уголовно-правовой сфере. Адвокат с 2023 года, кабинет № АО51/257."
+  description="Юрий Кочевинов о себе: свыше 20 лет юридической практики, предшествующий опыт работы в государственных органах в уголовно-правовой сфере. Адвокат с 2023 года, кабинет № АО51/257."
   schema={[schema, breadcrumbs([{ name: 'Главная', path: '/' }, { name: 'Об адвокате', path: '/ob-advokate/' }])]}
 >
   <section class="biography-hero">
@@ -52,13 +52,14 @@ const imageSizes = '(max-width: 860px) calc(100vw - 40px), (max-width: 1180px) 4
         <h1>Юрий Анатольевич<br /><em>Кочевинов</em></h1>
         <p class="biography-hero__lead">{about.lead}</p>
         <dl class="biography-hero__facts">
-          <div><dt>Юридическая практика</dt><dd>более 25 лет</dd></div>
+          <div><dt>Юридическая практика</dt><dd>свыше 20 лет</dd></div>
           <div><dt>Адвокат</dt><dd>с 2023 года</dd></div>
           <div><dt>Реестровый номер</dt><dd>{site.registryNumber}</dd></div>
+          <div><dt>Адвокатский кабинет</dt><dd>№ АО51/257</dd></div>
         </dl>
         <p class="detail-note">
           Юридическая практика включает предыдущую профессиональную деятельность; она не означает
-          25 лет работы в статусе адвоката. Сведения приведены по открытым источникам и реестру
+          20 лет работы в статусе адвоката. Сведения приведены по открытым источникам и реестру
           адвокатов.
         </p>
       </div>
@@ -147,6 +148,24 @@ const imageSizes = '(max-width: 860px) calc(100vw - 40px), (max-width: 1180px) 4
     </div>
   </section>
 
+  <section class="section section--paper" aria-labelledby="specialization-title">
+    <div class="container">
+      <div class="compact-head">
+        <div>
+          <p class="eyebrow">Специализация</p>
+          <h2 id="specialization-title">По каким статьям консультируем и защищаем</h2>
+        </div>
+        <p class="compact-head__note">
+          Перечень направлений профессиональной деятельности. Список статей — ориентир для
+          понимания, где я могу помочь; каждое дело индивидуально, исход не обещается.
+        </p>
+      </div>
+      <ul class="rule-list">
+        {about.specialization.map((item) => <li>{item}</li>)}
+      </ul>
+    </div>
+  </section>
+
   <section class="section section--paper">
     <div class="container biography-layout">
       <div>
@@ -194,6 +213,11 @@ const imageSizes = '(max-width: 860px) calc(100vw - 40px), (max-width: 1180px) 4
         <a href={site.chamberUrl} target="_blank" rel="noopener noreferrer">Сайт адвокатской палаты</a>
         <p style="margin-top: 8px;">
           <a href={withBase('/kak-proverit-advokata/')}>Инструкция по проверке статуса в реестре</a>
+        </p>
+        <p style="margin-top: 8px;">
+          <a href={site.egrUrl} target="_blank" rel="noopener noreferrer" data-goal="registry_check">
+            {site.egrLabel} (Минюст РФ)
+          </a>
         </p>
         <p class="detail-note">{about.note}</p>
       </aside>

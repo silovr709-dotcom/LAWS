@@ -134,8 +134,10 @@ const schema = [
         <strong>Мои данные для проверки:</strong> Кочевинов Юрий Анатольевич, реестровый номер
         {' '}<strong>{site.registryNumber}</strong>, {site.chamber}. Реестр — на сайте палаты:
         {' '}<a href={site.chamberUrl} target="_blank" rel="noopener noreferrer">{site.chamberUrl.replace('https://', '')}</a>.
+        {' '}<strong>Единый государственный реестр адвокатов</strong> (Минюст РФ):
+        {' '}<a href={site.egrUrl} target="_blank" rel="noopener noreferrer" data-goal="registry_check">{site.egrLabel}</a>.
         {' '}Федеральная палата адвокатов: <a href="https://fparf.ru/" target="_blank" rel="noopener noreferrer">fparf.ru</a>.
-        {' '}<a href={site.chamberUrl} target="_blank" rel="noopener noreferrer" data-goal="registry_check">Перейти в реестр</a>.
+        {' '}<a href={site.egrUrl} target="_blank" rel="noopener noreferrer" data-goal="registry_check">Перейти в реестр</a>.
       </div>
     </div>
   </section>
