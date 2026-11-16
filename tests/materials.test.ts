@@ -58,8 +58,9 @@ test('biography alternates text and photos and reflects the current practice', (
     assert.ok(block.image < about.gallery.length, `${block.title}: image index`);
   }
   const text = [...about.story.flatMap((block) => block.paragraphs), ...about.timeline.map((item) => item.text)].join(' ');
-  assert.match(text, /Кировск/);
-  assert.match(text, /Первомайского/);
+  // Опыт в органах указывается в общем виде: без ведомств, должностей и чинов.
+  assert.match(text, /государственных органах/);
+  assert.match(text, /государственной власти/);
   assert.match(text, /26 мая 2023/);
   assert.match(text, /АО51\/257/);
   assert.match(text, /Правоохранительные и судебные органы/);
