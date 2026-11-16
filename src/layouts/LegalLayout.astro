@@ -1,6 +1,6 @@
 ---
 import BaseLayout from './BaseLayout.astro';
-import { hasEmail, site } from '../data/site';
+import { site } from '../data/site';
 import { withBase } from '../lib/paths';
 
 interface Props {
@@ -14,6 +14,7 @@ interface Props {
 }
 
 const { title, description, heading, updated, version, toc = [], noindex = false } = Astro.props;
+const privacyEmail = site.legal.privacyEmail || site.email;
 ---
 
 <BaseLayout title={title} description={description} noindex={noindex}>
@@ -35,9 +36,9 @@ const { title, description, heading, updated, version, toc = [], noindex = false
         <slot />
         <div class="legal-note">
           Если положение документа требует уточнения, направьте обращение{' '}
-          {hasEmail ? (
+          {privacyEmail ? (
             <>
-              на <a href={`mailto:${site.legal.privacyEmail}`}>{site.legal.privacyEmail}</a> или
+              на <a href={`mailto:${privacyEmail}`}>{privacyEmail}</a> или
             </>
           ) : (
             'через '

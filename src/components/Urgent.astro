@@ -1,46 +1,29 @@
 ---
-import { hasPhone, site, urgent } from '../data/site';
+import { hasPhone, site } from '../data/site';
 import Icon from './Icon.astro';
 import { withBase } from '../lib/paths';
 ---
 
-<section class="urgent" id="srochno" aria-labelledby="urgent-title">
-  <div class="container urgent__inner">
-    <div class="urgent__head" data-reveal>
-      <p class="eyebrow urgent__eyebrow">{urgent.eyebrow}</p>
-      <h2 class="urgent__title" id="urgent-title">{urgent.title}</h2>
-      <p class="urgent__lead">{urgent.lead}</p>
-    </div>
-
-    <div class="urgent__body" data-reveal>
-      <ol class="urgent__list">
-        {
-          urgent.actions.map((action, index) => (
-            <li>
-              <span aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>
-              {action}
-            </li>
-          ))
-        }
-      </ol>
-
-      <div class="urgent__actions">
-        <a
-          class="btn btn--light"
-          href={hasPhone ? `tel:${site.phone.href}` : site.vkChat}
-          target={hasPhone ? undefined : '_blank'}
-          rel={hasPhone ? undefined : 'noopener noreferrer'}
-        >
-          <Icon name={hasPhone ? 'phone' : 'vk'} size={15} />
-          {hasPhone ? site.phone.display : urgent.cta}
-        </a>
-        <a class="urgent__link" href={withBase('/#kontakty')}>
-          Или оставьте сообщение через форму
-          <Icon name="arrow-right" size={14} />
-        </a>
+<section class="urgent urgent--compact" id="srochno" aria-labelledby="urgent-title">
+  <div class="container">
+    <div class="urgent-compact__inner">
+      <div>
+        <p class="eyebrow">Если помощь нужна сейчас</p>
+        <h2 id="urgent-title">Первые часы имеют значение</h2>
       </div>
-
-      <p class="urgent__note">{urgent.note}</p>
+      <div>
+        <p>Задержание, обыск, вызов на допрос. Уточните статус и ближайшие сроки. Не передавайте подробности дела через открытые каналы.</p>
+        <p class="urgent-compact__note">Переписка не является каналом экстренной связи.</p>
+      </div>
+      <a class="link-arrow" href={hasPhone ? `tel:${site.phone.href}` : withBase('/srochno/')} data-goal={hasPhone ? 'contact_phone' : undefined}>
+        {hasPhone ? 'Позвонить' : 'Что делать сейчас'}<Icon name="arrow-right" size={16} />
+      </a>
     </div>
+
+    <nav class="urgent-compact__quick" aria-label="Срочные инструменты и памятки">
+      <a href={withBase('/48-chasov/')}>Счётчик 48 часов<Icon name="arrow-right" size={14} /></a>
+      <a href={withBase('/pomoshch-blizkomu/')}>Если задержали близкого<Icon name="arrow-right" size={14} /></a>
+      <a href={withBase('/memos/')}>Памятки для печати PDF<Icon name="arrow-right" size={14} /></a>
+    </nav>
   </div>
 </section>

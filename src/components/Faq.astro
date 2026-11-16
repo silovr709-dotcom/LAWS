@@ -8,15 +8,14 @@ import { faq } from '../data/site';
       <p class="eyebrow">{faq.eyebrow}</p>
       <h2 id="voprosy-title">{faq.title}</h2>
       <p>
-        Если ответа нет в списке, задайте вопрос по телефону или через форму — без лишних
-        подробностей.
+        Если ответа нет в списке, начните с короткого обращения — без документов и чувствительных подробностей.
       </p>
     </div>
 
     <div class="accordion">
       {
-        faq.items.map((item, index) => (
-          <details class="accordion__item" data-reveal open={index === 0}>
+        faq.items.map((item) => (
+          <details class="accordion__item" data-reveal>
             <summary class="accordion__summary">
               <span>{item.question}</span>
               <span class="accordion__icon" aria-hidden="true" />

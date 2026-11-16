@@ -3,7 +3,10 @@ import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Icon from '../../components/Icon.astro';
 import { site } from '../../data/site';
-import { withBase } from '../../lib/paths';
+import { canonicalUrl, withBase } from '../../lib/paths';
+import HeroLedger from '../../components/HeroLedger.astro';
+import { breadcrumbs } from '../../lib/schema';
+import { reviews } from '../../data/reviews';
 
 const cases = (await getCollection('cases', ({ data }) => !data.draft)).sort(
   (a, b) => b.data.year - a.data.year,
@@ -13,23 +16,23 @@ const categories = [...new Set(cases.map((item) => item.data.category))].sort();
 const instances = [...new Set(cases.map((item) => item.data.instance))];
 const results = [...new Set(cases.map((item) => item.data.result))].sort();
 
-const title = 'Судебная практика — адвокат Юрий Кочевинов, Тверь';
+const title = 'Результаты и судебная практика — адвокат Юрий Кочевинов';
 const description =
-  'Каталог судебных дел с участием адвоката Юрия Кочевинова: категории, инстанции и результаты. Публикуются только подтверждённые и обезличенные материалы.';
+  'Дела с участием адвоката Юрия Кочевинова: категории, инстанции и результаты. Каждое дело указано с источником сведений; без имён, номеров дел и обещаний результата.';
 
 const schema = {
   '@context': 'https://schema.org',
   '@type': 'CollectionPage',
   name: title,
   description,
-  url: `${site.url}/praktika/`,
-  isPartOf: { '@type': 'WebSite', name: `Адвокат ${site.name}`, url: site.url },
+  url: canonicalUrl(site.url, '/praktika/'),
+  isPartOf: { '@type': 'WebSite', name: `Адвокат ${site.name}`, url: canonicalUrl(site.url, '/') },
   mainEntity: {
     '@type': 'ItemList',
     itemListElement: cases.map((item, index) => ({
       '@type': 'ListItem',
       position: index + 1,
-      url: `${site.url}/praktika/${item.id}/`,
+      url: canonicalUrl(site.url, `/praktika/${item.id}/`),
       name: item.data.title,
     })),
   },
@@ -40,22 +43,26 @@ const schema = {
   title={title}
   description={description}
   noindex={cases.length === 0}
-  schema={schema}
+  schema={[schema, breadcrumbs([{ name: 'Главная', path: '/' }, { name: 'Практика', path: '/praktika/' }])]}
 >
   <section class="page-hero">
-    <div class="container">
+    <div class="container page-hero__grid page-hero__grid--with-ledger">
+      <div class="page-hero__content">
       <nav class="breadcrumbs" aria-label="Хлебные крошки">
         <a href={withBase("/")}>Главная</a>
         <span aria-hidden="true">/</span>
         <span aria-current="page">Практика</span>
       </nav>
-      <p class="eyebrow">Судебная практика</p>
+      <p class="eyebrow">Результаты</p>
       <h1 class="page-hero__title">Дела и правовые вопросы</h1>
       <p class="page-hero__lead">
-        Каталог пополняется вручную. Для каждого дела проверяется участие адвоката и
-        допустимость публикации, а обстоятельства излагаются без сведений, позволяющих
-        идентифицировать доверителя.
+        Каталог пополняется вручную. Участие в деле подтверждается процессуальными документами
+        либо открытой публикацией, обстоятельства излагаются без сведений, позволяющих
+        идентифицировать доверителя. Отдельная пометка показывает, чем именно подтверждено дело.
       </p>
+    
+      </div>
+      <HeroLedger items={[{ value: String(cases.length), label: 'дел в каталоге' }, { value: '2024–2026', label: 'годы практики' }]} note="Участие подтверждено процессуальным документом или открытой публикацией." />
     </div>
   </section>
 
@@ -125,6 +132,9 @@ const schema = {
                   <p class="case-card__summary">{item.data.summary}</p>
                   <div class="case-card__foot">
                     <span class="case-card__result">{item.data.result}</span>
+                    <span class="case-card__source">
+                      {item.data.verification === 'document' ? 'по документам' : 'по открытым данным'}
+                    </span>
                     <Icon name="arrow-up-right" size={15} />
                   </div>
                 </a>
@@ -163,7 +173,7 @@ const schema = {
                 Обсудить ситуацию
                 <Icon name="arrow-right" size={15} />
               </a>
-              <a class="btn btn--outline" href={withBase("/publikacii/")}>Читать публикации</a>
+              <a class="btn btn--outline" href={withBase("/materialy/")}>Читать материалы</a>
             </div>
           </div>
         )
@@ -188,6 +198,14 @@ const schema = {
             </p>
           </div>
           <div>
+            <h3>Источник сведений</h3>
+            <p>
+              Пометка «по документам» означает, что участие подтверждено процессуальным документом.
+              Пометка «по открытым данным» — что сведения взяты из открытого отзыва доверителя или
+              публикации адвоката; такие дела не заменяют выписку из материалов дела.
+            </p>
+          </div>
+          <div>
             <h3>Без обещаний результата</h3>
             <p>
               Исход конкретного дела не свидетельствует о результате других дел. Каталог носит
@@ -198,6 +216,49 @@ const schema = {
       </div>
     </div>
   </section>
+
+  <section class="section section--milk" aria-labelledby="reviews-title">
+    <div class="container">
+      <div class="compact-head">
+        <div>
+          <p class="eyebrow">Отзывы</p>
+          <h2 id="reviews-title">Что говорят доверители</h2>
+        </div>
+        <p class="compact-head__note">
+          Фрагменты открытых отзывов. Орфография источника сохранена, фамилии и контакты не
+          публикуются. Отзыв отражает мнение доверителя и не подтверждает результат по другому делу.
+        </p>
+      </div>
+      <div class="reviews-grid">
+        {
+          reviews.map((review) => (
+            <figure class="review-card" data-reveal>
+              <blockquote>{review.quote}</blockquote>
+              <figcaption>
+                <span>{review.topic}</span>
+                <span>{review.date}</span>
+                <a href={review.sourceUrl} target="_blank" rel="noopener noreferrer">
+                  Источник
+                </a>
+              </figcaption>
+            </figure>
+          ))
+        }
+      </div>
+
+      <div class="sources-note" data-reveal>
+        <h3>Почему дел в каталоге меньше, чем отзывов</h3>
+        <p>
+          В открытых картотеках судебных актов фамилии защитников и представителей, как правило,
+          не публикуются или обезличиваются. По карточке дела нельзя достоверно установить, что в
+          нём участвовал конкретный адвокат, поэтому в каталог попадают только те дела, где участие
+          подтверждено процессуальным документом либо открытой публикацией с указанием исхода.
+          Остальные результаты видны в отзывах — без номеров дел и данных доверителей.
+        </p>
+      </div>
+    </div>
+  </section>
+
   <script>
   const root = document.querySelector<HTMLElement>('[data-filters]');
   const grid = document.querySelector<HTMLElement>('[data-cases]');
@@ -235,40 +296,72 @@ const schema = {
   }
 </script>
 <style>
-  .practice-policy {
-    margin-top: clamp(3rem, 6vw, 5rem);
-    padding-top: clamp(2rem, 4vw, 3rem);
-    border-top: 1px solid var(--line);
-  }
-
-  .practice-policy > h2 {
-    font-size: clamp(1.6rem, 2.6vw, 2.1rem);
-    margin-bottom: clamp(1.5rem, 3vw, 2rem);
-  }
-
-  .practice-policy__grid {
+  
+  .reviews-grid {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: clamp(20px, 3vw, 32px);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: clamp(16px, 2.4vw, 24px);
   }
 
-  .practice-policy__grid h3 {
-    font-size: 1.15rem;
+  .review-card {
+    margin: 0;
+    padding: clamp(20px, 2.6vw, 28px);
+    border: 1px solid var(--line);
+    background: var(--paper, #f6f0e7);
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .review-card blockquote {
+    margin: 0;
+    font-size: 0.95rem;
+    line-height: 1.66;
+    color: var(--ink, #1c1917);
+  }
+
+  .review-card figcaption {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 16px;
+    margin-top: auto;
+    padding-top: 14px;
+    border-top: 1px solid var(--line);
+    font-size: 0.78rem;
+    letter-spacing: 0.03em;
+    color: var(--muted);
+  }
+
+  .review-card figcaption a {
+    margin-left: auto;
+  }
+
+  .sources-note {
+    margin-top: clamp(24px, 3.4vw, 34px);
+    padding: clamp(20px, 2.6vw, 28px);
+    border-left: 3px solid var(--gold-deep, #796039);
+    background: rgba(121, 96, 57, 0.06);
+  }
+
+  .sources-note h3 {
     font-family: var(--font-body);
+    font-size: 1.05rem;
     font-weight: 600;
     margin-bottom: 8px;
   }
 
-  .practice-policy__grid p {
-    font-size: 0.9rem;
-    line-height: 1.62;
+  .sources-note p {
+    font-size: 0.92rem;
+    line-height: 1.66;
     color: var(--muted);
+    max-width: 92ch;
   }
 
   @media (max-width: 860px) {
-    .practice-policy__grid {
+    .reviews-grid {
       grid-template-columns: minmax(0, 1fr);
     }
   }
-  </style>
+</style>
 </BaseLayout>

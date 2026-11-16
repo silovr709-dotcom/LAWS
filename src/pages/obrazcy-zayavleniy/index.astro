@@ -1,0 +1,21 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import MovedPage from '../../components/MovedPage.astro';
+import { withBase } from '../../lib/paths';
+
+const target = withBase('/materialy/obrazcy/');
+---
+
+<BaseLayout
+  title="Образцы документов переехали — адвокат Юрий Кочевинов"
+  description="Образцы заявлений, жалоб и ходатайств теперь находятся в разделе «Материалы» на сайте адвоката Юрия Кочевинова."
+  noindex
+>
+  <meta slot="head" http-equiv="refresh" content={`0; url=${target}`} />
+  <MovedPage
+    to="/materialy/obrazcy/"
+    heading="Образцы переехали"
+    note="Теперь они находятся в разделе «Материалы» рядом с разборами ситуаций."
+  />
+  <script is:inline define:vars={{ target }}>window.location.replace(target);</script>
+</BaseLayout>

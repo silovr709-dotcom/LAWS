@@ -1,0 +1,28 @@
+---
+/**
+ * «Леджер» внутренней обложки: 2–4 реальных показателя страницы.
+ * Не декорация: цифры приходят из данных (количество разборов, образцов и т. п.).
+ */
+interface Item {
+  value: string;
+  label: string;
+}
+
+interface Props {
+  items: Item[];
+  note?: string;
+  label?: string;
+}
+
+const { items, note, label = 'Коротко о разделе' } = Astro.props;
+---
+
+<aside class="hero-ledger" aria-label={label}>
+  {items.map((item) => (
+    <div class="hero-ledger__row">
+      <span class="hero-ledger__value">{item.value}</span>
+      <span class="hero-ledger__label">{item.label}</span>
+    </div>
+  ))}
+  {note && <p class="hero-ledger__note">{note}</p>}
+</aside>

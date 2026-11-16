@@ -1,0 +1,39 @@
+---
+import { siteTools } from '../data/site';
+import Icon from './Icon.astro';
+import { withBase } from '../lib/paths';
+---
+
+<section class="section section--paper tools-preview" id="instrumenty" aria-labelledby="tools-preview-title">
+  <div class="container">
+    <div class="compact-head" data-reveal>
+      <div>
+        <p class="eyebrow">Инструменты · без отправки данных</p>
+        <h2 id="tools-preview-title">Посчитать сроки и проверить документ</h2>
+      </div>
+      <a class="link-arrow" href={withBase('/instrumenty/')}>
+        Все инструменты<Icon name="arrow-right" size={15} />
+      </a>
+    </div>
+
+    <div class="tools-preview__grid">
+      {siteTools.map((tool) => (
+        <a class="tool-plate" href={withBase(tool.href)} data-reveal>
+          <span class="tool-plate__meta">
+            <span class="tool-plate__code" aria-hidden="true">{tool.code}</span>
+            <span class="tool-plate__tag">{tool.tag}</span>
+          </span>
+          <h3>{tool.title}</h3>
+          <p>{tool.description}</p>
+          <span class="tool-plate__go">
+            Открыть инструмент<Icon name="arrow-up-right" size={15} />
+          </span>
+        </a>
+      ))}
+    </div>
+
+    <p class="detail-note">
+      Все расчёты и проверка текста выполняются локально в вашем браузере — даты, суммы и черновики никуда не передаются.
+    </p>
+  </div>
+</section>

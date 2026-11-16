@@ -3,7 +3,8 @@ import { getCollection, type CollectionEntry } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Icon from '../../components/Icon.astro';
 import { site } from '../../data/site';
-import { withBase } from '../../lib/paths';
+import { canonicalUrl, withBase } from '../../lib/paths';
+import { breadcrumbs } from '../../lib/schema';
 
 export async function getStaticPaths() {
   const cases = await getCollection('cases', ({ data }) => !data.draft);
@@ -36,11 +37,24 @@ const schema = {
     '@type': 'Person',
     name: site.fullName,
   },
-  mainEntityOfPage: `${site.url}/praktika/${item.id}/`,
+  mainEntityOfPage: canonicalUrl(site.url, `/praktika/${item.id}/`),
+};
+
+const legalCase = {
+  '@context': 'https://schema.org',
+  '@type': 'LegalCase',
+  name: data.title,
+  description: data.summary,
+  datePublished: data.publishedAt.toISOString(),
+  inLanguage: 'ru-RU',
+  about: [data.category, data.legalIssue].filter(Boolean),
+  keywords: [data.category, data.instance, data.role, data.result].join(', '),
+  author: { '@type': 'Person', name: site.fullName, jobTitle: 'Адвокат', url: canonicalUrl(site.url, '/ob-advokate/') },
+  url: canonicalUrl(site.url, `/praktika/${item.id}/`),
 };
 ---
 
-<BaseLayout title={title} description={description} type="article" schema={schema}>
+<BaseLayout title={title} description={description} type="article" schema={[schema, legalCase, breadcrumbs([{ name: 'Главная', path: '/' }, { name: 'Практика', path: '/praktika/' }, { name: data.title, path: `/praktika/${item.id}/` }])]}>
   <section class="page-hero">
     <div class="container">
       <nav class="breadcrumbs" aria-label="Хлебные крошки">
@@ -99,7 +113,7 @@ const schema = {
             <dd>{data.role}</dd>
           </div>
           <div>
-            <dt>Суд</dt>
+            <dt>{data.instance === 'досудебная стадия' ? 'Орган' : 'Суд'}</dt>
             <dd>{data.court}</dd>
           </div>
           <div>

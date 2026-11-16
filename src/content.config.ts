@@ -42,9 +42,14 @@ const cases = defineCollection({
     title: z.string().max(140),
     category: z.string(),
     court: z.string(),
-    instance: z.enum(['первая инстанция', 'апелляция', 'кассация']),
+    /**
+     * Стадия, на которой получен результат. «Досудебная стадия» нужна для дел,
+     * где итог достигнут до суда (например, освобождение задержанного),
+     * и указывать суд было бы неверно.
+     */
+    instance: z.enum(['досудебная стадия', 'первая инстанция', 'апелляция', 'кассация']),
     year: z.number().int().min(2000).max(2100),
-    role: z.enum(['защитник', 'представитель потерпевшего']),
+    role: z.enum(['защитник', 'представитель потерпевшего', 'представитель']),
     result: z.enum([
       'оправдание',
       'прекращение дела',
@@ -61,6 +66,13 @@ const cases = defineCollection({
     sourceUrl: z.url().optional(),
     sourceLabel: z.string().optional(),
     publicationBasis: z.string(),
+    /**
+     * Как подтверждено участие адвоката:
+     *  - 'document' — есть процессуальный документ (ордер, протокол, судебный акт);
+     *  - 'open-source' — сведения взяты из открытого отзыва доверителя или публикации
+     *    адвоката. В интерфейсе такое дело помечается явно.
+     */
+    verification: z.enum(['document', 'open-source']).default('open-source'),
     anonymized: z.literal(true),
     publishedAt: z.coerce.date(),
     draft: z.boolean().default(true),

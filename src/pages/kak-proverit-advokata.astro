@@ -1,0 +1,182 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ContactPrompt from '../components/ContactPrompt.astro';
+import { canonicalUrl, withBase } from '../lib/paths';
+import { site } from '../data/site';
+
+const title = 'Как проверить, что перед вами адвокат';
+const description =
+  'Пять проверок перед оплатой юридической помощи: реестр адвокатов палаты субъекта, удостоверение, ордер, соглашение и квитанция. Реестровый номер 51/862 и как его проверить самостоятельно.';
+
+const checks = [
+  {
+    title: 'Реестр адвокатов субъекта',
+    text: 'На сайте адвокатской палаты региона есть реестр: фамилия, имя, отчество, реестровый номер и дата внесения. Номер состоит из кода региона и порядкового номера — например, 51/862. Если человека в реестре нет, перед вами не адвокат.',
+  },
+  {
+    title: 'Удостоверение адвоката',
+    text: 'Единый образец, выданный палатой. В нём — фотография, фамилия, реестровый номер и наименование палаты. Копия в мессенджере не заменяет предъявление оригинала при личной встрече.',
+  },
+  {
+    title: 'Ордер на дело',
+    text: 'Полномочия защитника подтверждаются удостоверением и ордером, выданным адвокатским образованием (ст. 49 УПК РФ). В ордере указаны номер, дата, лицо и дело. Ордер не заменяет соглашение.',
+  },
+  {
+    title: 'Соглашение об оказании юридической помощи',
+    text: 'Письменный документ по ст. 25 Федерального закона № 63-ФЗ: предмет, объём помощи, стоимость и порядок оплаты. Если вам предлагают «договориться на словах» или подписать пустой бланк — это повод остановиться.',
+  },
+  {
+    title: 'Оплата и документы',
+    text: 'Оплата вносится в кассу или на счёт адвокатского образования, с квитанцией или платёжным документом. Перевод на личную карту без документов не подтверждает ни оплату, ни объём помощи.',
+  },
+];
+
+const redFlags = [
+  'Обещает конкретный результат: «оправдают», «закроют дело», «гарантирую условный срок».',
+  'Говорит о «связях» и решении вопроса вне процессуального порядка.',
+  'Не называет палату и реестровый номер либо путается в них.',
+  'Просит подписать соглашение, не объяснив объём помощи и стоимость.',
+  'Требует оплату на личную карту без квитанции и без соглашения.',
+  'Предлагает передать оригиналы документов «для сохранности» без описи.',
+];
+
+const faq = [
+  {
+    q: 'Как проверить адвоката по реестровому номеру?',
+    a: 'Откройте сайт адвокатской палаты субъекта РФ, указанного в номере, и найдите раздел «Реестр адвокатов». Номер 51/862 означает: 51 — Мурманская область, 862 — порядковый номер в реестре. Сверьте фамилию, имя и отчество.',
+  },
+  {
+    q: 'Может ли юрист без статуса адвоката быть защитником?',
+    a: 'По общему правилу защитник — адвокат. Иные лица допускаются в исключительных случаях и только по решению суда по ходатайству обвиняемого. Называть себя «адвокатом» без статуса нельзя.',
+  },
+  {
+    q: 'Что делать, если статус адвоката приостановлен?',
+    a: 'Приостановление статуса означает, что адвокат не вправе осуществлять адвокатскую деятельность. Это отражается в реестре. Уточните у палаты и не вносите оплату до выяснения.',
+  },
+  {
+    q: 'Куда жаловаться на адвоката?',
+    a: 'В адвокатскую палату субъекта РФ: совет палаты рассматривает жалобы на действия адвоката. Если речь о преступлении — в правоохранительные органы. Сохраняйте соглашение, квитанции и переписку.',
+  },
+];
+
+const schema = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'HowTo',
+    name: title,
+    description,
+    inLanguage: 'ru-RU',
+    totalTime: 'PT10M',
+    step: checks.map((check, index) => ({
+      '@type': 'HowToStep',
+      position: index + 1,
+      name: check.title,
+      text: check.text,
+    })),
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Главная', item: canonicalUrl(site.url, '/') },
+      { '@type': 'ListItem', position: 2, name: 'Проверка адвоката', item: canonicalUrl(site.url, '/kak-proverit-advokata/') },
+    ],
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faq.map((item) => ({
+      '@type': 'Question',
+      name: item.q,
+      acceptedAnswer: { '@type': 'Answer', text: item.a },
+    })),
+  },
+];
+---
+
+<BaseLayout title={`${title} — адвокат Юрий Кочевинов`} description={description} schema={schema}>
+  <section class="page-hero">
+    <div class="container">
+      <nav class="breadcrumbs" aria-label="Хлебные крошки">
+        <a href={withBase('/')}>Главная</a>
+        <span aria-hidden="true">/</span>
+        <span aria-current="page">Проверка адвоката</span>
+      </nav>
+      <p class="eyebrow">Пять проверок · 10 минут</p>
+      <h1 class="page-hero__title">Прежде чем платить,<br /><em>проверьте статус</em></h1>
+      <p class="page-hero__lead">
+        Статус адвоката — это не формальность: он даёт право быть защитником, гарантирует
+        адвокатскую тайну и подчиняет работу профессиональным правилам. Проверить это можно
+        самостоятельно и бесплатно.
+      </p>
+    </div>
+  </section>
+
+  <section class="section section--paper" aria-labelledby="pyat-proverok">
+    <div class="container">
+      <div class="compact-head">
+        <div>
+          <p class="eyebrow">Порядок</p>
+          <h2 id="pyat-proverok">Что проверить</h2>
+        </div>
+        <p>Если хотя бы один пункт не сходится, задайте вопросы до оплаты и подписания.</p>
+      </div>
+      <ol class="action-steps" style="max-width: 820px;">
+        {checks.map((check) => (
+          <li>
+            <strong>{check.title}</strong>
+            {check.text}
+          </li>
+        ))}
+      </ol>
+
+      <div class="sos-warning" style="margin-top: 28px; color: var(--graphite); background: var(--milk); border-color: var(--line); border-left-color: var(--wine);">
+        <strong>Мои данные для проверки:</strong> Кочевинов Юрий Анатольевич, реестровый номер
+        {' '}<strong>{site.registryNumber}</strong>, {site.chamber}. Реестр — на сайте палаты:
+        {' '}<a href={site.chamberUrl} target="_blank" rel="noopener noreferrer">{site.chamberUrl.replace('https://', '')}</a>.
+        {' '}Федеральная палата адвокатов: <a href="https://fparf.ru/" target="_blank" rel="noopener noreferrer">fparf.ru</a>.
+        {' '}<a href={site.chamberUrl} target="_blank" rel="noopener noreferrer" data-goal="registry_check">Перейти в реестр</a>.
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--milk" aria-labelledby="krasnye-flagi">
+    <div class="container">
+      <div class="compact-head">
+        <div>
+          <p class="eyebrow">Тревожные признаки</p>
+          <h2 id="krasnye-flagi">Когда лучше уйти</h2>
+        </div>
+      </div>
+      <ul class="rule-list rule-list--no" style="max-width: 820px;">
+        {redFlags.map((flag) => <li>{flag}</li>)}
+      </ul>
+    </div>
+  </section>
+
+  <section class="section section--paper" aria-labelledby="faq-proverka">
+    <div class="container">
+      <div class="compact-head">
+        <div>
+          <p class="eyebrow">Частые вопросы</p>
+          <h2 id="faq-proverka">О статусе и проверке</h2>
+        </div>
+      </div>
+      <div class="faq">
+        {faq.map((item) => (
+          <details class="accordion__item">
+            <summary class="accordion__summary">{item.q}</summary>
+            <div class="accordion__content"><p>{item.a}</p></div>
+          </details>
+        ))}
+      </div>
+      <p class="detail-note" style="margin-top: 20px;">
+        Дальше: <a href={withBase('/kak-my-rabotaem/')}>как устроена работа и оплата</a>,
+        {' '}<a href={withBase('/bezopasnaya-peredacha-dokumentov/')}>как передать документы</a>,
+        {' '}<a href={withBase('/ob-advokate/')}>об адвокате</a>.
+      </p>
+    </div>
+  </section>
+
+  <ContactPrompt title="Если остались вопросы о статусе и порядке работы" />
+</BaseLayout>

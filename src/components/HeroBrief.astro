@@ -1,0 +1,31 @@
+---
+/**
+ * «Паспорт» страницы на внутренней обложке: 2–4 пары «подпись — значение».
+ * В отличие от HeroLedger здесь допустим длинный текст: правовая основа, адресат, срок.
+ */
+interface Item {
+  label: string;
+  value: string;
+}
+
+interface Props {
+  items: Item[];
+  note?: string;
+  title?: string;
+}
+
+const { items, note, title = 'Коротко' } = Astro.props;
+---
+
+<aside class="hero-brief" aria-label={title}>
+  <p class="hero-brief__title">{title}</p>
+  <dl class="hero-brief__list">
+    {items.map((item) => (
+      <div class="hero-brief__row">
+        <dt>{item.label}</dt>
+        <dd>{item.value}</dd>
+      </div>
+    ))}
+  </dl>
+  {note && <p class="hero-brief__note">{note}</p>}
+</aside>
