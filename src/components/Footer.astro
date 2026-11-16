@@ -11,7 +11,7 @@ interface Props { menuItems?: NavItem[]; }
       <div class="footer__brand">
         <a class="brand" href={withBase('/')} title="На главную">
           <span class="brand__mark brand__logo" aria-hidden="true">
-            <img src={site.logo} alt="" width="38" height="38" />
+            <img src={withBase(site.logo)} alt="" width="38" height="38" />
           </span>
           <span class="brand__text">
             <span class="brand__name">{site.name}</span>
