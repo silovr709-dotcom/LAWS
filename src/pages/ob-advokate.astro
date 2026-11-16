@@ -195,12 +195,35 @@ const imageSizes = '(max-width: 860px) calc(100vw - 40px), (max-width: 1180px) 4
         <p style="margin-top: 8px;">
           <a href={withBase('/kak-proverit-advokata/')}>Инструкция по проверке статуса в реестре</a>
         </p>
-        <h2>Награды и знаки отличия</h2>
-        <ul>
-          {about.awards.map((award) => <li>{award}</li>)}
-        </ul>
         <p class="detail-note">{about.note}</p>
       </aside>
+    </div>
+  </section>
+
+  <section class="section section--milk" aria-labelledby="awards-title">
+    <div class="container">
+      <div class="compact-head">
+        <div>
+          <p class="eyebrow">Награды и знаки отличия</p>
+          <h2 id="awards-title">Профессиональные награды</h2>
+        </div>
+      </div>
+      <div class="awards-grid">
+        {
+          about.awards.map((award) => (
+            <article class="awards-card" data-reveal>
+              <span class="awards-card__mark" aria-hidden="true"></span>
+              <h3>{award.name}</h3>
+              <p>{award.text}</p>
+            </article>
+          ))
+        }
+      </div>
+      <p class="detail-note">
+        Награды приведены по открытым сведениям о профессиональной биографии адвоката.
+        Подробности о службе и служебных званиях на сайте не приводятся — в соответствии с
+        Кодексом профессиональной этики адвоката (обоснование — в docs/LEGAL-STANDARDS.md).
+      </p>
     </div>
   </section>
 
@@ -354,5 +377,39 @@ const imageSizes = '(max-width: 860px) calc(100vw - 40px), (max-width: 1180px) 4
     .about-intro__cards {
       grid-template-columns: minmax(0, 1fr);
     }
+  }
+
+  .awards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 20px;
+  }
+
+  .awards-card {
+    position: relative;
+    background: var(--paper);
+    border: 1px solid var(--line);
+    padding: 28px 26px;
+  }
+
+  .awards-card__mark {
+    display: block;
+    width: 34px;
+    height: 3px;
+    background: var(--gold);
+    margin-bottom: 16px;
+  }
+
+  .awards-card h3 {
+    font-family: var(--font-body);
+    font-size: 1.12rem;
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+
+  .awards-card p {
+    font-size: 0.92rem;
+    line-height: 1.66;
+    color: var(--muted);
   }
 </style>
