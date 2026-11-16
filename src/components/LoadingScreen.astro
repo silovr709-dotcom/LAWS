@@ -3,8 +3,13 @@
  * Загрузочный экран: адвокатская печать Кочевинова Ю. А.
  *
  * Заглушка на всю страницу до загрузки ресурсов: печать «печатается» в центре,
- * затем — нажатие печати и скрытие. Безопасные фолбэки:
- * - минимальный времени показ (~0.9 с), чтобы не мелькать на быстрой странице;
+ * затем — нажатие печати и скрытие.
+ *
+ * Дизайн печати: очертания (круги) — бордовые, текст и звёзды — золотые,
+ * внутреннее поле залито лёгкой бордовой дымкой, чтобы печать казалась налитой.
+ *
+ * Безопасные фолбэки:
+ * - минимальное время показ (~1.1 с), чтобы не мелькать на быстрой странице;
  * - страховка: скрытие через 5 с, если événement load не сработал;
  * - CSS-фолбэк без JS (`@media (scripting: none)`);
  * - `prefers-reduced-motion` — без анимаций, только короткий файд.
@@ -24,6 +29,12 @@
         <defs>
           <path id="ls-arc-top" d="M 18,150 A 132,132 0 0 1 282,150" fill="none" />
           <path id="ls-arc-bottom" d="M 18,150 A 132,132 0 0 0 282,150" fill="none" />
+          <!-- Лёгкая бордовая заливка поля печати: от более светлого центра к краям. -->
+          <radialGradient id="ls-field" cx="50%" cy="40%" r="68%">
+            <stop offset="0%" stop-color="rgba(84, 28, 43, 0.07)" />
+            <stop offset="65%" stop-color="rgba(84, 28, 43, 0.12)" />
+            <stop offset="100%" stop-color="rgba(84, 28, 43, 0.17)" />
+          </radialGradient>
           <filter id="ls-ink" x="-6%" y="-6%" width="112%" height="112%">
             <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" seed="7" result="noise" />
             <feDisplacementMap in="SourceGraphic" in2="noise" scale="1.6" />
@@ -33,13 +44,20 @@
         <g
           filter="url(#ls-ink)"
           fill="none"
-          stroke="currentColor"
+          stroke="var(--stamp-ring)"
           stroke-linecap="round"
         >
-          <circle cx="150" cy="150" r="142" stroke-width="5" />
-          <circle cx="150" cy="150" r="126" stroke-width="1.5" />
+          <!-- Залитое поле печати: бордовая дымка, «налитой» эффект. -->
+          <circle class="stamp-field" cx="150" cy="150" r="124" fill="url(#ls-field)" stroke="none" />
 
+          <!-- Очертания печати — бордовые круги. -->
+          <circle class="stamp-ring" cx="150" cy="150" r="142" stroke-width="5" />
+          <circle class="stamp-ring" cx="150" cy="150" r="126" stroke-width="1.5" />
+
+          <!-- Золотой текст и звёзды. -->
           <text
+            class="stamp-label"
+            stroke="none"
             font-family="'Golos Text', system-ui, sans-serif"
             font-size="12"
             font-weight="500"
@@ -51,6 +69,8 @@
           </text>
 
           <text
+            class="stamp-label"
+            stroke="none"
             font-family="'Cormorant Garamond', 'Times New Roman', Georgia, serif"
             font-size="27"
             letter-spacing="0.5px"
@@ -62,6 +82,8 @@
           </text>
 
           <text
+            class="stamp-label"
+            stroke="none"
             font-family="'Golos Text', system-ui, sans-serif"
             font-size="12"
             font-weight="500"
@@ -74,12 +96,14 @@
           </text>
 
           <polygon
-            fill="currentColor"
+            class="stamp-star"
             stroke="none"
             points="150,197 151.18,200.38 154.76,200.46 151.9,202.62 152.94,206.05 150,204 147.06,206.05 148.1,202.62 145.24,200.46 148.82,200.38"
           />
 
           <text
+            class="stamp-label"
+            stroke="none"
             font-family="'Golos Text', system-ui, sans-serif"
             font-size="12"
             font-weight="500"
@@ -140,7 +164,7 @@
 </script>
 
 <style>
-  .loading-screen {
+  :global(.loading-screen) {
     position: fixed;
     inset: 0;
     z-index: 9999;
@@ -156,39 +180,39 @@
       visibility 0s linear 700ms;
   }
 
-  .loading-screen.is-leaving {
+  :global(.loading-screen.is-leaving) {
     opacity: 0;
     visibility: hidden;
     pointer-events: none;
   }
 
-  .loading-screen.is-done {
+  :global(.loading-screen.is-done) {
     display: none;
   }
 
   /* Двойная волосатая рамка — как лист документа. */
-  .loading-screen__frame {
+  :global(.loading-screen__frame) {
     position: absolute;
     inset: clamp(18px, 4vw, 46px);
     border: 1px solid rgba(182, 154, 99, 0.42);
     pointer-events: none;
   }
 
-  .loading-screen__frame::after {
+  :global(.loading-screen__frame)::after {
     content: '';
     position: absolute;
     inset: 8px;
     border: 1px solid rgba(182, 154, 99, 0.22);
   }
 
-  .loading-screen__inner {
+  :global(.loading-screen__inner) {
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 0;
   }
 
-  .loading-screen__stamp {
+  :global(.loading-screen__stamp) {
     width: min(320px, 72vw);
     aspect-ratio: 1;
     opacity: 0;
@@ -196,8 +220,37 @@
     animation: ls-stamp-in 760ms var(--ease) 140ms forwards;
   }
 
-  .loading-screen.is-leaving .loading-screen__stamp {
+  :global(.loading-screen.is-leaving .loading-screen__stamp) {
     animation: ls-stamp-press 360ms ease forwards;
+  }
+
+  /* Края печати — бордовые; текст и звёзды — золотые. */
+  :global(.loading-screen__stamp) {
+    --stamp-ring: var(--wine);
+    --stamp-ink: var(--gold);
+  }
+
+  :global(.stamp-ring) {
+    stroke: var(--stamp-ring);
+  }
+
+  :global(.stamp-label),
+  :global(.stamp-star) {
+    fill: var(--stamp-ink);
+    stroke: none;
+  }
+
+  /* Заливка поля: появляется как «наливание» краски. */
+  :global(.stamp-field) {
+    transform-box: fill-box;
+    transform-origin: center;
+    opacity: 0;
+    animation: ls-field-fill 820ms var(--ease) 260ms forwards;
+  }
+
+  :global(.loading-screen.is-leaving .stamp-field) {
+    animation: none;
+    opacity: 1;
   }
 
   @keyframes ls-stamp-in {
@@ -226,7 +279,18 @@
     }
   }
 
-  .loading-screen__caption {
+  @keyframes ls-field-fill {
+    from {
+      opacity: 0;
+      transform: scale(0.88);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  :global(.loading-screen__caption) {
     margin-top: 30px;
     font-family: var(--font-body);
     font-size: 0.72rem;
@@ -238,8 +302,8 @@
     animation: ls-caption-in 640ms var(--ease) 480ms forwards;
   }
 
-  .loading-screen.is-leaving .loading-screen__caption,
-  .loading-screen.is-leaving .loading-screen__line {
+  :global(.loading-screen.is-leaving .loading-screen__caption),
+  :global(.loading-screen.is-leaving .loading-screen__line) {
     animation: none;
     opacity: 0;
     transition: opacity 300ms ease;
@@ -256,7 +320,7 @@
     }
   }
 
-  .loading-screen__line {
+  :global(.loading-screen__line) {
     margin-top: 24px;
     width: min(220px, 46vw);
     height: 1px;
@@ -264,7 +328,7 @@
     overflow: hidden;
   }
 
-  .loading-screen__line::after {
+  :global(.loading-screen__line)::after {
     content: '';
     display: block;
     height: 100%;
@@ -280,13 +344,14 @@
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .loading-screen__stamp {
+    :global(.loading-screen__stamp) {
       animation-duration: 120ms;
       animation-delay: 0ms;
     }
 
-    .loading-screen__caption,
-    .loading-screen__line::after {
+    :global(.stamp-field),
+    :global(.loading-screen__caption),
+    :global(.loading-screen__line)::after {
       animation-duration: 120ms;
       animation-delay: 0ms;
     }
@@ -294,7 +359,7 @@
 
   /* Фолбэк без JS: печать плавно уходит через ~2.4 с. */
   @media (scripting: none) {
-    .loading-screen {
+    :global(.loading-screen) {
       animation: ls-fallback 700ms 2400ms forwards;
     }
 
