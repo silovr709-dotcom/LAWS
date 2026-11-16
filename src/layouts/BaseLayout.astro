@@ -16,6 +16,7 @@ import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import MobileCallBar from '../components/MobileCallBar.astro';
 import CookieNotice from '../components/CookieNotice.astro';
+import LoadingScreen from '../components/LoadingScreen.astro';
 
 interface Props {
   title: string;
@@ -54,6 +55,7 @@ const path = Astro.url.pathname;
   </head>
   <body>
     <a class="skip-link" href="#main">Перейти к содержанию</a>
+    <LoadingScreen />
     <Header overHero={overHero} currentPath={path} />
     <main id="main" tabindex="-1">
       <slot />

@@ -12,5 +12,16 @@ export const onRequest = defineMiddleware(async (context, next) => {
     response.headers.set('Cache-Control', 'no-store');
   }
 
+  // Dev-режим: HTML не кэшировать — иначе в превью может остаться
+  // старая версия страницы после правок (браузер кэширует по умолчанию).
+  if (
+    import.meta.env.DEV &&
+    (context.url.pathname === '/' ||
+      context.url.pathname.endsWith('/') ||
+      context.url.pathname.endsWith('.html'))
+  ) {
+    response.headers.set('Cache-Control', 'no-store');
+  }
+
   return response;
 });

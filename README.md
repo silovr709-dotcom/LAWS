@@ -28,6 +28,10 @@
 Content Collections, без UI-фреймворков и клиентских библиотек. JS — только небольшие прогрессивные
 скрипты.
 
+При открытии страницы показывается загрузочный экран с **адвокатской печатью**
+Кочевинова Ю.А.: печать «ставится» на тёмно-молочном фоне и при загрузке страницы
+нажимается и растворяется (`src/components/LoadingScreen.astro`).
+
 ---
 
 ## Быстрый старт
@@ -50,7 +54,7 @@ npm run preview    # предпросмотр собранного сайта
 
 ```
 src/
-├── components/        # Hero, Directions, About, PracticePreview, ContactForm, Header, Footer…
+├── components/        # Hero, Directions, About, PracticePreview, ContactForm, Header, Footer, LoadingScreen…
 ├── content/
 │   ├── articles/      # публикации: .md
 │   └── cases/         # судебная практика: .md (сейчас пусто намеренно)
@@ -72,6 +76,7 @@ public/
 docs/
 ├── DATA-CHECKLIST.md       # подтверждённые факты и что нужно от адвоката
 ├── BRAND.md                # концепция, палитра, типографика, варианты заголовка
+├── LEGAL-STANDARDS.md      # что по КПЭА и разъяснениям ФПА можно/нельзя писать об опыте
 └── PRACTICE-PUBLISHING.md  # правила публикации дел + шаблон
 ```
 
