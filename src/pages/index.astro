@@ -2,16 +2,18 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Hero from '../components/Hero.astro';
 import Directions from '../components/Directions.astro';
+import SituationsPreview from '../components/SituationsPreview.astro';
 import Approach from '../components/Approach.astro';
 import About from '../components/About.astro';
 import PracticePreview from '../components/PracticePreview.astro';
 import Process from '../components/Process.astro';
 import Faq from '../components/Faq.astro';
 import Urgent from '../components/Urgent.astro';
-import Geography from '../components/Geography.astro';
 import Contact from '../components/Contact.astro';
 import { faq, site } from '../data/site';
-import { withBase } from '../lib/paths';
+import { canonicalUrl } from '../lib/paths';
+import PublicationsPreview from '../components/PublicationsPreview.astro';
+import ToolsPreview from '../components/ToolsPreview.astro';
 
 const title = 'Адвокат Юрий Кочевинов — уголовно-правовая защита в Твери и по всей России';
 const description =
@@ -20,14 +22,15 @@ const description =
 const personSchema: Record<string, unknown> = {
   '@context': 'https://schema.org',
   '@type': 'Person',
+  '@id': canonicalUrl(site.url, '/ob-advokate/#person'),
   name: site.fullName,
   givenName: 'Юрий',
   familyName: 'Кочевинов',
   jobTitle: 'Адвокат',
   description:
     'Адвокат, специализация — уголовно-правовая защита. Приём в Твери, работа по всей России.',
-  url: site.url,
-  image: `${site.url}${withBase('/og/og-default.png')}`,
+  url: canonicalUrl(site.url, '/'),
+  image: canonicalUrl(site.url, site.portrait),
   address: {
     '@type': 'PostalAddress',
     addressLocality: site.city,
@@ -55,8 +58,8 @@ const serviceSchema: Record<string, unknown> = {
   name: 'Адвокат Юрий Кочевинов',
   description:
     'Уголовно-правовая защита, представительство потерпевших, обжалование приговоров. Приём в Твери, работа по всей России.',
-  url: site.url,
-  image: `${site.url}${withBase('/og/og-default.png')}`,
+  url: canonicalUrl(site.url, '/'),
+  image: canonicalUrl(site.url, site.portrait),
   areaServed: [
     { '@type': 'Country', name: 'Россия' },
     { '@type': 'City', name: 'Тверь' },
@@ -80,7 +83,7 @@ const schemas = [
     '@context': 'https://schema.org',
     '@type': 'WebSite',
     name: `Адвокат ${site.name}`,
-    url: site.url,
+    url: canonicalUrl(site.url, '/'),
     inLanguage: 'ru-RU',
   },
   {
@@ -105,11 +108,13 @@ const schemas = [
   <Hero />
   <Urgent />
   <Directions />
-  <Approach />
+  <SituationsPreview />
   <About />
+  <Approach />
   <PracticePreview />
-  <Geography />
   <Process />
+  <PublicationsPreview />
+  <ToolsPreview />
   <Faq />
   <Contact />
 </BaseLayout>

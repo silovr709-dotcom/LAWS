@@ -8,10 +8,14 @@ import path from 'node:path';
 function hasPublishedCases() {
   const dir = path.resolve('src/content/cases');
   if (!fs.existsSync(dir)) return false;
-  return fs
-    .readdirSync(dir)
-    .filter((file) => file.endsWith('.md'))
-    .some((file) => !/^draft:\s*true/m.test(fs.readFileSync(path.join(dir, file), 'utf8')));
+  return fs.readdirSync(dir, { recursive: true, withFileTypes: true })
+    .filter((entry) => entry.isFile() && entry.name.endsWith('.md'))
+    .some((entry) => {
+      const text = fs.readFileSync(path.join(entry.parentPath, entry.name), 'utf8');
+      const frontmatter = text.match(/^---\r?\n([\s\S]*?)\r?\n---/)?.[1] ?? '';
+      // The content schema defaults to draft:true. Only an explicit false is publishable.
+      return /^draft:\s*false(?:\s+#.*)?\s*$/m.test(frontmatter);
+    });
 }
 
 const SITE = process.env.PUBLIC_SITE_URL ?? 'https://kochevinov.ru';
@@ -25,13 +29,28 @@ export default defineConfig({
   site: SITE,
   base: BASE,
   output: 'static',
+  security: {
+    // Astro's Node adapter validates Host/forwarded hosts independently of Vite's allowlist.
+    allowedDomains: [
+      { hostname: new URL(SITE).hostname },
+      { hostname: 'localhost' },
+      { hostname: '127.0.0.1' },
+      { hostname: '**.e2b.app' },
+      { hostname: '**.e2b.dev' },
+    ],
+  },
   adapter: node({ mode: 'standalone' }),
   integrations: [
     sitemap({
       // Служебные и noindex-страницы в карту сайта не попадают.
       filter: (page) =>
         !page.includes('/api/') &&
+        // Поиск закрыт от индексации: страница нужна людям, а не выдаче.
+        !page.includes('/poisk/') &&
         !page.includes('/soglasie-na-obrabotku-personalnyh-dannyh/') &&
+        // Старые адреса разделов: страницы-редиректы на /materialy/ закрыты от индексации.
+        !page.includes('/publikacii/') &&
+        !page.includes('/obrazcy-zayavleniy/') &&
         !page.endsWith('/404/') &&
         (hasPublishedCases() || !page.includes('/praktika/')),
     }),

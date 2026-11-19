@@ -1,0 +1,43 @@
+---
+import { withBase } from '../lib/paths';
+
+interface Props {
+  to: string;
+  heading?: string;
+  note?: string;
+}
+
+const {
+  to,
+  heading = 'Страница переехала',
+  note = 'Материалы и образцы документов теперь собраны в одном разделе.',
+} = Astro.props;
+const target = withBase(to);
+---
+
+<section class="page-hero">
+  <div class="container">
+    <p class="eyebrow">Новый адрес</p>
+    <h1 class="page-hero__title">{heading}</h1>
+    <p class="page-hero__lead">{note}</p>
+    <p class="moved-page__action">
+      <a class="btn btn--primary" href={target}>Перейти в раздел «Материалы»</a>
+    </p>
+    <p class="moved-page__note">
+      Если переход не произошёл автоматически, откройте ссылку выше — адрес страницы изменился,
+      содержание сохранено.
+    </p>
+  </div>
+</section>
+
+<style>
+  .moved-page__action {
+    margin-top: 22px;
+  }
+
+  .moved-page__note {
+    margin-top: 14px;
+    font-size: 0.86rem;
+    color: var(--muted);
+  }
+</style>

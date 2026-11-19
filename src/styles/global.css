@@ -413,18 +413,18 @@ button {
 }
 
 /* Появление при прокрутке */
-.js [data-reveal] {
-  opacity: 0;
-  transform: translateY(18px);
+[data-reveal] {
+  opacity: 1;
+  transform: none;
   transition:
     opacity 700ms var(--ease),
     transform 700ms var(--ease);
   transition-delay: var(--reveal-delay, 0ms);
 }
 
-.js [data-reveal].is-visible {
-  opacity: 1;
-  transform: none;
+.has-reveal [data-reveal]:not(.is-visible) {
+  opacity: 0;
+  transform: translateY(12px);
 }
 
 /* --------------------------------------------------------------------------
@@ -487,6 +487,28 @@ button {
 .site-header.is-solid .brand__mark {
   border-color: var(--gold-deep);
   color: var(--wine);
+}
+
+/* Логотип адвокатского кабинета (фонд близок к белому):
+   на тёмной шапке над hero и в тёмном подвале — светлый закруглённый значок. */
+.brand__logo {
+  border: none;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #fbf9f6;
+  padding: 0;
+}
+
+.brand__logo img {
+  display: block;
+  width: 34px;
+  height: 34px;
+  object-fit: contain;
+}
+
+.site-header.is-scrolled .brand__logo,
+.site-header.is-solid .brand__logo {
+  border-radius: 7px;
 }
 
 .brand__text {

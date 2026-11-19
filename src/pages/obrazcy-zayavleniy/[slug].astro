@@ -1,0 +1,30 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import MovedPage from '../../components/MovedPage.astro';
+import { documents } from '../../data/documents';
+import { withBase } from '../../lib/paths';
+
+export async function getStaticPaths() {
+  return documents.map((document) => ({
+    params: { slug: document.slug },
+    props: { title: document.title },
+  }));
+}
+
+const { title } = Astro.props;
+const target = withBase(`/materialy/obrazcy/${Astro.params.slug}/`);
+---
+
+<BaseLayout
+  title={`${title} — страница переехала · адвокат Юрий Кочевинов`}
+  description="Образец документа опубликован в разделе «Материалы» на сайте адвоката Юрия Кочевинова."
+  noindex
+>
+  <meta slot="head" http-equiv="refresh" content={`0; url=${target}`} />
+  <MovedPage
+    to={`/materialy/obrazcy/${Astro.params.slug}/`}
+    heading="Образец переехал"
+    note="Образцы документов теперь находятся в разделе «Материалы»."
+  />
+  <script is:inline define:vars={{ target }}>window.location.replace(target);</script>
+</BaseLayout>

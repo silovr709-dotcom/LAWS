@@ -1,0 +1,439 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Portrait from '../components/Portrait.astro';
+import ContactPrompt from '../components/ContactPrompt.astro';
+import Geography from '../components/Geography.astro';
+import Icon from '../components/Icon.astro';
+import { about, site } from '../data/site';
+import { canonicalUrl, withBase } from '../lib/paths';
+import { breadcrumbs } from '../lib/schema';
+
+const gallery = about.gallery;
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  '@id': canonicalUrl(site.url, '/ob-advokate/#person'),
+  name: site.fullName,
+  alternateName: site.shortName,
+  jobTitle: 'Адвокат',
+  url: canonicalUrl(site.url, '/ob-advokate/'),
+  image: canonicalUrl(site.url, `${site.portraits.about}-960.webp`),
+  description: about.lead,
+  memberOf: { '@type': 'Organization', name: site.chamber, url: site.chamberUrl },
+  identifier: { '@type': 'PropertyValue', propertyID: 'Реестровый номер адвоката', value: site.registryNumber },
+  knowsAbout: [
+    'Уголовное право',
+    'Уголовный процесс',
+    'Защита по уголовным делам',
+    'Представительство потерпевших',
+    'Правоохранительные органы',
+  ],
+  sameAs: [site.vk],
+};
+const srcset = (stem: string, format: string) =>
+  [320, 640, 960].map((width) => `${withBase(`${stem}-${width}.${format}`)} ${width}w`).join(', ');
+const imageSizes = '(max-width: 860px) calc(100vw - 40px), (max-width: 1180px) 40vw, 470px';
+---
+
+<BaseLayout
+  title="Обо мне — адвокат Юрий Кочевинов"
+  description="Юрий Кочевинов о себе: свыше 20 лет юридической практики, предшествующий опыт работы в государственных органах в уголовно-правовой сфере. Адвокат с 2023 года, кабинет № АО51/257."
+  schema={[schema, breadcrumbs([{ name: 'Главная', path: '/' }, { name: 'Об адвокате', path: '/ob-advokate/' }])]}
+>
+  <section class="biography-hero">
+    <div class="container biography-hero__inner">
+      <div>
+        <nav class="breadcrumbs" aria-label="Хлебные крошки">
+          <a href={withBase('/')}>Главная</a>
+          <span aria-hidden="true">/</span>
+          <span aria-current="page">Обо мне</span>
+        </nav>
+        <p class="eyebrow">{about.eyebrow}</p>
+        <h1>Юрий Анатольевич<br /><em>Кочевинов</em></h1>
+        <p class="biography-hero__lead">{about.lead}</p>
+        <dl class="biography-hero__facts">
+          <div><dt>Юридическая практика</dt><dd>свыше 20 лет</dd></div>
+          <div><dt>Адвокат</dt><dd>с 2023 года</dd></div>
+          <div><dt>Реестровый номер</dt><dd>{site.registryNumber}</dd></div>
+          <div><dt>Адвокатский кабинет</dt><dd>№ АО51/257</dd></div>
+        </dl>
+        <p class="detail-note">
+          Юридическая практика включает предыдущую профессиональную деятельность; она не означает
+          20 лет работы в статусе адвоката. Сведения приведены по открытым источникам и реестру
+          адвокатов.
+        </p>
+      </div>
+      <Portrait
+        variant="about"
+        priority
+        sizes="(max-width: 600px) calc(100vw - 40px), (max-width: 760px) 420px, (max-width: 1024px) 40vw, 465px"
+      />
+    </div>
+  </section>
+
+  <section class="section section--paper" aria-labelledby="story-title">
+    <div class="container">
+      <div class="compact-head about-story__head">
+        <div>
+          <p class="eyebrow">От первого лица</p>
+          <h2 id="story-title">Путь к защите</h2>
+        </div>
+        <p class="compact-head__note">
+          Служба, надзор и адвокатура — не три профессии, а три взгляда на одно и то же дело.
+          Ниже — как это складывалось.
+        </p>
+      </div>
+
+      <div class="about-story">
+        {
+          about.story.map((block, index) => {
+            const image = gallery[block.image];
+            return (
+              <article
+                class:list={['about-story__row', index % 2 === 1 && 'about-story__row--reverse']}
+                data-reveal
+              >
+                <figure class="about-story__figure">
+                  <picture>
+                    <source
+                      type="image/avif"
+                      srcset={srcset(image.src, 'avif')}
+                      sizes={imageSizes}
+                    />
+                    <img
+                      src={withBase(`${image.src}-640.webp`)}
+                      srcset={srcset(image.src, 'webp')}
+                      sizes={imageSizes}
+                      width={image.width}
+                      height={image.height}
+                      alt={image.alt}
+                      loading={index === 0 ? 'eager' : 'lazy'}
+                      decoding="async"
+                    />
+                  </picture>
+                  <figcaption>{image.caption}</figcaption>
+                </figure>
+                <div class="about-story__text">
+                  <p class="about-story__eyebrow">{block.eyebrow}</p>
+                  <h3>{block.title}</h3>
+                  {block.paragraphs.map((paragraph) => <p>{paragraph}</p>)}
+                </div>
+              </article>
+            );
+          })
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--milk" aria-labelledby="principles-title">
+    <div class="container">
+      <div class="compact-head">
+        <div>
+          <p class="eyebrow">Подход</p>
+          <h2 id="principles-title">Почему работаю на стороне защиты</h2>
+        </div>
+      </div>
+      <div class="about-intro__cards">
+        {
+          about.intro.map((item, index) => (
+            <article class="about-card" data-reveal>
+              <span class="about-card__number" aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>
+              <h3>{item.title}</h3>
+              <p>{item.text}</p>
+            </article>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--paper" aria-labelledby="specialization-title">
+    <div class="container">
+      <div class="compact-head">
+        <div>
+          <p class="eyebrow">Специализация</p>
+          <h2 id="specialization-title">По каким статьям консультируем и защищаем</h2>
+        </div>
+        <p class="compact-head__note">
+          Перечень направлений профессиональной деятельности. Список статей — ориентир для
+          понимания, где можно помочь; каждое дело индивидуально, исход не обещается.
+        </p>
+      </div>
+      <ul class="rule-list">
+        {about.specialization.map((item) => <li>{item}</li>)}
+      </ul>
+    </div>
+  </section>
+
+  <section class="section section--paper">
+    <div class="container biography-layout">
+      <div>
+        <p class="eyebrow">Хронология</p>
+        <h2>Коротко о главном</h2>
+        <div class="biography-timeline">
+          {
+            about.timeline.map((item) => (
+              <article>
+                <span>{item.period}</span>
+                <div>
+                  <h3>{item.title}</h3>
+                  <p>{item.text}</p>
+                </div>
+              </article>
+            ))
+          }
+        </div>
+        <p class="about-links">
+          <a class="link-arrow" href={withBase('/kak-my-rabotaem/')}>
+            Порядок работы и стоимость
+            <Icon name="arrow-right" size={14} />
+          </a>
+          <a class="link-arrow" href={withBase('/kak-proverit-advokata/')}>
+            Как проверить статус адвоката
+            <Icon name="arrow-right" size={14} />
+          </a>
+          <a class="link-arrow" href={withBase('/bezopasnaya-peredacha-dokumentov/')}>
+            Безопасная передача документов
+            <Icon name="arrow-right" size={14} />
+          </a>
+          <a class="link-arrow" href={withBase('/praktika/')}>
+            Результаты и отзывы
+            <Icon name="arrow-right" size={14} />
+          </a>
+        </p>
+      </div>
+      <aside class="biography-facts">
+        <p class="eyebrow">Профессиональные сведения</p>
+        <dl>
+          {about.facts.map((fact) => (
+            <div><dt>{fact.label}</dt><dd>{fact.value}</dd></div>
+          ))}
+        </dl>
+        <a href={site.chamberUrl} target="_blank" rel="noopener noreferrer">Сайт адвокатской палаты</a>
+        <p style="margin-top: 8px;">
+          <a href={withBase('/kak-proverit-advokata/')}>Инструкция по проверке статуса в реестре</a>
+        </p>
+        <p style="margin-top: 8px;">
+          <a href={site.egrUrl} target="_blank" rel="noopener noreferrer" data-goal="registry_check">
+            {site.egrLabel} (Минюст РФ)
+          </a>
+        </p>
+        <p class="detail-note">{about.note}</p>
+      </aside>
+    </div>
+  </section>
+
+  <section class="section section--milk" aria-labelledby="awards-title">
+    <div class="container">
+      <div class="compact-head">
+        <div>
+          <p class="eyebrow">Награды и знаки отличия</p>
+          <h2 id="awards-title">Профессиональные награды</h2>
+        </div>
+      </div>
+      <div class="awards-grid">
+        {
+          about.awards.map((award) => (
+            <article class="awards-card" data-reveal>
+              <span class="awards-card__mark" aria-hidden="true"></span>
+              <h3>{award.name}</h3>
+              <p>{award.text}</p>
+            </article>
+          ))
+        }
+      </div>
+      <p class="detail-note">
+        Награды приведены по открытым сведениям о профессиональной биографии адвоката.
+        Подробности о службе и служебных званиях на сайте не приводятся — в соответствии с
+        Кодексом профессиональной этики адвоката (обоснование — в docs/LEGAL-STANDARDS.md).
+      </p>
+    </div>
+  </section>
+
+  <Geography />
+  <ContactPrompt title="Если вам нужна помощь — начните с короткого разговора" />
+</BaseLayout>
+
+<style>
+  .biography-hero__facts {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .about-story__head {
+    margin-bottom: clamp(26px, 3.6vw, 40px);
+  }
+
+  .about-story {
+    display: grid;
+    gap: clamp(38px, 5vw, 62px);
+  }
+
+  .about-story__row {
+    display: grid;
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+    align-items: center;
+    gap: clamp(22px, 4vw, 52px);
+    padding-bottom: clamp(30px, 4vw, 46px);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .about-story__row:last-child {
+    padding-bottom: 0;
+    border-bottom: 0;
+  }
+
+  .about-story__row--reverse .about-story__figure {
+    order: 2;
+  }
+
+  .about-story__figure {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .about-story__figure img {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+    display: block;
+    background: var(--paper, #f6f0e7);
+  }
+
+  .about-story__figure figcaption {
+    font-size: 0.76rem;
+    line-height: 1.45;
+    color: var(--muted);
+  }
+
+  .about-story__eyebrow {
+    font-size: 0.72rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--gold-deep, #796039);
+    margin-bottom: 10px;
+  }
+
+  .about-story__text h3 {
+    font-size: clamp(1.35rem, 2.4vw, 1.9rem);
+    line-height: 1.22;
+    margin-bottom: 14px;
+    max-width: 26ch;
+  }
+
+  .about-story__text p {
+    font-size: 0.96rem;
+    line-height: 1.7;
+    color: var(--muted);
+    max-width: 60ch;
+  }
+
+  .about-story__text p + p {
+    margin-top: 12px;
+  }
+
+  .about-intro__cards {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: clamp(20px, 3vw, 34px);
+  }
+
+  .about-card {
+    padding-top: 18px;
+    border-top: 1px solid var(--line);
+  }
+
+  .about-card__number {
+    display: block;
+    font-size: 0.72rem;
+    letter-spacing: 0.16em;
+    color: var(--gold-deep, #796039);
+    margin-bottom: 10px;
+  }
+
+  .about-card h3 {
+    font-family: var(--font-body);
+    font-size: 1.12rem;
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+
+  .about-card p {
+    font-size: 0.92rem;
+    line-height: 1.66;
+    color: var(--muted);
+  }
+
+  .about-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 18px 28px;
+    margin-top: 28px;
+  }
+
+  @media (max-width: 960px) {
+    .about-story__row {
+      grid-template-columns: minmax(0, 1fr);
+      align-items: start;
+    }
+
+    .about-story__row--reverse .about-story__figure {
+      order: 0;
+    }
+
+    .about-story__figure img {
+      aspect-ratio: 16 / 11;
+    }
+
+    .about-intro__cards {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 640px) {
+    .biography-hero__facts {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .about-intro__cards {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+
+  .awards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 20px;
+  }
+
+  .awards-card {
+    position: relative;
+    background: var(--paper);
+    border: 1px solid var(--line);
+    padding: 28px 26px;
+  }
+
+  .awards-card__mark {
+    display: block;
+    width: 34px;
+    height: 3px;
+    background: var(--gold);
+    margin-bottom: 16px;
+  }
+
+  .awards-card h3 {
+    font-family: var(--font-body);
+    font-size: 1.12rem;
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+
+  .awards-card p {
+    font-size: 0.92rem;
+    line-height: 1.66;
+    color: var(--muted);
+  }
+</style>

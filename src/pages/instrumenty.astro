@@ -1,0 +1,162 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Icon from '../components/Icon.astro';
+import HeroLedger from '../components/HeroLedger.astro';
+import ContactPrompt from '../components/ContactPrompt.astro';
+import { memos } from '../data/memos';
+import { documents } from '../data/documents';
+import { site, siteTools } from '../data/site';
+import { canonicalUrl, withBase } from '../lib/paths';
+import { breadcrumbs } from '../lib/schema';
+
+const title = 'Инструменты: счётчик 48 часов, проверка черновика, калькуляторы сроков — адвокат Юрий Кочевинов';
+const description =
+  'Интерактивные юридические инструменты, работающие прямо в браузере без отправки данных: счётчик 48 часов при задержании, проверка черновика заявления или жалобы, 6 калькуляторов сроков, конструктор первого сообщения и памятки PDF.';
+
+const schema = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'CollectionPage',
+    name: 'Инструменты и памятки',
+    description,
+    url: canonicalUrl(site.url, '/instrumenty/'),
+    inLanguage: 'ru-RU',
+    hasPart: siteTools.map((tool, index) => ({
+      '@type': 'WebApplication',
+      position: index + 1,
+      applicationCategory: 'LegalService',
+      operatingSystem: 'All',
+      name: tool.title,
+      description: tool.description,
+      url: canonicalUrl(site.url, tool.href),
+    })),
+  },
+  breadcrumbs([
+    { name: 'Главная', path: '/' },
+    { name: 'Инструменты', path: '/instrumenty/' },
+  ]),
+];
+---
+
+<BaseLayout title={title} description={description} schema={schema}>
+  <section class="page-hero">
+    <div class="container page-hero__grid page-hero__grid--with-ledger">
+      <div class="page-hero__content">
+        <nav class="breadcrumbs" aria-label="Хлебные крошки">
+          <a href={withBase('/')}>Главная</a>
+          <span aria-hidden="true">/</span>
+          <span aria-current="page">Инструменты</span>
+        </nav>
+        <p class="eyebrow">Инструменты · локально в браузере</p>
+        <h1 class="page-hero__title">Сроки, черновики<br /><em>и памятки</em></h1>
+        <p class="page-hero__lead">
+          Прикладные инструменты для ситуации, когда нужно быстро посчитать процессуальный срок,
+          проверить реквизиты заявления или распечатать памятку на один лист. Даты, суммы и тексты
+          обрабатываются только на вашем устройстве.
+        </p>
+      </div>
+      <HeroLedger
+        items={[
+          { value: String(siteTools.length), label: 'интерактивных инструмента' },
+          { value: '6', label: 'расчётов сроков и долей' },
+          { value: `${memos.length} PDF`, label: 'памятки на одну страницу' },
+        ]}
+        note="Без регистрации, cookie и отправки введённых данных на сервер."
+      />
+    </div>
+  </section>
+
+  <section class="section section--paper" aria-labelledby="tools-all-title">
+    <div class="container">
+      <div class="compact-head">
+        <div>
+          <p class="eyebrow">В браузере · без регистрации и отправки</p>
+          <h2 id="tools-all-title">Онлайн-инструменты</h2>
+        </div>
+        <a class="link-arrow" href={withBase('/poisk/')}>
+          Поиск по всему сайту<Icon name="arrow-right" size={15} />
+        </a>
+      </div>
+
+      <div class="tools-preview__grid">
+        {siteTools.map((tool) => (
+          <a class="tool-plate" href={withBase(tool.href)}>
+            <span class="tool-plate__meta">
+              <span class="tool-plate__code" aria-hidden="true">{tool.code}</span>
+              <span class="tool-plate__tag">{tool.tag}</span>
+            </span>
+            <h3>{tool.title}</h3>
+            <p>{tool.description}</p>
+            <span class="tool-plate__go">
+              Открыть инструмент<Icon name="arrow-up-right" size={15} />
+            </span>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--milk" aria-labelledby="tools-memos-title">
+    <div class="container">
+      <div class="compact-head">
+        <div>
+          <p class="eyebrow">На одну страницу · печать и PDF</p>
+          <h2 id="tools-memos-title">Памятки для первых часов</h2>
+        </div>
+        <a class="link-arrow" href={withBase('/memos/')}>
+          Все памятки<Icon name="arrow-right" size={15} />
+        </a>
+      </div>
+
+      <div class="memo-grid">
+        {memos.map((memo) => (
+          <article class="memo-card">
+            <p class="eyebrow">{memo.subtitle}</p>
+            <h3>{memo.title}</h3>
+            <p>{memo.intro}</p>
+            <div class="memo-card__actions">
+              <a class="btn btn--outline" href={withBase(`/memos/${memo.slug}/`)} data-goal="memo_view">
+                Открыть <Icon name="arrow-right" size={15} />
+              </a>
+              <a href={withBase(`/memos/${memo.slug}.pdf`)} download data-goal="memo_download">
+                Скачать PDF
+              </a>
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--paper" aria-labelledby="tools-next-title">
+    <div class="container">
+      <div class="compact-head">
+        <div>
+          <p class="eyebrow">Связанные разделы</p>
+          <h2 id="tools-next-title">Материалы и навигатор по ситуациям</h2>
+        </div>
+      </div>
+
+      <div class="related-docs__grid">
+        <a class="related-docs__item" href={withBase('/materialy/obrazcy/')}>
+          <span>{documents.length} шаблона + PDF</span>
+          <strong>Образцы процессуальных документов</strong>
+        </a>
+        <a class="related-docs__item" href={withBase('/situacii/')}>
+          <span>8 пошаговых сценариев</span>
+          <strong>Навигатор по жизненным ситуациям</strong>
+        </a>
+        <a class="related-docs__item" href={withBase('/srochno/')}>
+          <span>Задержание · обыск · допрос</span>
+          <strong>Аварийный экран первых часов</strong>
+        </a>
+        <a class="related-docs__item" href={withBase('/pomoshch-blizkomu/')}>
+          <span>Для родственников и близких</span>
+          <strong>Если помощь нужна близкому человеку</strong>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <ContactPrompt title="Нужна правовая оценка конкретных обстоятельств?" />
+</BaseLayout>

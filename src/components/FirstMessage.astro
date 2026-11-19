@@ -1,0 +1,101 @@
+---
+import { site } from '../data/site';
+import { situations } from '../data/situations';
+import Icon from './Icon.astro';
+---
+<section class="section section--milk" aria-labelledby="first-message-title" id="pervoe-soobshchenie">
+  <div class="container">
+    <div class="compact-head">
+      <div>
+        <p class="eyebrow">Безопасный первый контакт</p>
+        <h2 id="first-message-title">Собрать первое сообщение</h2>
+      </div>
+      <p>
+        В первом сообщении не нужны фамилии, адреса и документы. Достаточно ситуации, города и
+        ближайшего срока. Текст собирается в браузере и никуда не отправляется, пока вы сами не
+        откроете чат.
+      </p>
+    </div>
+
+    <div class="calc" style="max-width: 760px;">
+      <div class="calc__field">
+        <label for="fm-situation">Что происходит</label>
+        <select id="fm-situation">
+          <option value="">Выберите ситуацию</option>
+          {situations.map((situation) => (
+            <option value={situation.title}>{situation.title}</option>
+          ))}
+          <option value="другая ситуация">Другая ситуация</option>
+        </select>
+      </div>
+
+      <div class="calc-grid" style="gap: 16px;">
+        <div class="calc__field">
+          <label for="fm-city">Город (необязательно)</label>
+          <input id="fm-city" type="text" maxlength="60" autocomplete="off" placeholder="например, Тверь" />
+        </div>
+        <div class="calc__field">
+          <label for="fm-deadline">Ближайший срок (необязательно)</label>
+          <input id="fm-deadline" type="text" maxlength="80" autocomplete="off" placeholder="например, заседание 24 октября" />
+        </div>
+      </div>
+
+      <div class="calc__field">
+        <label for="fm-text">Текст сообщения</label>
+        <textarea id="fm-text" rows="6" readonly style="width: 100%; padding: 12px 14px; border: 1px solid var(--line-strong); border-radius: var(--radius); background: #fff; font: inherit; font-size: 0.9375rem; resize: vertical;"></textarea>
+      </div>
+
+      <p class="calc__hint" id="fm-status" aria-live="polite">
+        Не указывайте здесь фамилии, номера дел и подробности — их можно сообщить после ответа.
+      </p>
+
+      <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+        <button class="btn btn--outline" type="button" id="fm-copy">Скопировать текст</button>
+        <a class="btn btn--primary" href={site.vkChat} target="_blank" rel="noopener noreferrer" data-goal="contact_vk">
+          Открыть чат <Icon name="arrow-up-right" size={15} />
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  import { trackGoal } from '../lib/events';
+
+  const situation = document.getElementById('fm-situation') as HTMLSelectElement | null;
+  const city = document.getElementById('fm-city') as HTMLInputElement | null;
+  const deadline = document.getElementById('fm-deadline') as HTMLInputElement | null;
+  const textarea = document.getElementById('fm-text') as HTMLTextAreaElement | null;
+  const copy = document.getElementById('fm-copy') as HTMLButtonElement | null;
+  const status = document.getElementById('fm-status');
+
+  const build = () => {
+    if (!textarea) return;
+    const parts = ['Здравствуйте, Юрий Анатольевич.'];
+    const what = situation?.value?.trim();
+    parts.push(what ? `Нужна помощь: ${what}.` : 'Нужна юридическая помощь.');
+    const town = city?.value.trim();
+    if (town) parts.push(`Город: ${town}.`);
+    const soon = deadline?.value.trim();
+    if (soon) parts.push(`Ближайший срок: ${soon}.`);
+    parts.push('Готов(а) обсудить формат и стоимость. Документы и подробности пришлю по согласованному каналу.');
+    textarea.value = parts.join(' ');
+  };
+
+  [situation, city, deadline].forEach((field) => field?.addEventListener('input', build));
+  situation?.addEventListener('change', build);
+  build();
+
+  copy?.addEventListener('click', async () => {
+    if (!textarea) return;
+    try {
+      await navigator.clipboard.writeText(textarea.value);
+      if (status) status.textContent = 'Текст скопирован. Вставьте его в чат — и отправьте, когда будете готовы.';
+      trackGoal('contact_vk');
+    } catch {
+      textarea.focus();
+      textarea.select();
+      if (status) status.textContent = 'Текст выделен — скопируйте его вручную (Ctrl+C или ⌘C).';
+    }
+  });
+</script>

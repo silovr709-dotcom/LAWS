@@ -1,0 +1,373 @@
+---
+/**
+ * Загрузочный экран: адвокатская печать Кочевинова Ю. А.
+ *
+ * Заглушка на всю страницу до загрузки ресурсов: печать «печатается» в центре,
+ * затем — нажатие печати и скрытие.
+ *
+ * Дизайн печати: очертания (круги) — бордовые, текст и звёзды — золотые,
+ * внутреннее поле залито лёгкой бордовой дымкой, чтобы печать казалась налитой.
+ *
+ * Безопасные фолбэки:
+ * - минимальное время показ (~1.1 с), чтобы не мелькать на быстрой странице;
+ * - страховка: скрытие через 5 с, если événement load не сработал;
+ * - CSS-фолбэк без JS (`@media (scripting: none)`);
+ * - `prefers-reduced-motion` — без анимаций, только короткий файд.
+ */
+---
+
+<div class="loading-screen" aria-hidden="true">
+  <div class="loading-screen__frame" aria-hidden="true"></div>
+
+  <div class="loading-screen__inner">
+    <div class="loading-screen__stamp">
+      <svg
+        viewBox="0 0 300 300"
+        role="img"
+        aria-label="Печать адвоката Кочевинова Ю. А."
+      >
+        <defs>
+          <path id="ls-arc-top" d="M 18,150 A 132,132 0 0 1 282,150" fill="none" />
+          <path id="ls-arc-bottom" d="M 18,150 A 132,132 0 0 0 282,150" fill="none" />
+          <!-- Лёгкая бордовая заливка поля печати: от более светлого центра к краям. -->
+          <radialGradient id="ls-field" cx="50%" cy="40%" r="68%">
+            <stop offset="0%" stop-color="rgba(84, 28, 43, 0.07)" />
+            <stop offset="65%" stop-color="rgba(84, 28, 43, 0.12)" />
+            <stop offset="100%" stop-color="rgba(84, 28, 43, 0.17)" />
+          </radialGradient>
+          <filter id="ls-ink" x="-6%" y="-6%" width="112%" height="112%">
+            <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" seed="7" result="noise" />
+            <feDisplacementMap in="SourceGraphic" in2="noise" scale="1.6" />
+          </filter>
+        </defs>
+
+        <g
+          filter="url(#ls-ink)"
+          fill="none"
+          stroke="var(--stamp-ring)"
+          stroke-linecap="round"
+        >
+          <!-- Залитое поле печати: бордовая дымка, «налитой» эффект. -->
+          <circle class="stamp-field" cx="150" cy="150" r="124" fill="url(#ls-field)" stroke="none" />
+
+          <!-- Очертания печати — бордовые круги. -->
+          <circle class="stamp-ring" cx="150" cy="150" r="142" stroke-width="5" />
+          <circle class="stamp-ring" cx="150" cy="150" r="126" stroke-width="1.5" />
+
+          <!-- Золотой текст и звёзды. -->
+          <text
+            class="stamp-label"
+            stroke="none"
+            font-family="'Golos Text', system-ui, sans-serif"
+            font-size="12"
+            font-weight="500"
+            letter-spacing="6px"
+          >
+            <textPath href="#ls-arc-top" startOffset="50%" text-anchor="middle">
+              АДВОКАТ
+            </textPath>
+          </text>
+
+          <text
+            class="stamp-label"
+            stroke="none"
+            font-family="'Cormorant Garamond', 'Times New Roman', Georgia, serif"
+            font-size="27"
+            letter-spacing="0.5px"
+            text-anchor="middle"
+            x="150"
+            y="152"
+          >
+            Кочевинов Ю.А.
+          </text>
+
+          <text
+            class="stamp-label"
+            stroke="none"
+            font-family="'Golos Text', system-ui, sans-serif"
+            font-size="12"
+            font-weight="500"
+            letter-spacing="3px"
+            text-anchor="middle"
+            x="150"
+            y="180"
+          >
+            № 51/862
+          </text>
+
+          <polygon
+            class="stamp-star"
+            stroke="none"
+            points="150,197 151.18,200.38 154.76,200.46 151.9,202.62 152.94,206.05 150,204 147.06,206.05 148.1,202.62 145.24,200.46 148.82,200.38"
+          />
+
+          <text
+            class="stamp-label"
+            stroke="none"
+            font-family="'Golos Text', system-ui, sans-serif"
+            font-size="12"
+            font-weight="500"
+            letter-spacing="6px"
+          >
+            <textPath href="#ls-arc-bottom" startOffset="50%" text-anchor="middle">
+              ТВЕРЬ
+            </textPath>
+          </text>
+        </g>
+      </svg>
+    </div>
+
+    <p class="loading-screen__caption">Кочевинов Ю.А. — адвокат</p>
+    <div class="loading-screen__line" aria-hidden="true"></div>
+  </div>
+</div>
+
+<script>
+  const screen = document.querySelector<HTMLElement>('.loading-screen');
+  if (screen) {
+    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    const finish = () => {
+      if (screen.dataset.done) return;
+      screen.dataset.done = '1';
+      document.body.classList.remove('is-locked');
+      screen.classList.add('is-leaving');
+      window.setTimeout(() => {
+        screen.classList.add('is-done');
+        screen.remove();
+      }, 760);
+    };
+
+    document.body.classList.add('is-locked');
+
+    const minDisplay = prefersReduced ? 350 : 1100;
+    const startedAt = performance.now();
+
+    const onReady = () => {
+      const waited = performance.now() - startedAt;
+      if (waited >= minDisplay) {
+        finish();
+      } else {
+        window.setTimeout(finish, minDisplay - waited);
+      }
+    };
+
+    if (document.readyState === 'complete') {
+      onReady();
+    } else {
+      window.addEventListener('load', onReady, { once: true });
+    }
+
+    // Страховка: если ресурсы не догрузились и load не пришёл — завершаем.
+    window.setTimeout(finish, 5000);
+  }
+</script>
+
+<style>
+  :global(.loading-screen) {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: grid;
+    place-items: center;
+    color: var(--wine);
+    background-color: var(--paper);
+    background-image:
+      radial-gradient(120% 90% at 50% 12%, rgba(246, 240, 231, 1) 0%, rgba(255, 252, 247, 0.96) 55%, rgba(255, 252, 247, 0.82) 100%),
+      linear-gradient(180deg, #fbf6ee 0%, #f6f0e7 100%);
+    transition:
+      opacity 700ms var(--ease),
+      visibility 0s linear 700ms;
+  }
+
+  :global(.loading-screen.is-leaving) {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
+
+  :global(.loading-screen.is-done) {
+    display: none;
+  }
+
+  /* Двойная волосатая рамка — как лист документа. */
+  :global(.loading-screen__frame) {
+    position: absolute;
+    inset: clamp(18px, 4vw, 46px);
+    border: 1px solid rgba(182, 154, 99, 0.42);
+    pointer-events: none;
+  }
+
+  :global(.loading-screen__frame)::after {
+    content: '';
+    position: absolute;
+    inset: 8px;
+    border: 1px solid rgba(182, 154, 99, 0.22);
+  }
+
+  :global(.loading-screen__inner) {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+  }
+
+  :global(.loading-screen__stamp) {
+    width: min(320px, 72vw);
+    aspect-ratio: 1;
+    opacity: 0;
+    transform: scale(0.92) rotate(-6deg);
+    animation: ls-stamp-in 760ms var(--ease) 140ms forwards;
+  }
+
+  :global(.loading-screen.is-leaving .loading-screen__stamp) {
+    animation: ls-stamp-press 360ms ease forwards;
+  }
+
+  /* Края печати — бордовые; текст и звёзды — золотые. */
+  :global(.loading-screen__stamp) {
+    --stamp-ring: var(--wine);
+    --stamp-ink: var(--gold);
+  }
+
+  :global(.stamp-ring) {
+    stroke: var(--stamp-ring);
+  }
+
+  :global(.stamp-label),
+  :global(.stamp-star) {
+    fill: var(--stamp-ink);
+    stroke: none;
+  }
+
+  /* Заливка поля: появляется как «наливание» краски. */
+  :global(.stamp-field) {
+    transform-box: fill-box;
+    transform-origin: center;
+    opacity: 0;
+    animation: ls-field-fill 820ms var(--ease) 260ms forwards;
+  }
+
+  :global(.loading-screen.is-leaving .stamp-field) {
+    animation: none;
+    opacity: 1;
+  }
+
+  @keyframes ls-stamp-in {
+    0% {
+      opacity: 0;
+      transform: scale(0.92) rotate(-6deg);
+    }
+    65% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1) rotate(-1.5deg);
+    }
+  }
+
+  @keyframes ls-stamp-press {
+    0% {
+      transform: scale(1) rotate(-1.5deg);
+    }
+    55% {
+      transform: scale(0.935) rotate(0.5deg);
+    }
+    100% {
+      transform: scale(0.97) rotate(0deg);
+    }
+  }
+
+  @keyframes ls-field-fill {
+    from {
+      opacity: 0;
+      transform: scale(0.88);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  :global(.loading-screen__caption) {
+    margin-top: 30px;
+    font-family: var(--font-body);
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.42em;
+    text-transform: uppercase;
+    color: var(--gold-deep);
+    opacity: 0;
+    animation: ls-caption-in 640ms var(--ease) 480ms forwards;
+  }
+
+  :global(.loading-screen.is-leaving .loading-screen__caption),
+  :global(.loading-screen.is-leaving .loading-screen__line) {
+    animation: none;
+    opacity: 0;
+    transition: opacity 300ms ease;
+  }
+
+  @keyframes ls-caption-in {
+    from {
+      opacity: 0;
+      transform: translateY(6px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  :global(.loading-screen__line) {
+    margin-top: 24px;
+    width: min(220px, 46vw);
+    height: 1px;
+    background: rgba(182, 154, 99, 0.35);
+    overflow: hidden;
+  }
+
+  :global(.loading-screen__line)::after {
+    content: '';
+    display: block;
+    height: 100%;
+    width: 0;
+    background: var(--gold);
+    animation: ls-line 1.6s var(--ease) 260ms forwards;
+  }
+
+  @keyframes ls-line {
+    to {
+      width: 100%;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    :global(.loading-screen__stamp) {
+      animation-duration: 120ms;
+      animation-delay: 0ms;
+    }
+
+    :global(.stamp-field),
+    :global(.loading-screen__caption),
+    :global(.loading-screen__line)::after {
+      animation-duration: 120ms;
+      animation-delay: 0ms;
+    }
+  }
+
+  /* Фолбэк без JS: печать плавно уходит через ~2.4 с. */
+  @media (scripting: none) {
+    :global(.loading-screen) {
+      animation: ls-fallback 700ms 2400ms forwards;
+    }
+
+    @keyframes ls-fallback {
+      to {
+        opacity: 0;
+        visibility: hidden;
+      }
+    }
+  }
+</style>

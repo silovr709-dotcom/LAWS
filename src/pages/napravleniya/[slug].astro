@@ -1,0 +1,48 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import EditorialImage from '../../components/EditorialImage.astro';
+import { servicePhotos } from '../../data/editorial';
+import Portrait from '../../components/Portrait.astro';
+import ContactPrompt from '../../components/ContactPrompt.astro';
+import Icon from '../../components/Icon.astro';
+import { services, type Service } from '../../data/services';
+import { documents } from '../../data/documents';
+import { serviceDocuments } from '../../data/links';
+import { situations } from '../../data/situations';
+import { site } from '../../data/site';
+import { canonicalUrl, withBase } from '../../lib/paths';
+export function getStaticPaths() { return services.map((service) => ({ params: { slug: service.slug }, props: { service } })); }
+interface Props { service: Service; }
+const { service } = Astro.props;
+const articles = (await getCollection('articles', ({ data }) => !data.draft)).filter((article) => service.articleIds.includes(article.id));
+const serviceDocs = (serviceDocuments[service.slug] ?? [])
+  .map((slug) => documents.find((document) => document.slug === slug))
+  .filter((document) => document !== undefined);
+const serviceSituations = situations.filter((situation) => situation.service === service.slug);
+const url = canonicalUrl(site.url, `/napravleniya/${service.slug}/`);
+const photo = servicePhotos[service.slug];
+const schema = [{ '@context': 'https://schema.org', '@type': 'Service', name: service.title, description: service.lead, url, areaServed: { '@type': 'Country', name: 'Россия' }, provider: { '@type': 'Person', '@id': canonicalUrl(site.url, '/ob-advokate/#person'), name: site.fullName, url: canonicalUrl(site.url, '/ob-advokate/') } }, { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: 'Главная', item: canonicalUrl(site.url, '/') }, { '@type': 'ListItem', position: 2, name: service.title, item: url }] }];
+---
+<BaseLayout title={`${service.title} — адвокат Юрий Кочевинов, Тверь и Россия`} description={service.lead} schema={schema}>
+  <header class="detail-hero"><div class="container"><nav class="breadcrumbs" aria-label="Хлебные крошки"><a href={withBase('/')}>Главная</a><span aria-hidden="true">/</span><a href={withBase('/#napravleniya')}>Направления</a><span aria-hidden="true">/</span><span aria-current="page">{service.title}</span></nav><div class="detail-hero__grid"><div><p class="eyebrow"><span>Уголовно-правовая защита</span> <span class="eyebrow__num">· {service.number}</span></p><h1>{service.title}</h1><p class="detail-hero__lead">{service.lead}</p></div><div class="detail-hero__person"><Portrait variant="avatar" /><div><span>{site.name}</span><p>Адвокат · {site.registryNumber}<br />Тверь и вся Россия</p><a href={withBase('/ob-advokate/')}>Об адвокате<Icon name="arrow-right" size={14} /></a></div></div></div></div></header>
+  {
+    photo && (
+      <figure class="service-cover">
+        <div class="container">
+          <EditorialImage name={photo.name} alt={photo.alt} sizes="(max-width: 900px) 92vw, 1180px" />
+        </div>
+      </figure>
+    )
+  }
+  <div class="section section--paper"><div class="container service-detail"><div>
+    <section class="service-detail__section" id="kogda"><p class="eyebrow">Когда обратиться</p><h2>Если вы узнали свою ситуацию</h2><ul class="editorial-list">{service.scenarios.map((item) => <li>{item}</li>)}</ul><p class="service-focus">{service.focus}</p></section>
+    <section class="service-detail__section" id="rabota"><p class="eyebrow">Содержание помощи</p><h2>Что может входить в работу</h2><div class="service-work">{service.work.map((item, index) => <article><span aria-hidden="true">0{index + 1}</span><div><h3>{item.title}</h3><p>{item.text}</p></div></article>)}</div><p class="detail-note">Конкретные действия зависят от материалов, процессуального статуса и принятого поручения. Это описание направления, а не обещание определённого результата.</p></section>
+    <section class="service-detail__section" id="podgotovka"><p class="eyebrow">До первого разговора</p><h2>Что стоит уточнить заранее</h2><ol class="editorial-list editorial-list--ordered">{service.prepare.map((item) => <li>{item}</li>)}</ol><div class="link-grid" style="margin-top: 22px;"><a href={withBase('/kak-my-rabotaem/')}>Как устроена работа и стоимость<span>Шесть этапов поручения и соглашение</span></a><a href={withBase('/bezopasnaya-peredacha-dokumentov/#pervoe-soobshchenie')}>Собрать первое сообщение<span>Без документов и чувствительных данных</span></a><a href={withBase('/sroki/')}>Калькуляторы сроков<span>Апелляция, проверка по ст. 144 УПК РФ, 48 часов</span></a><a href={withBase('/proverka-zayavleniya/')}>Проверка черновика<span>10 формальных реквизитов до подачи</span></a></div></section>
+  </div><aside class="service-detail__aside"><nav aria-label="На этой странице"><p class="eyebrow">На этой странице</p><a href="#kogda">Когда обратиться</a><a href="#rabota">Содержание помощи</a><a href="#podgotovka">Что подготовить</a></nav><div class="service-detail__aside-note"><h2>Безопасный первый контакт</h2><p>В первом сообщении достаточно стадии дела и сроков. Передачу документов и подробностей нужно согласовать отдельно.</p><a class="link-arrow" href={withBase('/#kontakty')}>Обсудить ситуацию<Icon name="arrow-right" size={14} /></a></div></aside></div></div>
+  {articles.length > 0 && <section class="section section--milk"><div class="container"><div class="compact-head"><div><p class="eyebrow">По теме</p><h2>Полезные материалы</h2></div></div><div class="publication-preview__grid">{articles.map((item) => <a class="publication-card" href={withBase(`/materialy/razbory/${item.id}/`)}><span>{item.data.category} · {item.data.readingTime}</span><h3>{item.data.title}</h3><span class="publication-card__read">Читать<Icon name="arrow-up-right" size={16} /></span></a>)}</div>
+      {serviceDocs.length > 0 && <><h3 style="margin: 34px 0 14px; font-family: var(--font-display); font-size: 1.6rem; color: var(--wine);">Документы по теме</h3><div class="link-grid">{serviceDocs.map((document) => <a href={withBase(`/materialy/obrazcy/${document.slug}/`)} data-goal="doc_open">{document.short}<span>{document.group} · {document.deadline || document.addressee}</span></a>)}</div></>}
+      {serviceSituations.length > 0 && <p style="margin-top: 20px;">{serviceSituations.map((situation) => <a class="link-arrow" href={withBase(`/situacii/${situation.slug}/`)} style="margin-right: 18px;">Ситуация: {situation.title}<Icon name="arrow-right" size={15} /></a>)}</p>}
+      </div></section>}
+  <ContactPrompt />
+</BaseLayout>
