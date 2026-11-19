@@ -41,7 +41,8 @@ const mobileQuick: NavItem[] = [
   <div class="site-header__inner">
     <a class="brand" href={withBase('/')} title="На главную">
       <span class="brand__mark brand__logo" aria-hidden="true">
-        <img src={withBase(site.logo)} alt="" width="38" height="38" />
+        <img class="brand__logo-light" src={withBase(site.logoLight)} alt="" width="38" height="38" />
+        <img class="brand__logo-dark" src={withBase(site.logoDark)} alt="" width="38" height="38" />
       </span>
       <span class="brand__text">
         <span class="brand__name">{site.name}</span>

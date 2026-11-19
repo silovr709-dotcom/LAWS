@@ -489,26 +489,38 @@ button {
   color: var(--wine);
 }
 
-/* Логотип адвокатского кабинета (фонд близок к белому):
-   на тёмной шапке над hero и в тёмном подвале — светлый закруглённый значок. */
+/* Логотип адвокатского кабинета — без подложки, на прозрачном фоне.
+   Над тёмным hero и в тёмном подвале — светлый вариант;
+   на светлой твёрдой шапке — тёмный вариант. */
 .brand__logo {
   border: none;
   border-radius: 8px;
   overflow: hidden;
-  background: #fbf9f6;
   padding: 0;
+  background: transparent;
 }
 
 .brand__logo img {
-  display: block;
+  display: none;
   width: 34px;
   height: 34px;
   object-fit: contain;
 }
 
-.site-header.is-scrolled .brand__logo,
-.site-header.is-solid .brand__logo {
-  border-radius: 7px;
+/* По умолчанию (над hero — прозрачная шапка на тёмном фоне) — светлый логотип. */
+.brand__logo .brand__logo-light {
+  display: block;
+}
+
+/* Твёрдая/проскролленная шапка — светлый фон, нужен тёмный логотип. */
+.site-header.is-scrolled .brand__logo .brand__logo-light,
+.site-header.is-solid .brand__logo .brand__logo-light {
+  display: none;
+}
+
+.site-header.is-scrolled .brand__logo .brand__logo-dark,
+.site-header.is-solid .brand__logo .brand__logo-dark {
+  display: block;
 }
 
 .brand__text {

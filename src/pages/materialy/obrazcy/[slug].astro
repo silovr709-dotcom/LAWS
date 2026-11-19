@@ -110,6 +110,7 @@ const schema = {
 
         <article class="doc-sheet">
           <div class="doc-sheet__brand">
+            <img class="doc-sheet__logo" src={withBase(site.logoDark)} alt="" width="88" height="65" />
             <span>Адвокат Юрий Кочевинов · реестровый номер {site.registryNumber}</span>
             <span>Образец документа</span>
           </div>
@@ -311,6 +312,7 @@ const schema = {
     .doc-sheet__brand {
       display: flex;
       flex-wrap: wrap;
+      align-items: center;
       justify-content: space-between;
       gap: 8px;
       padding-bottom: 10px;
@@ -320,6 +322,13 @@ const schema = {
       letter-spacing: 0.1em;
       text-transform: uppercase;
       color: var(--wine, #7a1f33);
+    }
+
+    .doc-sheet__logo {
+      height: 26px;
+      width: auto;
+      max-width: 80px;
+      flex: none;
     }
 
     .doc-sheet__header {

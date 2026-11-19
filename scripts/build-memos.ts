@@ -71,7 +71,7 @@ const tab = await context.newPage();
 await mkdir('public/memos', { recursive: true });
 
 const assets = {
-  logo: await embed('public/logo.png', 'image/png'),
+  logo: await embed('public/logo-dark.png', 'image/png'),
   qr: await embed('public/memos/qr-vk.png', 'image/png'),
 };
 
